@@ -1,4 +1,4 @@
-# Gaming Software by Hacker114
+# Unblocked School Gaming Software by **Hacker114**
 
 This repository contains gaming software created by **Hacker114**.  
 Please review the license before taking any action with this repository.
