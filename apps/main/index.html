@@ -8,27 +8,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <title>Project Freedom | Apps</title>
     <link rel="icon" type="image/png" href="../../images/favicon.png">
-    <!-- Cronitor RUM -->
-<script async src="https://rum.cronitor.io/script.js"></script>
-<script>
-    window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
-    cronitor('config', { clientKey: '8b9ac14f693662c7e4489199bffaf6ae' });
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-        const lastVisit = localStorage.getItem('lastVisitDate');
-
-        if (lastVisit !== today) {
-            // If the last visit date is not today, track the viewer as unique
-            cronitor("track", "UniqueViewers");
-            localStorage.setItem('lastVisitDate', today); // Update the last visit date to today
-        }
-        const user = localStorage.getItem('user');
-
-        if (user != 1) {
-            // If the last visit date is not today, track the viewer as unique
-            cronitor("track", "AllTimeUniqueViewers");
-            localStorage.setItem('user', 1); // Update the last visit date to today
-        }
-</script>
 
  <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
 
