@@ -1,32 +1,41 @@
 // login-main-directory.js
-// Updated rules:
-// - Popup closed / user cancels → DENY access
-// - Google blocks login (no credential + error case) → ALLOW access
-// - Successful login → check domain as before
+// ────────────────────────────────────────────────
+// Features:
+// - Immediate full-screen loading
+// - Google Sign-In with remember (cookie)
+// - After login success: assign ID → check /{id}.html → redirect or show page
+// ────────────────────────────────────────────────
 
+// Hide content right away
 document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
 
-const overlay = document.createElement('div');
-overlay.id = 'auth-overlay';
-Object.assign(overlay.style, {
+// Create persistent loading overlay (stays until final decision)
+const loading = document.createElement('div');
+loading.id = 'vexa-loading';
+Object.assign(loading.style, {
   position: 'fixed',
   inset: '0',
   background: '#0f172a',
-  zIndex: '999999',
+  zIndex: '9999',
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
   alignItems: 'center',
-  color: '#e2e8f0',
+  justifyContent: 'center',
+  color: 'white',
   fontFamily: 'system-ui, sans-serif',
-  transition: 'opacity 0.5s'
+  transition: 'opacity 0.7s'
 });
 
-overlay.innerHTML = `
-  <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1rem;">Loading...</div>
-  <div style="font-size:1.1rem; opacity:0.8;">Verifying access</div>
+loading.innerHTML = `
+  <div style="font-size:3.5rem; font-weight:bold; margin-bottom:1.8rem;">
+    Loading VexaCloud...
+  </div>
+  <div style="width:90px; height:90px; border:10px solid #334155; border-top:10px solid #60a5fa; border-radius:50%; animation:spin 1.1s linear infinite;"></div>
+  <style>
+    @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+  </style>
 `;
-document.documentElement.appendChild(overlay);
+document.documentElement.appendChild(loading);
 
 // Google meta
 const meta = document.createElement('meta');
@@ -42,8 +51,6 @@ script.defer = true;
 script.onload = init;
 document.head.appendChild(script);
 
-let popupInteractionDetected = false;
-
 function init() {
   const access = getCookie('access');
 
@@ -52,17 +59,18 @@ function init() {
     return;
   }
   if (access === 'allowed') {
-    grantAccess();
+    afterLoginSuccess();
     return;
   }
 
-  overlay.innerHTML = `
-    <div style="font-size:2.2rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
+  // Show sign-in UI
+  loading.innerHTML = `
+    <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
       Sign in with Google
     </div>
     <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
     <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
-      You must sign in to continue
+      Required to access VexaCloud
     </div>
   `;
 
@@ -84,21 +92,27 @@ function init() {
     width: 340
   });
 
-  // Track if user attempted to interact with the button
-  document.addEventListener('click', function attemptHandler(e) {
-    if (e.target.closest('#gbtn')) {
-      popupInteractionDetected = true;
-      // Remove listener after first click
-      this.removeEventListener('click', attemptHandler);
-    }
-  }, { once: false });
+  // Optional: timeout fallback if popup closed/no response
+  let popupAttempted = false;
+  document.addEventListener('click', e => {
+    if (e.target.closest('#gbtn')) popupAttempted = true;
+  }, { once: true });
 
-  // If popup was opened but no callback after reasonable time → assume closed → deny
   setTimeout(() => {
-    if (popupInteractionDetected && !accessGranted) {
-      denyAccess("Sign-in popup was closed. Access denied.");
+    if (popupAttempted && !accessGranted) {
+      loading.innerHTML = `
+        <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
+          Sign-in cancelled
+        </div>
+        <div style="font-size:1.25rem; text-align:center; max-width:420px;">
+          Please reload and complete sign-in.
+        </div>
+        <button onclick="location.reload()" style="margin-top:1.5rem; padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer;">
+          Reload
+        </button>
+      `;
     }
-  }, 15000);  // 15 seconds – enough time for most users to complete or cancel
+  }, 14000);
 }
 
 let accessGranted = false;
@@ -106,15 +120,13 @@ let accessGranted = false;
 function handleResponse(resp) {
   accessGranted = true;
 
-  // No credential usually means: popup closed / user cancelled / consent denied / blocked by policy
   if (!resp || !resp.credential) {
-    // Google blocked it (admin policy, origin mismatch, etc.) → ALLOW
+    // Popup closed / cancelled / blocked → allow per your last request
     setCookie('access', 'allowed', 365);
-    grantAccess();
+    afterLoginSuccess();
     return;
   }
 
-  // Successful credential → normal domain check
   try {
     const payload = JSON.parse(atob(resp.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
@@ -123,42 +135,51 @@ function handleResponse(resp) {
       setCookie('access', 'teacher', 365);
       setCookie('email', email, 365);
       window.location.replace('/teacher.html');
+      return;
     } else {
       setCookie('access', 'allowed', 365);
       setCookie('email', email, 365);
-      grantAccess();
+      afterLoginSuccess();
     }
-  } catch (err) {
-    // Parsing failed → treat as blocked → allow
+  } catch {
     setCookie('access', 'allowed', 365);
-    grantAccess();
+    afterLoginSuccess();
   }
 }
 
-function denyAccess(message = "Access denied. You must complete sign-in.") {
-  overlay.innerHTML = `
-    <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
-      ACCESS DENIED
-    </div>
-    <div style="font-size:1.25rem; max-width:420px; text-align:center; line-height:1.6;">
-      ${message}<br><br>
-      <button onclick="location.reload()" style="padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:1rem;">
-        Reload and try again
-      </button>
-    </div>
-  `;
-  // No fade-out – stay blocked
+// ────────────────────────────────────────────────
+// Runs after login success (or returning user)
+// ────────────────────────────────────────────────
+function afterLoginSuccess() {
+  // Get or create ID
+  let userId = localStorage.getItem('vexaUserId');
+  if (!userId) {
+    userId = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('vexaUserId', userId);
+  }
+
+  const target = `/${userId}.html`;
+
+  fetch(target, { method: 'HEAD', cache: 'no-store' })
+    .then(res => {
+      if (res.ok) {
+        window.location.replace(target);
+      } else {
+        hideLoading();
+      }
+    })
+    .catch(() => hideLoading());
 }
 
-function grantAccess() {
-  accessGranted = true;
-  overlay.style.opacity = '0';
+function hideLoading() {
+  loading.style.opacity = '0';
   setTimeout(() => {
-    overlay.remove();
+    loading.remove();
     document.body.style.visibility = 'visible';
-  }, 600);
+  }, 800);
 }
 
+// Cookie helpers
 function getCookie(name) {
   const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
   return m ? decodeURIComponent(m[1]) : null;
@@ -168,7 +189,7 @@ function setCookie(name, value, days) {
   let expires = '';
   if (days) {
     const d = new Date();
-    d.setTime(d.getTime() + days*864e5);
+    d.setTime(d.getTime() + days * 864e5);
     expires = '; expires=' + d.toUTCString();
   }
   document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
