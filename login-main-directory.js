@@ -1,8 +1,11 @@
-const hideStyle = document.createElement('style');
-hideStyle.textContent = 'body { visibility: hidden !important; }';
-document.head.appendChild(hideStyle);
+// login-main-directory.js
+// Updated rules:
+// - Popup closed / user cancels → DENY access
+// - Google blocks login (no credential + error case) → ALLOW access
+// - Successful login → check domain as before
 
-// Loading overlay
+document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
+
 const overlay = document.createElement('div');
 overlay.id = 'auth-overlay';
 Object.assign(overlay.style, {
@@ -20,16 +23,12 @@ Object.assign(overlay.style, {
 });
 
 overlay.innerHTML = `
-  <div style="font-size: 2.6rem; font-weight: bold; margin-bottom: 1rem;">
-    Loading...
-  </div>
-  <div style="font-size: 1.15rem; opacity: 0.8; text-align: center; max-width: 360px;">
-    Preparing access...
-  </div>
+  <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1rem;">Loading...</div>
+  <div style="font-size:1.1rem; opacity:0.8;">Verifying access</div>
 `;
 document.documentElement.appendChild(overlay);
 
-// Google Sign-In meta tag
+// Google meta
 const meta = document.createElement('meta');
 meta.name = 'google-signin-client_id';
 meta.content = '679269140652-7d1pivqd4d269g1d0fmlivhqebnd2grt.apps.googleusercontent.com';
@@ -40,113 +39,84 @@ const script = document.createElement('script');
 script.src = 'https://accounts.google.com/gsi/client';
 script.async = true;
 script.defer = true;
-script.onload = initialize;
+script.onload = init;
 document.head.appendChild(script);
 
-// ────────────────────────────────────────────────
-// User ID logic
-function getOrCreateUserId() {
-  let id = getCookie('userId');
-  if (!id) {
-    id = Math.floor(100000 + Math.random() * 900000).toString();
-    setCookie('userId', id, 365);
-  }
-  return id;
-}
+let popupInteractionDetected = false;
 
-const userId = getOrCreateUserId();
-
-// ────────────────────────────────────────────────
-// Force URL to be /<userId>
-function forceUrlWithId() {
-  const targetPath = `/${userId}`;
-
-  if (window.location.pathname !== targetPath &&
-      window.location.pathname !== targetPath + '/') {
-    const newUrl = targetPath + window.location.search + window.location.hash;
-    window.history.replaceState(null, '', newUrl);
-  }
-}
-
-forceUrlWithId();  // Run right away
-
-// ────────────────────────────────────────────────
-function initialize() {
+function init() {
   const access = getCookie('access');
 
-  checkIfBanned(() => {
-    if (access === 'teacher') {
-      window.location.replace('/teacher.html');
-    } else if (access === 'allowed') {
-      grantAccess();
-    } else {
-      showSignIn();
-    }
-  });
-}
+  if (access === 'teacher') {
+    window.location.replace('/teacher.html');
+    return;
+  }
+  if (access === 'allowed') {
+    grantAccess();
+    return;
+  }
 
-function showSignIn() {
   overlay.innerHTML = `
-    <div style="font-size: 2.3rem; font-weight: bold; margin-bottom: 1.5rem; color: #60a5fa;">
+    <div style="font-size:2.2rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
       Sign in with Google
     </div>
-    <div id="google-button-container" style="
-      background: white;
-      border-radius: 10px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      min-width: 340px;
-      display: flex;
-      justify-content: center;
-    "></div>
-    <div style="margin-top: 2rem; font-size: 1.05rem; opacity: 0.8; text-align: center; max-width: 380px;">
-      Required to continue<br>User ID: ${userId}
+    <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
+    <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
+      You must sign in to continue
     </div>
   `;
 
   google.accounts.id.initialize({
     client_id: '679269140652-7d1pivqd4d269g1d0fmlivhqebnd2grt.apps.googleusercontent.com',
-    callback: handleGoogleResponse,
+    callback: handleResponse,
     auto_select: false,
     cancel_on_tap_outside: false,
     ux_mode: 'popup'
   });
 
-  google.accounts.id.renderButton(
-    document.getElementById('google-button-container'),
-    {
-      type: 'standard',
-      theme: 'outline',
-      size: 'large',
-      text: 'signin_with',
-      shape: 'rectangular',
-      logo_alignment: 'center',
-      width: 340
-    }
-  );
+  google.accounts.id.renderButton(document.getElementById('gbtn'), {
+    type: 'standard',
+    theme: 'outline',
+    size: 'large',
+    text: 'signin_with',
+    shape: 'rectangular',
+    logo_alignment: 'center',
+    width: 340
+  });
 
-  // Fallback: treat no response as allowed
-  document.addEventListener('click', e => {
-    if (e.target.closest('#google-button-container')) {
-      setTimeout(() => {
-        if (overlay.parentNode) {
-          setCookie('access', 'allowed', 365);
-          grantAccess();
-        }
-      }, 10000);
+  // Track if user attempted to interact with the button
+  document.addEventListener('click', function attemptHandler(e) {
+    if (e.target.closest('#gbtn')) {
+      popupInteractionDetected = true;
+      // Remove listener after first click
+      this.removeEventListener('click', attemptHandler);
     }
-  }, { once: true });
+  }, { once: false });
+
+  // If popup was opened but no callback after reasonable time → assume closed → deny
+  setTimeout(() => {
+    if (popupInteractionDetected && !accessGranted) {
+      denyAccess("Sign-in popup was closed. Access denied.");
+    }
+  }, 15000);  // 15 seconds – enough time for most users to complete or cancel
 }
 
-function handleGoogleResponse(response) {
-  if (!response?.credential) {
+let accessGranted = false;
+
+function handleResponse(resp) {
+  accessGranted = true;
+
+  // No credential usually means: popup closed / user cancelled / consent denied / blocked by policy
+  if (!resp || !resp.credential) {
+    // Google blocked it (admin policy, origin mismatch, etc.) → ALLOW
     setCookie('access', 'allowed', 365);
     grantAccess();
     return;
   }
 
+  // Successful credential → normal domain check
   try {
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const payload = JSON.parse(atob(resp.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
 
     if (email.endsWith('@evergreenps.org')) {
@@ -158,78 +128,48 @@ function handleGoogleResponse(response) {
       setCookie('email', email, 365);
       grantAccess();
     }
-  } catch {
+  } catch (err) {
+    // Parsing failed → treat as blocked → allow
     setCookie('access', 'allowed', 365);
     grantAccess();
   }
 }
 
-// ────────────────────────────────────────────────
-// Ban check: looks for <userId>.txt in ROOT (e.g. /374821.txt)
-function checkIfBanned(onNotBanned) {
-  const banFile = `/${userId}.txt`;   // ← root directory, no subfolder
-
-  fetch(banFile, { method: 'HEAD', cache: 'no-store' })
-    .then(res => {
-      if (res.ok) {
-        showBannedScreen();
-      } else {
-        onNotBanned();
-      }
-    })
-    .catch(() => onNotBanned());   // 404 or network error → not banned
-}
-
-function showBannedScreen() {
+function denyAccess(message = "Access denied. You must complete sign-in.") {
   overlay.innerHTML = `
-    <div style="font-size: 2.8rem; font-weight: bold; color: #ef4444; margin-bottom: 1rem;">
+    <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
       ACCESS DENIED
     </div>
-    <div style="font-size: 1.25rem; max-width: 420px; text-align: center; line-height: 1.6;">
-      Your account (ID: ${userId}) is banned.<br>
-      Contact an administrator if this is incorrect.
+    <div style="font-size:1.25rem; max-width:420px; text-align:center; line-height:1.6;">
+      ${message}<br><br>
+      <button onclick="location.reload()" style="padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:1rem;">
+        Reload and try again
+      </button>
     </div>
   `;
+  // No fade-out – stay blocked
 }
 
 function grantAccess() {
-  // Show your main game content here
-  // Example: document.getElementById('main-content').style.display = 'block';
-  // or load iframe, start game logic, etc.
-
-  overlay.innerHTML = `
-    <div style="font-size: 2.5rem; font-weight: bold; color: #22c55e; margin-bottom: 1rem;">
-      Access Granted
-    </div>
-    <div style="font-size: 1.2rem; text-align: center; max-width: 400px;">
-      User ID: ${userId}<br>
-      Welcome to the site
-    </div>
-  `;
-
+  accessGranted = true;
+  overlay.style.opacity = '0';
   setTimeout(() => {
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-      overlay.remove();
-      document.body.style.visibility = 'visible';
-      // If you have a main element to show:
-      // document.getElementById('main-content')?.style.display = 'block';
-    }, 600);
-  }, 1400);
+    overlay.remove();
+    document.body.style.visibility = 'visible';
+  }, 600);
 }
 
-// Cookie helpers
 function getCookie(name) {
-  const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-  return match ? decodeURIComponent(match[1]) : null;
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
 }
 
 function setCookie(name, value, days) {
   let expires = '';
   if (days) {
-    const date = new Date();
-    date.setTime(date.getTime() + days * 86400000);
-    expires = '; expires=' + date.toUTCString();
+    const d = new Date();
+    d.setTime(d.getTime() + days*864e5);
+    expires = '; expires=' + d.toUTCString();
   }
   document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
 }
