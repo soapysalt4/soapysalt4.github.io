@@ -9,6 +9,61 @@
     <title>VexaCloud | Hacker114</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <script src="login-main-directory.js"></script>
+    <script>
+// ────────────────────────────────────────────────
+// User ID + ban check (runs very early)
+// ────────────────────────────────────────────────
+
+function getOrCreateUserId() {
+  let id = localStorage.getItem('vexaUserId');   // using localStorage so it survives cookie clear
+  if (!id) {
+    id = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('vexaUserId', id);
+  }
+  return id;
+}
+
+const userId = getOrCreateUserId();
+
+// Show ID somewhere visible (you can style/move this later)
+document.addEventListener('DOMContentLoaded', () => {
+  const title = document.getElementById('title');
+  if (title) {
+    title.innerHTML += `<br><small style="font-size:0.7em; opacity:0.7;">ID: ${userId}</small>`;
+  }
+});
+
+// Ban check: looks for <userId>.txt in ROOT (e.g. https://yourdomain.com/374821.txt)
+function checkBanAndBlock() {
+  const banFile = `/${userId}.txt`;
+
+  fetch(banFile, { method: 'HEAD', cache: 'no-store' })
+    .then(res => {
+      if (res.ok) {
+        document.body.innerHTML = `
+          <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#0f172a; color:#ef4444; font-family:system-ui; text-align:center; padding:2rem;">
+            <h1 style="font-size:3rem; margin-bottom:1rem;">ACCESS DENIED</h1>
+            <p style="font-size:1.4rem; max-width:500px;">
+              Your account has been banned.<br>
+              User ID: <strong>${userId}</strong><br><br>
+              Contact the administrator if you believe this is a mistake.
+            </p>
+          </div>
+        `;
+        // Stop everything else
+        throw new Error('Banned');
+      }
+    })
+    .catch(() => {
+      // Not banned → continue normally
+      console.log('User not banned. ID:', userId);
+    });
+}
+
+// Run ban check immediately
+checkBanAndBlock();
+
+</script>
     <script async src="https://rum.cronitor.io/script.js"></script>
     <script>
         window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
