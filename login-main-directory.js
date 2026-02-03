@@ -1,14 +1,12 @@
-// login.js
-// - Remembers successful sign-in via 'access' cookie → skips Google prompt on reload/return visits
-// - Still generates/checks user ID + bans on EVERY load (even returning users)
-// - Keeps loading screen, teacher redirect, allowed access, ban logic
+// login.js - Updated: changes URL to include user ID (like /483921)
+// Remembers sign-in, assigns persistent user ID, checks ban, redirects URL
 
-// 1. Hide content immediately
+// Immediately hide content
 const hideStyle = document.createElement('style');
 hideStyle.textContent = 'body { visibility: hidden !important; }';
 document.head.appendChild(hideStyle);
 
-// 2. Loading overlay
+// Create loading overlay
 const overlay = document.createElement('div');
 overlay.id = 'auth-overlay';
 Object.assign(overlay.style, {
@@ -26,22 +24,22 @@ Object.assign(overlay.style, {
 });
 
 overlay.innerHTML = `
-  <div style="font-size: 2.6rem; font-weight: bold; margin-bottom: 1.5rem;">
-    Verifying access...
+  <div style="font-size: 2.6rem; font-weight: bold; margin-bottom: 1rem;">
+    Loading...
   </div>
   <div style="font-size: 1.15rem; opacity: 0.8; text-align: center; max-width: 360px;">
-    Just a moment
+    Preparing secure access
   </div>
 `;
 document.documentElement.appendChild(overlay);
 
-// 3. Google meta (still needed even if we skip sign-in)
+// Google Sign-In meta
 const meta = document.createElement('meta');
 meta.name = 'google-signin-client_id';
 meta.content = '679269140652-7d1pivqd4d269g1d0fmlivhqebnd2grt.apps.googleusercontent.com';
 document.head.appendChild(meta);
 
-// 4. Load GIS script (only if needed, but we load it anyway for safety)
+// Load Google script
 const script = document.createElement('script');
 script.src = 'https://accounts.google.com/gsi/client';
 script.async = true;
@@ -49,48 +47,54 @@ script.defer = true;
 script.onload = initialize;
 document.head.appendChild(script);
 
-setTimeout(() => {
-  if (!window.google?.accounts?.id && !hasValidAccessCookie()) {
-    overlay.innerHTML = `
-      <div style="font-size: 2rem; color: #f87171; margin-bottom: 1.5rem;">
-        Sign-in library failed to load
-      </div>
-      <button onclick="location.reload()" style="padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer;">
-        Reload
-      </button>
-    `;
+// ────────────────────────────────────────────────
+// Get or generate persistent user ID
+function getOrCreateUserId() {
+  let id = getCookie('userId');
+  if (!id) {
+    id = Math.floor(100000 + Math.random() * 900000).toString();
+    setCookie('userId', id, 365);
   }
-}, 12000);
-
-function hasValidAccessCookie() {
-  const access = getCookie('access');
-  return access === 'teacher' || access === 'allowed';
+  return id;
 }
 
+const userId = getOrCreateUserId();
+
+// ────────────────────────────────────────────────
+// Change URL to include user ID (e.g., /483921)
+function updateUrlWithId() {
+  const currentPath = window.location.pathname;
+  const idPath = `/${userId}`;
+
+  if (currentPath !== idPath && currentPath !== idPath + '/') {
+    // Preserve any query params or hash
+    const newUrl = idPath + window.location.search + window.location.hash;
+    window.history.replaceState(null, '', newUrl);
+  }
+}
+
+// Call immediately
+updateUrlWithId();
+
+// ────────────────────────────────────────────────
 function initialize() {
-  // Quick check first — if already authorized via cookie, skip Google entirely
-  if (hasValidAccessCookie()) {
-    const userId = getCookie('userId') || generateUserId();
-    checkIfBanned(userId, proceedBasedOnAccess);
-    return;
-  }
-
-  // No valid cookie → proceed to sign-in flow
-  setTimeout(showSignInScreen, 300);
-}
-
-function proceedBasedOnAccess() {
+  // Check if already signed in (via cookie)
   const access = getCookie('access');
-  if (access === 'teacher') {
-    window.location.replace('teacher.html');
-  } else {
-    grantGameAccess();
-  }
+
+  checkIfBanned(() => {
+    if (access === 'teacher') {
+      window.location.replace('/teacher.html');
+    } else if (access === 'allowed') {
+      grantAccess();
+    } else {
+      showSignIn();
+    }
+  });
 }
 
-function showSignInScreen() {
+function showSignIn() {
   overlay.innerHTML = `
-    <div style="font-size: 2.3rem; font-weight: bold; margin-bottom: 2rem; color: #60a5fa;">
+    <div style="font-size: 2.3rem; font-weight: bold; margin-bottom: 1.5rem; color: #60a5fa;">
       Sign in with Google
     </div>
     <div id="google-button-container" style="
@@ -103,7 +107,7 @@ function showSignInScreen() {
       justify-content: center;
     "></div>
     <div style="margin-top: 2rem; font-size: 1.05rem; opacity: 0.8; text-align: center; max-width: 380px;">
-      Required to access this site.
+      Required to access this site.<br>User ID: ${userId}
     </div>
   `;
 
@@ -128,12 +132,13 @@ function showSignInScreen() {
     }
   );
 
-  // Timeout fallback for no interaction / cancel / block
+  // Timeout: treat as allowed if no response
   document.addEventListener('click', e => {
     if (e.target.closest('#google-button-container')) {
       setTimeout(() => {
         if (overlay.parentNode) {
-          generateAndCheckUserId(proceedBasedOnAccess); // treat as allowed
+          setCookie('access', 'allowed', 365);
+          grantAccess();
         }
       }, 10000);
     }
@@ -142,7 +147,8 @@ function showSignInScreen() {
 
 function handleGoogleResponse(response) {
   if (!response?.credential) {
-    generateAndCheckUserId(proceedBasedOnAccess);
+    setCookie('access', 'allowed', 365);
+    grantAccess();
     return;
   }
 
@@ -150,89 +156,58 @@ function handleGoogleResponse(response) {
     const payload = JSON.parse(atob(response.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
 
-    if (!email) {
-      generateAndCheckUserId(proceedBasedOnAccess);
-      return;
-    }
-
     if (email.endsWith('@evergreenps.org')) {
       setCookie('access', 'teacher', 365);
       setCookie('email', email, 365);
+      window.location.replace('/teacher.html');
     } else {
       setCookie('access', 'allowed', 365);
       setCookie('email', email, 365);
+      grantAccess();
     }
-
-    generateAndCheckUserId(proceedBasedOnAccess);
   } catch {
-    generateAndCheckUserId(proceedBasedOnAccess);
+    setCookie('access', 'allowed', 365);
+    grantAccess();
   }
 }
 
-// ────────────────────────────────────────────────
-// User ID & Ban logic (runs every time)
-function generateUserId() {
-  const existing = getCookie('userId');
-  if (existing) return existing;
-
-  const newId = Math.floor(100000 + Math.random() * 900000).toString();
-  setCookie('userId', newId, 365);
-  return newId;
-}
-
-function generateAndCheckUserId(onSuccess = proceedBasedOnAccess) {
-  const userId = generateUserId();
-  checkIfBanned(userId, onSuccess);
-}
-
-function checkIfBanned(userId, onNotBanned) {
-  const banUrl = `/banned/${userId}.txt`;  // or .html
+function checkIfBanned(onNotBanned) {
+  const banUrl = `/banned/${userId}.txt`;
 
   fetch(banUrl, { method: 'HEAD', cache: 'no-store' })
     .then(res => {
       if (res.ok) {
-        showBannedScreen(userId);
+        showBannedScreen();
       } else {
         onNotBanned();
       }
     })
-    .catch(() => onNotBanned()); // network error / 404 → not banned
+    .catch(() => onNotBanned());
 }
 
-function showBannedScreen(userId) {
+function showBannedScreen() {
   overlay.innerHTML = `
-    <div style="font-size: 2.8rem; font-weight: bold; color: #ef4444; margin-bottom: 1.5rem;">
+    <div style="font-size: 2.8rem; font-weight: bold; color: #ef4444; margin-bottom: 1rem;">
       ACCESS DENIED
     </div>
     <div style="font-size: 1.25rem; max-width: 420px; text-align: center; line-height: 1.6;">
-      This account is banned.<br>
-      User ID: <strong>${userId}</strong><br><br>
-      Contact support if this is a mistake.
+      Your account (ID: ${userId}) is banned.<br>Contact support.
     </div>
   `;
-  // Stays on screen — no access granted
 }
 
-function grantGameAccess() {
-  overlay.innerHTML = `
-    <div style="font-size: 2.5rem; font-weight: bold; color: #22c55e; margin-bottom: 1.5rem;">
-      Welcome back!
-    </div>
-    <div style="font-size: 1.2rem; text-align: center; max-width: 400px;">
-      Access granted to the game site
-    </div>
-  `;
+function grantAccess() {
+  // Show main content
+  document.getElementById('main-content').style.display = 'flex';
+  document.getElementById('user-id-display').textContent = userId;
 
+  overlay.style.opacity = '0';
   setTimeout(() => {
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-      overlay.remove();
-      document.body.style.visibility = 'visible';
-    }, 600);
-  }, 1400);
+    overlay.remove();
+    document.body.style.visibility = 'visible';
+  }, 600);
 }
 
-// ────────────────────────────────────────────────
 // Cookie helpers
 function getCookie(name) {
   const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
