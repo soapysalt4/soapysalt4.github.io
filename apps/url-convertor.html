@@ -3,140 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data URL Converter</title>
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <title>Data URL Converter • Hacker114</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #202327;
+            font-family: 'Roboto Mono', monospace;
+            background: #0d0d0d;
+            color: #e63946;
+            min-height: 100vh;
             padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(230,57,70,0.08) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, rgba(230,57,70,0.06) 0%, transparent 35%);
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            background-color: #2d3339;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            background: #111111;
+            border: 2px solid #e63946;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 
+                0 0 30px rgba(230,57,70,0.25),
+                inset 0 0 15px rgba(230,57,70,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(230,57,70,0.07),
+                transparent
+            );
+            animation: scan 12s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scan {
+            0% { transform: translateY(-100%) rotate(-15deg); }
+            100% { transform: translateY(100%) rotate(-15deg); }
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #e63946;
             text-align: center;
-            color: #fff;
-            border: 5.5px;
-            border-style: solid;
-            border-color: #4f5964;
-            overflow-y: hidden;
-            overflow-x: hidden;
+            font-size: 2.4rem;
+            margin-bottom: 35px;
+            text-shadow: 0 0 15px rgba(230,57,70,0.7);
+            letter-spacing: 3px;
         }
-        .form-group {
-            margin-bottom: 20px;
+        h1 span {
+            color: #ff4d6d;
+            text-shadow: 0 0 20px #ff4d6d;
+        }
+        .controls {
             display: flex;
-            width: 180px;
-            position: absolute;
-            top: 50px;
-            margin-left: 5px;
-            border-radius: 15px;
-        }
-        .dropdown-container {
-            display: flex;
-            gap: 10px;
-            width: 180px;
-            position: absolute;
-            top: 0px;
-            right: 292px;
-            border-radius: 15px;
-        }
-        select, input[type="file"], textarea, button {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-family: monospace;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         select {
-            flex: 1;
+            background: #1a1a1a;
+            color: #e63946;
+            border: 1px solid #e63946;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 240px;
+            box-shadow: 0 0 10px rgba(230,57,70,0.2);
+        }
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(230,57,70,0.5);
         }
         textarea {
-            border: 3px solid #4f5963;
+            width: 100%;
+            height: 180px;
+            background: #0f0f0f;
+            color: #ffccd5;
+            border: 2px solid #e63946;
             border-radius: 10px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
-            color: #fff;
-            background-color: #394047;
-            resize: none;
-            width: 96%;
-            height: 160px;
+            padding: 16px;
+            font-size: 1.05rem;
+            resize: vertical;
+            font-family: 'Roboto Mono', monospace;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
         }
-        button {
-            padding: 18px 10px;
-            margin: 5px;
-            margin-bottom: 20px;
-            border: none;
-            border-radius: 11px;
-            background-color: #3b8ea5;
-            color: #f0f0f0;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+        textarea:focus {
+            outline: none;
+            border-color: #ff4d6d;
+            box-shadow: 0 0 20px rgba(230,57,70,0.35);
         }
-        button:hover {
-            background-color: #41a3be;
+        input[type="file"] {
+            color: #e63946;
+            margin: 12px 0;
         }
         #imagePreview {
-            display: none;
-            margin-bottom: 20px;
             max-width: 100%;
-            height: auto;
-        }
-        .hidden {
-            display: none;
+            max-height: 260px;
+            border: 2px solid #e63946;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 0 18px rgba(230,57,70,0.3);
         }
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 25px 0;
         }
-        h1 {
-            margin-top: 0px;
+        button {
+            background: #e63946;
+            color: #111;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(230,57,70,0.5);
+        }
+        button:hover {
+            background: #ff4d6d;
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(230,57,70,0.8);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        #resultOutput {
+            width: 100%;
+            height: 140px;
+            background: #0a0a0a;
+            color: #ffccd5;
+            border: 2px solid #e63946;
+            border-radius: 10px;
+            padding: 16px;
+            font-size: 1.05rem;
+            resize: vertical;
+            margin-top: 15px;
         }
         ::placeholder {
-            color: #ccc;
+            color: #7d3844;
+        }
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>dinguschan's Converter</h1>
+        <h1>HACKER<span>114</span>'s CONVERTER</h1>
 
-        <div class="form-group">
+        <div class="controls">
             <select id="conversionType" onchange="toggleInputArea()">
                 <option value="rawHtml">Raw HTML Code</option>
                 <option value="githubLink">Raw GitHub Link</option>
                 <option value="websiteSource">Website Link</option>
-                <option value="uploadImage">Upload an Image</option>
-                <option value="uploadTextFile">Upload a .txt File</option>
+                <option value="uploadImage">Upload Image</option>
+                <option value="uploadTextFile">Upload .txt File</option>
+            </select>
+
+            <select id="outputType">
+                <option value="dataUrl">Data URL</option>
+                <option value="blobUrl">Blob URL</option>
             </select>
         </div>
 
-        <div class="dropdown-container">
-            <div class="form-group">
-                <select id="outputType">
-                    <option value="dataUrl">Data URL</option>
-                    <option value="blobUrl">Blob URL</option>
-                </select>
-            </div>
-        </div>
-
-        <textarea id="inputArea" placeholder="Enter your media format here"></textarea>
-        <input type="file" id="fileInput" class="hidden" accept="image/*,text/*" onchange="handleFile()">
-        <img id="imagePreview" src="" alt="Image Preview" class="hidden">
+        <textarea id="inputArea" placeholder="Paste raw code / URL here..."></textarea>
+        <input type="file" id="fileInput" class="hidden" accept="image/*,text/plain" onchange="handleFile()">
+        <img id="imagePreview" src="" alt="Preview" class="hidden">
 
         <div class="actions">
-            <button onclick="convertToUrl()">Generate URL</button>
-            <button onclick="copyToClipboard()">Copy to Clipboard</button>
-            <button onclick="clearFields()">Clear</button>
+            <button onclick="convertToUrl()">GENERATE</button>
+            <button onclick="copyToClipboard()">COPY URL</button>
+            <button onclick="clearFields()">CLEAR ALL</button>
         </div>
-        <textarea id="resultOutput" placeholder="Your converted data:/blob: URL will appear here" readonly ></textarea>
+
+        <textarea id="resultOutput" placeholder="your data: or blob: url appears here..." readonly></textarea>
     </div>
 
     <script>
@@ -147,115 +211,109 @@
         let currentProxyIndex = 0;
 
         function toggleInputArea() {
-            const conversionType = document.getElementById('conversionType').value;
-            const inputArea = document.getElementById('inputArea');
-            const fileInput = document.getElementById('fileInput');
-            const imagePreview = document.getElementById('imagePreview');
-            
-            if (conversionType === 'uploadImage' || conversionType === 'uploadTextFile') {
-                inputArea.style.display = 'none';
-                fileInput.style.display = 'block';
-                imagePreview.classList.toggle('hidden', conversionType !== 'uploadImage');
+            const type = document.getElementById('conversionType').value;
+            const input = document.getElementById('inputArea');
+            const file = document.getElementById('fileInput');
+            const preview = document.getElementById('imagePreview');
+
+            if (type === 'uploadImage' || type === 'uploadTextFile') {
+                input.classList.add('hidden');
+                file.classList.remove('hidden');
+                preview.classList.toggle('hidden', type !== 'uploadImage');
             } else {
-                inputArea.style.display = 'block';
-                fileInput.style.display = 'none';
-                imagePreview.classList.add('hidden');
+                input.classList.remove('hidden');
+                file.classList.add('hidden');
+                preview.classList.add('hidden');
             }
         }
 
         function handleFile() {
-            const conversionType = document.getElementById('conversionType').value;
+            const type = document.getElementById('conversionType').value;
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
+            if (!file) return;
 
-            if (file) {
-                const reader = new FileReader();
+            const reader = new FileReader();
 
-                if (conversionType === 'uploadImage') {
-                    reader.onload = function(e) {
-                        const imagePreview = document.getElementById('imagePreview');
-                        imagePreview.src = e.target.result;
-                        imagePreview.classList.remove('hidden');
-                        document.getElementById('resultOutput').value = convertToBlobUrl(e.target.result);
-                    }
-                    reader.readAsDataURL(file);
-                } else if (conversionType === 'uploadTextFile') {
-                    reader.onload = function(e) {
-                        const textContent = e.target.result;
-                        const base64EncodedText = btoa(unescape(encodeURIComponent(textContent)));
-                        document.getElementById('resultOutput').value = convertToBlobUrl('data:text/plain;base64,' + base64EncodedText);
-                    }
-                    reader.readAsText(file);
-                }
+            if (type === 'uploadImage') {
+                reader.onload = e => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    document.getElementById('resultOutput').value = convertToBlobUrl(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else if (type === 'uploadTextFile') {
+                reader.onload = e => {
+                    const text = e.target.result;
+                    const base64 = btoa(unescape(encodeURIComponent(text)));
+                    const data = 'data:text/plain;base64,' + base64;
+                    document.getElementById('resultOutput').value = convertToBlobUrl(data);
+                };
+                reader.readAsText(file);
             }
         }
 
         function convertToUrl() {
-            const conversionType = document.getElementById('conversionType').value;
-            const outputType = document.getElementById('outputType').value;
+            const type = document.getElementById('conversionType').value;
+            const out = document.getElementById('outputType').value;
 
-            if (conversionType === 'rawHtml') {
-                convertRawHtmlToUrl(outputType);
-            } else if (conversionType === 'githubLink' || conversionType === 'websiteSource') {
-                fetchAndConvertUrl(outputType);
+            if (type === 'rawHtml') {
+                convertRawHtmlToUrl(out);
+            } else if (type === 'githubLink' || type === 'websiteSource') {
+                fetchAndConvertUrl(out);
             }
         }
 
         function convertRawHtmlToUrl(outputType) {
-            const htmlInput = document.getElementById('inputArea').value;
-            const base64EncodedHTML = btoa(unescape(encodeURIComponent(htmlInput)));
-            const dataUrl = 'data:text/html;base64,' + base64EncodedHTML;
-            document.getElementById('resultOutput').value = convertOutput(dataUrl, outputType);
+            const html = document.getElementById('inputArea').value;
+            const b64 = btoa(unescape(encodeURIComponent(html)));
+            const data = 'data:text/html;base64,' + b64;
+            document.getElementById('resultOutput').value = convertOutput(data, outputType);
         }
 
         function fetchAndConvertUrl(outputType) {
             const url = document.getElementById('inputArea').value.trim();
-            const proxyUrl = corsProxies[currentProxyIndex];
+            if (!url) return alert('Enter a URL first');
 
-            fetch(proxyUrl + url)
-                .then(response => response.text())
+            const proxy = corsProxies[currentProxyIndex];
+            fetch(proxy + url)
+                .then(r => r.text())
                 .then(html => {
-                    const base64EncodedHTML = btoa(unescape(encodeURIComponent(html)));
-                    const dataUrl = 'data:text/html;base64,' + base64EncodedHTML;
-                    document.getElementById('resultOutput').value = convertOutput(dataUrl, outputType);
+                    const b64 = btoa(unescape(encodeURIComponent(html)));
+                    const data = 'data:text/html;base64,' + b64;
+                    document.getElementById('resultOutput').value = convertOutput(data, outputType);
                 })
-                .catch(error => {
-                    alert('Error fetching content: ' + error);
-                });
-
+                .catch(err => alert('Fetch error: ' + err));
+            
             currentProxyIndex = (currentProxyIndex + 1) % corsProxies.length;
         }
 
         function convertOutput(dataUrl, outputType) {
-            if (outputType === 'blobUrl') {
-                return convertToBlobUrl(dataUrl);
-            } else {
-                return dataUrl;
-            }
+            return outputType === 'blobUrl' ? convertToBlobUrl(dataUrl) : dataUrl;
         }
 
         function convertToBlobUrl(dataUrl) {
             const blob = dataUrlToBlob(dataUrl);
-            const blobUrl = URL.createObjectURL(blob);
-            return blobUrl;
+            return URL.createObjectURL(blob);
         }
 
         function dataUrlToBlob(dataUrl) {
-            const parts = dataUrl.split(',');
-            const mime = parts[0].match(/:(.*?);/)[1];
-            const data = atob(parts[1]);
-            const array = [];
-            for (let i = 0; i < data.length; i++) {
-                array.push(data.charCodeAt(i));
+            const [header, base64] = dataUrl.split(',');
+            const mime = header.match(/:(.*?);/)[1];
+            const binary = atob(base64);
+            const array = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                array[i] = binary.charCodeAt(i);
             }
-            return new Blob([new Uint8Array(array)], { type: mime });
+            return new Blob([array], { type: mime });
         }
 
         function copyToClipboard() {
-            const resultOutput = document.getElementById('resultOutput');
-            resultOutput.select();
+            const out = document.getElementById('resultOutput');
+            out.select();
             document.execCommand('copy');
-            alert('Result copied to clipboard!');
+            alert('URL copied to clipboard!');
         }
 
         function clearFields() {
@@ -265,6 +323,9 @@
             document.getElementById('imagePreview').src = '';
             document.getElementById('imagePreview').classList.add('hidden');
         }
+
+        // init
+        toggleInputArea();
     </script>
 </body>
 </html>
