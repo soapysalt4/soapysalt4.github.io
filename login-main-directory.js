@@ -1,12 +1,8 @@
-// login.js - Updated: changes URL to include user ID (like /483921)
-// Remembers sign-in, assigns persistent user ID, checks ban, redirects URL
-
-// Immediately hide content
 const hideStyle = document.createElement('style');
 hideStyle.textContent = 'body { visibility: hidden !important; }';
 document.head.appendChild(hideStyle);
 
-// Create loading overlay
+// Loading overlay
 const overlay = document.createElement('div');
 overlay.id = 'auth-overlay';
 Object.assign(overlay.style, {
@@ -28,12 +24,12 @@ overlay.innerHTML = `
     Loading...
   </div>
   <div style="font-size: 1.15rem; opacity: 0.8; text-align: center; max-width: 360px;">
-    Preparing secure access
+    Preparing access...
   </div>
 `;
 document.documentElement.appendChild(overlay);
 
-// Google Sign-In meta
+// Google Sign-In meta tag
 const meta = document.createElement('meta');
 meta.name = 'google-signin-client_id';
 meta.content = '679269140652-7d1pivqd4d269g1d0fmlivhqebnd2grt.apps.googleusercontent.com';
@@ -48,7 +44,7 @@ script.onload = initialize;
 document.head.appendChild(script);
 
 // ────────────────────────────────────────────────
-// Get or generate persistent user ID
+// User ID logic
 function getOrCreateUserId() {
   let id = getCookie('userId');
   if (!id) {
@@ -61,24 +57,21 @@ function getOrCreateUserId() {
 const userId = getOrCreateUserId();
 
 // ────────────────────────────────────────────────
-// Change URL to include user ID (e.g., /483921)
-function updateUrlWithId() {
-  const currentPath = window.location.pathname;
-  const idPath = `/${userId}`;
+// Force URL to be /<userId>
+function forceUrlWithId() {
+  const targetPath = `/${userId}`;
 
-  if (currentPath !== idPath && currentPath !== idPath + '/') {
-    // Preserve any query params or hash
-    const newUrl = idPath + window.location.search + window.location.hash;
+  if (window.location.pathname !== targetPath &&
+      window.location.pathname !== targetPath + '/') {
+    const newUrl = targetPath + window.location.search + window.location.hash;
     window.history.replaceState(null, '', newUrl);
   }
 }
 
-// Call immediately
-updateUrlWithId();
+forceUrlWithId();  // Run right away
 
 // ────────────────────────────────────────────────
 function initialize() {
-  // Check if already signed in (via cookie)
   const access = getCookie('access');
 
   checkIfBanned(() => {
@@ -107,7 +100,7 @@ function showSignIn() {
       justify-content: center;
     "></div>
     <div style="margin-top: 2rem; font-size: 1.05rem; opacity: 0.8; text-align: center; max-width: 380px;">
-      Required to access this site.<br>User ID: ${userId}
+      Required to continue<br>User ID: ${userId}
     </div>
   `;
 
@@ -132,7 +125,7 @@ function showSignIn() {
     }
   );
 
-  // Timeout: treat as allowed if no response
+  // Fallback: treat no response as allowed
   document.addEventListener('click', e => {
     if (e.target.closest('#google-button-container')) {
       setTimeout(() => {
@@ -171,10 +164,12 @@ function handleGoogleResponse(response) {
   }
 }
 
+// ────────────────────────────────────────────────
+// Ban check: looks for <userId>.txt in ROOT (e.g. /374821.txt)
 function checkIfBanned(onNotBanned) {
-  const banUrl = `/banned/${userId}.txt`;
+  const banFile = `/${userId}.txt`;   // ← root directory, no subfolder
 
-  fetch(banUrl, { method: 'HEAD', cache: 'no-store' })
+  fetch(banFile, { method: 'HEAD', cache: 'no-store' })
     .then(res => {
       if (res.ok) {
         showBannedScreen();
@@ -182,7 +177,7 @@ function checkIfBanned(onNotBanned) {
         onNotBanned();
       }
     })
-    .catch(() => onNotBanned());
+    .catch(() => onNotBanned());   // 404 or network error → not banned
 }
 
 function showBannedScreen() {
@@ -191,21 +186,36 @@ function showBannedScreen() {
       ACCESS DENIED
     </div>
     <div style="font-size: 1.25rem; max-width: 420px; text-align: center; line-height: 1.6;">
-      Your account (ID: ${userId}) is banned.<br>Contact support.
+      Your account (ID: ${userId}) is banned.<br>
+      Contact an administrator if this is incorrect.
     </div>
   `;
 }
 
 function grantAccess() {
-  // Show main content
-  document.getElementById('main-content').style.display = 'flex';
-  document.getElementById('user-id-display').textContent = userId;
+  // Show your main game content here
+  // Example: document.getElementById('main-content').style.display = 'block';
+  // or load iframe, start game logic, etc.
 
-  overlay.style.opacity = '0';
+  overlay.innerHTML = `
+    <div style="font-size: 2.5rem; font-weight: bold; color: #22c55e; margin-bottom: 1rem;">
+      Access Granted
+    </div>
+    <div style="font-size: 1.2rem; text-align: center; max-width: 400px;">
+      User ID: ${userId}<br>
+      Welcome to the site
+    </div>
+  `;
+
   setTimeout(() => {
-    overlay.remove();
-    document.body.style.visibility = 'visible';
-  }, 600);
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.remove();
+      document.body.style.visibility = 'visible';
+      // If you have a main element to show:
+      // document.getElementById('main-content')?.style.display = 'block';
+    }, 600);
+  }, 1400);
 }
 
 // Cookie helpers
