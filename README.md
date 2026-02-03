@@ -12,6 +12,7 @@ Please read the license before copying any software on this repository!
 ---
 
 ### Terms
+
 1. All games included are **not illegally pirated**; they contain ads from the original game creators. I am not the owner of any of the apps. If an app violates copyright laws, it falls under the responsibility of the user to recognize this!
 2. Credits for game code go to **Hacker114**, **UCBG**, and **The Ultimate Game Stash**.
 3. Fork this repository at your **own risk**.
@@ -20,4 +21,4 @@ Please read the license before copying any software on this repository!
 
 ---
 
-Thank you for using this software!
+### Thank you for using this software!
