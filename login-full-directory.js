@@ -70,12 +70,12 @@ function init() {
     </div>
     <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
     <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
-      Required to access VexaCloud
+      Required to access VexaCloud. Please revies the license at https://www.mozilla.org/en-US/MPL/2.0/ before entering!
     </div>
   `;
 
   google.accounts.id.initialize({
-    client_id: '679269140652-7d1pivqd4d269g1d0fmlivhqebnd2grt.apps.googleusercontent.com',
+    client_id: '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com',
     callback: handleResponse,
     auto_select: false,
     cancel_on_tap_outside: false,
