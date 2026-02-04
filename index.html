@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <script>
-  // Helpers (same as before)
+  // ────────────────────────────────────────────────
+  //  Cookie & ID helpers
+  // ────────────────────────────────────────────────
   function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -18,8 +20,24 @@
     return String(100000 + Math.floor(Math.random() * 900000));
   }
 
-  // Main logic — runs immediately
-  (function setupUserID() {
+  // ────────────────────────────────────────────────
+  //  Cronitor setup (from your original code)
+  // ────────────────────────────────────────────────
+  function loadCronitor() {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = "https://rum.cronitor.io/script.js";
+    document.head.appendChild(s);
+    window.cronitor = window.cronitor || function() {
+      (window.cronitor.q = window.cronitor.q || []).push(arguments);
+    };
+    cronitor('config', { clientKey: 'b15d299fd61ddcab513a165c13c1313d' });
+  }
+
+  // ────────────────────────────────────────────────
+  //  Main logic – delayed to avoid resource race
+  // ────────────────────────────────────────────────
+  function setupUserIDAndBanCheck() {
     let userID = getCookie("userID");
 
     if (!userID) {
@@ -28,47 +46,60 @@
     }
 
     const currentPath = window.location.pathname;
+    const desiredPath = "/" + userID + "/";  // trailing slash preferred for CF Pages
 
-    // We prefer trailing slash style since Cloudflare enforces it anyway
-    const desiredPath = "/" + userID + "/";
-
-    // Ban file check (root-level, outside any folders)
     const banFile = "/" + userID + ".html";
 
-    // Fast check if ban file exists
+    // Check ban first (fast HEAD)
     fetch(banFile, { method: "HEAD", cache: "no-store" })
       .then(response => {
         if (response.ok) {
-          // Ban exists → actually navigate to it (full page change)
-          window.location.replace(banFile);
+          window.location.replace(banFile);  // go to ban page if exists
           return;
         }
 
-        // No ban → only update URL bar if needed, NO reload
+        // Not banned → update URL silently + ping cronitor
         if (currentPath !== desiredPath) {
-          // Change URL without reloading or adding to history
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
 
-        // Optional: you can log or send the cronitor ping here if you want
-        // (but only after deciding not to ban-redirect)
+        loadCronitor();
+        cronitor('ping', {
+          monitor: 'user-id-' + userID,
+          message: 'User ID: ' + userID,
+          url: desiredPath
+        });
       })
       .catch(() => {
-        // Ban fetch failed (404/network) → treat as not banned
+        // Ban file not found/error → proceed with URL update + ping
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
+
+        loadCronitor();
+        cronitor('ping', {
+          monitor: 'user-id-' + userID,
+          message: 'User ID: ' + userID,
+          url: desiredPath
+        });
       });
-  })();
+  }
+
+  // Run after load to give resources time to start fetching
+  if (document.readyState === 'complete') {
+    setupUserIDAndBanCheck();
+  } else {
+    window.addEventListener('load', setupUserIDAndBanCheck);
+  }
 </script>
     <script src="/login-full-directory.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <title>VexaCloud | Hacker114</title>
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
 
     <!-- Cronitor -->
     <script async src="https://rum.cronitor.io/script.js"></script>
@@ -132,9 +163,9 @@ for (let i = 0; i < starCount; i++) {
 }
 
 var gamelist = [
-  { "link": "apps/main/index.html", "imgSrc": "images/apps.png", "title": "Apps" },
-  { "link": "apps/games/index.html", "imgSrc": "images/game-logo.png", "title": "Games" },
-  { "link": "links/main/index.html", "imgSrc": "images/links.jpg", "title": "Link Hub" }
+  { "link": "/apps/main/index.html", "imgSrc": "/images/apps.png", "title": "Apps" },
+  { "link": "/apps/games/index.html", "imgSrc": "/images/game-logo.png", "title": "Games" },
+  { "link": "/links/main/index.html", "imgSrc": "/images/links.jpg", "title": "Link Hub" }
 ];
 
 var ab = false;
