@@ -1,3 +1,6 @@
+//JS login system version 3.0. If you are viewing this file, you will be banned from this site for web scraping! Please fork the GitHub repository instead!
+
+// Hide content right away
 document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
 
 // Create persistent loading overlay (stays until final decision)
@@ -117,14 +120,13 @@ function init() {
           setCookie('access', 'allowed', 365);
           afterLoginSuccess();
         }
-        window.removeEventListener('blur', onBlur);
-        window.removeEventListener('focus', onFocus);
       }, 1000);
 
       // Long timeout for showing cancelled if still open
       setTimeout(() => {
         if (popupAttempted && popupOpened && !accessGranted) {
-          // Show sign-in cancelled
+          // Show sign-in cancelled and set cookie for reload
+          setCookie('access', 'allowed', 365);
           loading.innerHTML = `
           <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
           Sign-in cancelled
