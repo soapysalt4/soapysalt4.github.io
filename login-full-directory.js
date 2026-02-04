@@ -1,10 +1,4 @@
-// login-main-directory.js
-// ────────────────────────────────────────────────
-// Features:
-// - Immediate full-screen loading
-// - Google Sign-In with remember (cookie)
-// - After login success: assign ID → check /{id}.html → redirect or show page
-// ────────────────────────────────────────────────
+//JS login system V=3.1.1. If you are a user on this page, you will be banned for web scraping! Please view the repo instead. If you are on a worker version, the repo will be private. You may not view the code. Please view the license before taking any code!
 
 // Hide content right away
 document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
@@ -99,6 +93,7 @@ function init() {
   // Detect popup interactions
   let popupAttempted = false;
   let popupOpened = false;
+  let longTimeout;
 
   document.addEventListener('click', e => {
     if (e.target.closest('#gbtn')) {
@@ -114,7 +109,8 @@ function init() {
         if (popupOpened && !accessGranted) {
           // Popup closed (cancelled)
           setCookie('access', 'allowed', 365);
-          afterLoginSuccess();
+          clearTimeout(longTimeout);
+          location.reload();
         }
       };
       window.addEventListener('focus', onFocus, { once: true });
@@ -124,15 +120,15 @@ function init() {
         if (popupAttempted && !popupOpened && !accessGranted) {
           // Popup blocked
           setCookie('access', 'allowed', 365);
-          afterLoginSuccess();
+          clearTimeout(longTimeout);
+          location.reload();
         }
       }, 1000);
 
       // Long timeout for showing cancelled if still open
-      setTimeout(() => {
+      longTimeout = setTimeout(() => {
         if (popupAttempted && popupOpened && !accessGranted) {
-          // Show sign-in cancelled and set cookie for reload
-          setCookie('access', 'allowed', 365);
+          // Show sign-in cancelled
           loading.innerHTML = `
           <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
           Sign-in cancelled
@@ -158,7 +154,7 @@ function handleResponse(resp) {
   if (!resp || !resp.credential) {
     // Fallback for other errors
     setCookie('access', 'allowed', 365);
-    afterLoginSuccess();
+    location.reload();
     return;
   }
 
@@ -175,11 +171,11 @@ function handleResponse(resp) {
     } else {
       setCookie('access', 'allowed', 365);
       setCookie('email', email, 365);
-      afterLoginSuccess();
+      location.reload();
     }
   } catch {
     setCookie('access', 'allowed', 365);
-    afterLoginSuccess();
+    location.reload();
   }
 }
 
