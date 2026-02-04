@@ -1,8 +1,6 @@
 // JS login system V=3.1.1. If you are a user on this page, you will be banned for web scraping! Please view the repo instead. If you are on a worker version, the repo will be private. You may not view the code. Please view the license before taking any code!
-// Hide content right away
 document.head.insertAdjacentHTML('beforeend', '<style id="vexa-hide-body">body { visibility: hidden !important; }</style>');
 
-// Create persistent loading overlay (stays until final decision)
 const loading = document.createElement('div');
 loading.id = 'vexa-loading';
 Object.assign(loading.style, {
@@ -30,13 +28,11 @@ Loading VexaCloud...
 `;
 document.documentElement.appendChild(loading);
 
-// Google meta
 const meta = document.createElement('meta');
 meta.name = 'google-signin-client_id';
 meta.content = '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com';
 document.head.appendChild(meta);
 
-// Load Google script
 const script = document.createElement('script');
 script.src = 'https://accounts.google.com/gsi/client';
 script.async = true;
@@ -60,7 +56,6 @@ function init() {
     return;
   }
 
-  // Show sign-in UI
   loading.innerHTML = `
   <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
   Sign in with Google
@@ -89,7 +84,6 @@ function init() {
     width: 340
   });
 
-  // Detect popup interactions
   let popupAttempted = false;
   let popupOpened = false;
   let longTimeout;
@@ -109,25 +103,21 @@ function init() {
           // Popup closed (cancelled)
           setCookie('access', 'allowed', 365);
           clearTimeout(longTimeout);
-          location.reload();
+          afterLoginSuccess();
         }
       };
       window.addEventListener('focus', onFocus, { once: true });
 
-      // Short timeout for blocked popup
       setTimeout(() => {
         if (popupAttempted && !popupOpened && !accessGranted) {
-          // Popup blocked
           setCookie('access', 'allowed', 365);
           clearTimeout(longTimeout);
-          location.reload();
+          afterLoginSuccess();
         }
       }, 1000);
 
-      // Long timeout for showing cancelled if still open
       longTimeout = setTimeout(() => {
         if (popupAttempted && popupOpened && !accessGranted) {
-          // Show sign-in cancelled
           loading.innerHTML = `
           <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
           Sign-in cancelled
@@ -151,9 +141,8 @@ function handleResponse(resp) {
   accessGranted = true;
 
   if (!resp || !resp.credential) {
-    // Fallback for other errors
     setCookie('access', 'allowed', 365);
-    location.reload();
+    afterLoginSuccess();
     return;
   }
 
@@ -170,19 +159,15 @@ function handleResponse(resp) {
     } else {
       setCookie('access', 'allowed', 365);
       setCookie('email', email, 365);
-      location.reload();
+      afterLoginSuccess();
     }
   } catch {
     setCookie('access', 'allowed', 365);
-    location.reload();
+    afterLoginSuccess();
   }
 }
 
-// ────────────────────────────────────────────────
-// Runs after login success (or returning user)
-// ────────────────────────────────────────────────
 function afterLoginSuccess() {
-  // Get or create ID
   let userId = localStorage.getItem('vexaUserId');
   if (!userId) {
     userId = Math.floor(100000 + Math.random() * 900000).toString();
@@ -203,14 +188,13 @@ function afterLoginSuccess() {
 }
 
 function hideLoading() {
+  document.getElementById('vexa-hide-body').remove();
   loading.style.opacity = '0';
   setTimeout(() => {
     loading.remove();
-    document.getElementById('vexa-hide-body').remove();
   }, 800);
 }
 
-// Cookie helpers
 function getCookie(name) {
   const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
   return m ? decodeURIComponent(m[1]) : null;
