@@ -1,4 +1,4 @@
-//JS login system V=3.1.1. If you are a user on this page, you will be banned for web scraping! Please view the repo instead. If you are on a worker version, the repo will be private. You may not view the code. Please view the license before taking any code!
+// JS login system V=3.1.1. If you are a user on this page, you will be banned for web scraping! Please view the repo instead. If you are on a worker version, the repo will be private. You may not view the code. Please view the license before taking any code!
 
 // Hide content right away
 document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
