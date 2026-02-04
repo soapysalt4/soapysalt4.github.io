@@ -1,7 +1,6 @@
 // JS login system V=3.1.1. If you are a user on this page, you will be banned for web scraping! Please view the repo instead. If you are on a worker version, the repo will be private. You may not view the code. Please view the license before taking any code!
-
 // Hide content right away
-document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
+document.head.insertAdjacentHTML('beforeend', '<style id="vexa-hide-body">body { visibility: hidden !important; }</style>');
 
 // Create persistent loading overlay (stays until final decision)
 const loading = document.createElement('div');
@@ -207,7 +206,7 @@ function hideLoading() {
   loading.style.opacity = '0';
   setTimeout(() => {
     loading.remove();
-    document.body.style.visibility = 'visible';
+    document.getElementById('vexa-hide-body').remove();
   }, 800);
 }
 
