@@ -1,9 +1,22 @@
 // login-main-directory.js
 // ────────────────────────────────────────────────
-// Features:
-// - Immediate full-screen loading
-// - Google Sign-In with remember (cookie)
-// - After login success: assign ID → check /{id}.html → redirect or show page
+// EARLY EXIT: Disable script after login + refresh once
+// ────────────────────────────────────────────────
+
+const vexaAccess = document.cookie.includes('access=teacher') || document.cookie.includes('access=allowed');
+
+if (vexaAccess) {
+  // Refresh once to clear hidden body + overlays
+  if (!sessionStorage.getItem('vexaRefreshed')) {
+    sessionStorage.setItem('vexaRefreshed', '1');
+    location.reload();
+  }
+  // Stop the entire script from running
+  return;
+}
+
+// ────────────────────────────────────────────────
+// ORIGINAL SCRIPT STARTS HERE (unchanged)
 // ────────────────────────────────────────────────
 
 // Hide content right away
@@ -112,16 +125,23 @@ function init() {
         </button>
       `;
     }
-  }, 14000);
+  }, 15000); // changed to 15 seconds
 }
 
 let accessGranted = false;
+
+// Add your teacher whitelist here:
+const teacherWhitelist = [
+  "teacher1@example.com",
+  "teacher2@example.com",
+  "teacher3@example.com"
+];
 
 function handleResponse(resp) {
   accessGranted = true;
 
   if (!resp || !resp.credential) {
-    // Popup closed / cancelled / blocked → allow per your last request
+    // Popup closed / cancelled / blocked → allow per your request
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
     return;
@@ -131,7 +151,7 @@ function handleResponse(resp) {
     const payload = JSON.parse(atob(resp.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
 
-    if (email.endsWith('@evergreenps.org')) {
+    if (email.endsWith('@evergreenps.org') || teacherWhitelist.includes(email)) {
       setCookie('access', 'teacher', 365);
       setCookie('email', email, 365);
       window.location.replace('/teacher.html');
