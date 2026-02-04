@@ -1,34 +1,6 @@
-// login-main-directory.js
-// ────────────────────────────────────────────────
-// EARLY EXIT: Disable script after login + refresh once
-// ────────────────────────────────────────────────
-
-const access = getCookie('access');
-const emailStored = getCookie('email');
-
-// If teacher → ALWAYS redirect to teacher.html
-if (access === 'teacher') {
-  window.location.replace('/teacher.html');
-  return;
-}
-
-// If normal user → allow page, disable script
-if (access === 'allowed') {
-  if (!sessionStorage.getItem('vexaRefreshed')) {
-    sessionStorage.setItem('vexaRefreshed', '1');
-    location.reload();
-  }
-  return;
-}
-
-// ────────────────────────────────────────────────
-// USER NOT LOGGED IN → RUN LOGIN SYSTEM
-// ────────────────────────────────────────────────
-
-// Hide content right away
 document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
 
-// Create persistent loading overlay
+// Create persistent loading overlay (stays until final decision)
 const loading = document.createElement('div');
 loading.id = 'vexa-loading';
 Object.assign(loading.style, {
@@ -46,13 +18,13 @@ Object.assign(loading.style, {
 });
 
 loading.innerHTML = `
-  <div style="font-size:3.5rem; font-weight:bold; margin-bottom:1.8rem;">
-    Loading VexaCloud...
-  </div>
-  <div style="width:90px; height:90px; border:10px solid #334155; border-top:10px solid #60a5fa; border-radius:50%; animation:spin 1.1s linear infinite;"></div>
-  <style>
-    @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
-  </style>
+<div style="font-size:3.5rem; font-weight:bold; margin-bottom:1.8rem;">
+Loading VexaCloud...
+</div>
+<div style="width:90px; height:90px; border:10px solid #334155; border-top:10px solid #60a5fa; border-radius:50%; animation:spin 1.1s linear infinite;"></div>
+<style>
+@keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+</style>
 `;
 document.documentElement.appendChild(loading);
 
@@ -71,15 +43,30 @@ script.onload = init;
 document.head.appendChild(script);
 
 function init() {
+  const access = getCookie('access');
+
+  if (access === 'teacher') {
+    if (window.location.pathname.endsWith('/teacher.html')) {
+      hideLoading();
+    } else {
+      window.location.replace('/teacher.html');
+    }
+    return;
+  }
+  if (access === 'allowed') {
+    afterLoginSuccess();
+    return;
+  }
+
   // Show sign-in UI
   loading.innerHTML = `
-    <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
-      Sign in with Google
-    </div>
-    <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
-    <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
-      Required to access VexaCloud.
-    </div>
+  <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
+  Sign in with Google
+  </div>
+  <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
+  <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
+  Required to access VexaCloud. Please review the license at https://www.mozilla.org/en-US/MPL/2.0/ before entering!
+  </div>
   `;
 
   google.accounts.id.initialize({
@@ -100,37 +87,68 @@ function init() {
     width: 340
   });
 
-  // 15-second timeout for cancelled login
-  setTimeout(() => {
-    if (!accessGranted) {
-      loading.innerHTML = `
-        <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
+  // Detect popup interactions
+  let popupAttempted = false;
+  let popupOpened = false;
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('#gbtn')) {
+      popupAttempted = true;
+      popupOpened = false;
+
+      const onBlur = () => {
+        popupOpened = true;
+      };
+      window.addEventListener('blur', onBlur, { once: true });
+
+      const onFocus = () => {
+        if (popupOpened && !accessGranted) {
+          // Popup closed (cancelled)
+          setCookie('access', 'allowed', 365);
+          afterLoginSuccess();
+        }
+      };
+      window.addEventListener('focus', onFocus, { once: true });
+
+      // Short timeout for blocked popup
+      setTimeout(() => {
+        if (popupAttempted && !popupOpened && !accessGranted) {
+          // Popup blocked
+          setCookie('access', 'allowed', 365);
+          afterLoginSuccess();
+        }
+        window.removeEventListener('blur', onBlur);
+        window.removeEventListener('focus', onFocus);
+      }, 1000);
+
+      // Long timeout for showing cancelled if still open
+      setTimeout(() => {
+        if (popupAttempted && popupOpened && !accessGranted) {
+          // Show sign-in cancelled
+          loading.innerHTML = `
+          <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
           Sign-in cancelled
-        </div>
-        <div style="font-size:1.25rem; text-align:center; max-width:420px;">
+          </div>
+          <div style="font-size:1.25rem; text-align:center; max-width:420px;">
           Please reload and complete sign-in.
-        </div>
-        <button onclick="location.reload()" style="margin-top:1.5rem; padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer;">
+          </div>
+          <button onclick="location.reload()" style="margin-top:1.5rem; padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer;">
           Reload
-        </button>
-      `;
+          </button>
+          `;
+        }
+      }, 15000);
     }
-  }, 15000);
+  }, { once: true });
 }
 
 let accessGranted = false;
-
-// Teacher whitelist
-const teacherWhitelist = [
-  "teacher1@example.com",
-  "teacher2@example.com"
-];
 
 function handleResponse(resp) {
   accessGranted = true;
 
   if (!resp || !resp.credential) {
-    // Cancelled login → treat as normal user
+    // Fallback for other errors
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
     return;
@@ -140,28 +158,45 @@ function handleResponse(resp) {
     const payload = JSON.parse(atob(resp.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
 
-    // Teacher logic
-    if (email.endsWith('@evergreenps.org') || teacherWhitelist.includes(email)) {
+    const teacherEmails = ['specificteacher1@example.com', 'specificteacher2@example.com']; // Add individual emails here
+
+    if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
       setCookie('access', 'teacher', 365);
       setCookie('email', email, 365);
       window.location.replace('/teacher.html');
-      return;
+    } else {
+      setCookie('access', 'allowed', 365);
+      setCookie('email', email, 365);
+      afterLoginSuccess();
     }
-
-    // Normal user
-    setCookie('access', 'allowed', 365);
-    setCookie('email', email, 365);
-    afterLoginSuccess();
-
   } catch {
-    // If decoding fails → normal user
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   }
 }
 
+// ────────────────────────────────────────────────
+// Runs after login success (or returning user)
+// ────────────────────────────────────────────────
 function afterLoginSuccess() {
-  hideLoading();
+  // Get or create ID
+  let userId = localStorage.getItem('vexaUserId');
+  if (!userId) {
+    userId = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('vexaUserId', userId);
+  }
+
+  const target = `/${userId}.html`;
+
+  fetch(target, { method: 'HEAD', cache: 'no-store' })
+  .then(res => {
+    if (res.ok) {
+      window.location.replace(target);
+    } else {
+      hideLoading();
+    }
+  })
+  .catch(() => hideLoading());
 }
 
 function hideLoading() {
