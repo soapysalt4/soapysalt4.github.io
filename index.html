@@ -2,6 +2,60 @@
 <html lang="en">
 <head>
     <script src="/login-full-directory.js"></script>
+<script>
+  function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+  }
+
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return match ? match[2] : null;
+  }
+
+  function generateID() {
+    return Math.floor(Math.random() * 900000) + 100000;
+  }
+
+  function loadCronitor() {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = "https://rum.cronitor.io/script.js";
+    document.head.appendChild(s);
+    window.cronitor = window.cronitor || function() {
+      (window.cronitor.q = window.cronitor.q || []).push(arguments);
+    };
+    cronitor('config', { clientKey: 'b15d299fd61ddcab513a165c13c1313d' });
+  }
+
+  function start() {
+    let cookieID = getCookie("userID");
+    if (!cookieID) {
+      cookieID = generateID();
+      setCookie("userID", cookieID, 365);
+    }
+
+    const id = cookieID;
+    loadCronitor();
+    cronitor('ping', {
+      monitor: 'user-id-' + id,
+      message: 'User ID: ' + id,
+      url: window.location.pathname
+    });
+
+    const filePath = "/" + id + ".html";
+    fetch(filePath, { method: "HEAD" })
+      .then(response => {
+        if (response.ok) {
+          window.location.href = filePath;
+        }
+      })
+      .catch(() => {});
+  }
+
+  window.onload = start;
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
