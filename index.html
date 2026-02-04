@@ -21,74 +21,7 @@
 
     <!-- Popup.js -->
     <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
-
-    <!-- Loading screen + ID generation + {id}.html check (runs AFTER login) -->
-    <script>
-    // Show loading screen right away
-    (function() {
-      const loading = document.createElement('div');
-      loading.id = 'vexa-loading';
-      loading.style.cssText = `
-        position: fixed; inset: 0; z-index: 9999;
-        background: #0f172a; color: white;
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        font-family: system-ui, sans-serif;
-        transition: opacity 0.7s;
-      `;
-      loading.innerHTML = `
-        <div style="font-size: 3.5rem; font-weight: bold; margin-bottom: 1.8rem;">
-          Loading VexaCloud...
-        </div>
-        <div style="width: 90px; height: 90px; border: 10px solid #334155; border-top: 10px solid #60a5fa; border-radius: 50%; animation: spin 1.1s linear infinite;"></div>
-        <style>
-          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        </style>
-      `;
-      document.documentElement.appendChild(loading);
-
-      // Hide body content until ready
-      document.documentElement.style.visibility = 'hidden';
-    })();
-
-    // Called by login-main-directory.js after login success
-    window.afterLoginSuccess = function() {
-      // Get or create user ID
-      let userId = localStorage.getItem('vexaUserId');
-      if (!userId) {
-        userId = Math.floor(100000 + Math.random() * 900000).toString();
-        localStorage.setItem('vexaUserId', userId);
-      }
-
-      const targetPage = `/${userId}.html`;
-
-      // Check if {userId}.html exists
-      fetch(targetPage, { method: 'HEAD', cache: 'no-store' })
-        .then(res => {
-          const loadingEl = document.getElementById('vexa-loading');
-          if (res.ok) {
-            // Exists → redirect
-            window.location.replace(targetPage);
-          } else {
-            // Does NOT exist → show normal page
-            if (loadingEl) {
-              loadingEl.style.opacity = '0';
-              setTimeout(() => loadingEl.remove(), 800);
-            }
-            document.documentElement.style.visibility = 'visible';
-          }
-        })
-        .catch(() => {
-          // Error → show normal page
-          const loadingEl = document.getElementById('vexa-loading');
-          if (loadingEl) {
-            loadingEl.style.opacity = '0';
-            setTimeout(() => loadingEl.remove(), 800);
-          }
-          document.documentElement.style.visibility = 'visible';
-        });
-    };
-    </script>
+    
 </head>
 <body>
   <div id="starfield"></div>
