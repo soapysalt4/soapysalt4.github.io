@@ -40,7 +40,7 @@ document.documentElement.appendChild(loading);
 // Google meta
 const meta = document.createElement('meta');
 meta.name = 'google-signin-client_id';
-meta.content = '679269140652-7d1pivqd4d269g1d0fmlivhqebnd2grt.apps.googleusercontent.com';
+meta.content = '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com';
 document.head.appendChild(meta);
 
 // Load Google script
