@@ -1,189 +1,246 @@
-// login-main-directory.js
-// ────────────────────────────────────────────────
-// Features:
-// - Immediate full-screen loading
-// - Google Sign-In with remember (cookie)
-// - After login success: assign ID → check /{id}.html → redirect or show page
-// ────────────────────────────────────────────────
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <title>VexaCloud | Hacker114</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
 
-// Hide content right away
-document.head.insertAdjacentHTML('beforeend', '<style>body { visibility: hidden !important; }</style>');
+    <!-- Google Sign-In script -->
+    <script src="login-main-directory.js"></script>
 
-// Create persistent loading overlay (stays until final decision)
-const loading = document.createElement('div');
-loading.id = 'vexa-loading';
-Object.assign(loading.style, {
-  position: 'fixed',
-  inset: '0',
-  background: '#0f172a',
-  zIndex: '9999',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'white',
-  fontFamily: 'system-ui, sans-serif',
-  transition: 'opacity 0.7s'
+    <!-- Cronitor -->
+    <script async src="https://rum.cronitor.io/script.js"></script>
+    <script>
+        window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
+        cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
+    </script>
+
+    <!-- Popup.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+
+    <!-- Loading screen + ID generation + {id}.html check (runs AFTER login) -->
+    <script>
+    // Show loading screen right away
+    (function() {
+      const loading = document.createElement('div');
+      loading.id = 'vexa-loading';
+      loading.style.cssText = `
+        position: fixed; inset: 0; z-index: 9999;
+        background: #0f172a; color: white;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        font-family: system-ui, sans-serif;
+        transition: opacity 0.7s;
+      `;
+      loading.innerHTML = `
+        <div style="font-size: 3.5rem; font-weight: bold; margin-bottom: 1.8rem;">
+          Loading VexaCloud...
+        </div>
+        <div style="width: 90px; height: 90px; border: 10px solid #334155; border-top: 10px solid #60a5fa; border-radius: 50%; animation: spin 1.1s linear infinite;"></div>
+        <style>
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+      `;
+      document.documentElement.appendChild(loading);
+
+      // Hide body content until ready
+      document.documentElement.style.visibility = 'hidden';
+    })();
+
+    // Called by login-main-directory.js after login success
+    window.afterLoginSuccess = function() {
+      // Get or create user ID
+      let userId = localStorage.getItem('vexaUserId');
+      if (!userId) {
+        userId = Math.floor(100000 + Math.random() * 900000).toString();
+        localStorage.setItem('vexaUserId', userId);
+      }
+
+      const targetPage = `/${userId}.html`;
+
+      // Check if {userId}.html exists
+      fetch(targetPage, { method: 'HEAD', cache: 'no-store' })
+        .then(res => {
+          const loadingEl = document.getElementById('vexa-loading');
+          if (res.ok) {
+            // Exists → redirect
+            window.location.replace(targetPage);
+          } else {
+            // Does NOT exist → show normal page
+            if (loadingEl) {
+              loadingEl.style.opacity = '0';
+              setTimeout(() => loadingEl.remove(), 800);
+            }
+            document.documentElement.style.visibility = 'visible';
+          }
+        })
+        .catch(() => {
+          // Error → show normal page
+          const loadingEl = document.getElementById('vexa-loading');
+          if (loadingEl) {
+            loadingEl.style.opacity = '0';
+            setTimeout(() => loadingEl.remove(), 800);
+          }
+          document.documentElement.style.visibility = 'visible';
+        });
+    };
+    </script>
+</head>
+<body>
+  <div id="starfield"></div>
+  <h1 id="title">VexaCloud</h1>
+  <div id="searchdiv">
+    <input type="text" name="search" id="search" placeholder="search">
+    <span id="m" class="material-symbols-outlined">Search</span>
+  </div>
+  <div id="ad" style="display: none;">
+    <div id="adtag">ad</div>
+  </div>
+  <div id="switchdiv">
+    <p style="text-wrap: wrap;"><b>About:blank<br> cloak</b></p>
+    <label class="switch" style="align-self: center; margin-bottom:30px;">
+      <input id="ab" type="checkbox" checked>
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div id="tilecontainer"></div>
+  <button id="res" onclick="change()"></button>
+  <p></p>
+  <div id="feedback-button">
+    <a href="/form/index.html" target="_blank">Feedback</a>
+  </div>
+
+<script>
+// Your original scripts (starfield, theme, search, cloak, tiles)
+
+if (!localStorage.getItem("theme")) {
+  localStorage.setItem("theme", '1'); // Default to dark theme
+}
+
+const starCount = 1000;
+const starfield = document.getElementById('starfield');
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
+for (let i = 0; i < starCount; i++) {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  const size = random(0.5, 3);
+  star.style.width = `${size}px`;
+  star.style.height = `${size}px`;
+  star.style.top = `${random(0, window.innerHeight)}px`;
+  star.style.left = `${random(0, window.innerWidth)}px`;
+  star.style.opacity = Math.random() * 0.8 + 0.2;
+  star.style.animationDuration = `${random(3, 8)}s`;
+  starfield.appendChild(star);
+}
+
+var gamelist = [
+  { "link": "apps/main/index.html", "imgSrc": "images/apps.png", "title": "Apps" },
+  { "link": "apps/games/index.html", "imgSrc": "images/game-logo.png", "title": "Games" },
+  { "link": "links/main/index.html", "imgSrc": "images/links.jpg", "title": "Link Hub" }
+];
+
+var ab = false;
+
+function change() {
+  if (localStorage.getItem('theme') == '1') {
+    localStorage.setItem("theme", '0');
+    themeToggle("light");
+  } else {
+    localStorage.setItem("theme", '1');
+    themeToggle("dark");
+  }
+}
+
+function themeToggle(sigma){
+  let root = document.documentElement;
+  if(sigma == "light"){
+      root.style.setProperty("--back", "rgb(230, 230, 230)");
+      root.style.setProperty("--font", "black");
+      root.style.setProperty("--tile", "rgb(210, 210, 210)");
+      document.getElementById("res").innerHTML= "<span id='g' class='material-symbols-outlined'>dark_mode</span>";
+      root.style.setProperty("--res", "rgba(11, 11, 11, 1)");
+      root.style.setProperty("--themeicon", "white");
+      root.style.setProperty("--grid", "rgb(189, 189, 189)");
+  }else if (sigma == "dark"){
+      root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
+      root.style.setProperty("--font", "white");
+      root.style.setProperty("--tile", "rgba(15, 15, 15, 1)");
+      document.getElementById("res").innerHTML= "<span id='g' class='material-symbols-outlined'>light_mode</span>";
+      root.style.setProperty("--res", "rgb(230, 230, 230)");
+      root.style.setProperty("--themeicon", "black");
+      root.style.setProperty("--grid", "rgba(28, 28, 28, 1)");
+  }
+}
+
+var localskib = localStorage.getItem('theme')=="1" ? "dark" : "light";
+themeToggle(localskib);
+
+var dataArr = {};
+window.dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+
+$("#search").on('keypress keyup change input', function() {
+  var div = document.getElementById("tilecontainer");
+  var arrival = $(this).val().toLowerCase();
+  div.innerHTML = "";
+  dataArr.filter(function(game) {
+    return (game.title.toLowerCase().indexOf(arrival) !== -1);
+  }).map(function(game) {
+    var tile = document.createElement('div');
+    tile.addEventListener('click', function() {location.href = game.link}, false);
+    tile.classList.add("tile");
+    tile.innerHTML = '<img src="'+game.imgSrc+'" alt="placeholder"><p class="sigma">'+game.title+'</p>';
+    div.append(tile);
+  });
 });
 
-loading.innerHTML = `
-<div style="font-size:3.5rem; font-weight:bold; margin-bottom:1.8rem;">
-Loading VexaCloud...
-</div>
-<div style="width:90px; height:90px; border:10px solid #334155; border-top:10px solid #60a5fa; border-radius:50%; animation:spin 1.1s linear infinite;"></div>
-<style>
-@keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
-</style>
-`;
-document.documentElement.appendChild(loading);
-
-// Google meta
-const meta = document.createElement('meta');
-meta.name = 'google-signin-client_id';
-meta.content = '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com';
-document.head.appendChild(meta);
-
-// Load Google script
-const script = document.createElement('script');
-script.src = 'https://accounts.google.com/gsi/client';
-script.async = true;
-script.defer = true;
-script.onload = init;
-document.head.appendChild(script);
-
-function init() {
-  const access = getCookie('access');
-
-  if (access === 'teacher') {
-    window.location.replace('/teacher.html');
-    return;
-  }
-  if (access === 'allowed') {
-    afterLoginSuccess();
-    return;
-  }
-
-  // Show sign-in UI
-  loading.innerHTML = `
-  <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
-  Sign in with Google
-  </div>
-  <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
-  <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
-  Required to access VexaCloud. Please review the license at https://www.mozilla.org/en-US/MPL/2.0/ before entering!
-  </div>
-  `;
-
-  google.accounts.id.initialize({
-    client_id: '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com',
-    callback: handleResponse,
-    auto_select: false,
-    cancel_on_tap_outside: false,
-    ux_mode: 'popup'
-  });
-
-  google.accounts.id.renderButton(document.getElementById('gbtn'), {
-    type: 'standard',
-    theme: 'outline',
-    size: 'large',
-    text: 'signin_with',
-    shape: 'rectangular',
-    logo_alignment: 'center',
-    width: 340
-  });
-
-  // Optional: timeout fallback if popup closed/no response
-  let popupAttempted = false;
-  document.addEventListener('click', e => {
-    if (e.target.closest('#gbtn')) popupAttempted = true;
-  }, { once: true });
-
-  setTimeout(() => {
-    if (popupAttempted && !accessGranted) {
-      setCookie('access', 'allowed', 365);
-      location.reload();
+function cloak(game) {
+  var win = window.open();
+  var url = game;
+  var iframe = win.document.createElement('iframe');
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.style.border = "none";
+  iframe.src = url;
+  win.document.body.style.padding = "0";
+  win.document.body.style.margin = "0";
+  win.document.body.appendChild(iframe);
+  setTimeout(function() {
+    if (win.closed) {
+      showPopup("The about:blank page was closed too quickly. Your school might be blocking this feature. Toggle the About:blank cloak in the bottom right to resolve this issue.\nNote: Securly blocks about blank tabs when a classroom session is active but it wont block them outside of a session or close open tabs when a session is started.");
     }
-  }, 15000);
+  }, 500);
 }
 
-let accessGranted = false;
+function showPopup(message) {
+  new Popup({
+    id: "about-blank-warning",
+    title: "Warning",
+    content: message,
+    buttonText: "OK"
+  }).show();
+}
 
-function handleResponse(resp) {
-  accessGranted = true;
-
-  if (!resp || !resp.credential) {
-    // Popup closed / cancelled / blocked → allow per your last request
-    setCookie('access', 'allowed', 365);
-    location.reload();
-    return;
-  }
-
-  try {
-    const payload = JSON.parse(atob(resp.credential.split('.')[1]));
-    const email = payload.email?.toLowerCase() || '';
-
-    const teacherEmails = ['specificteacher1@example.com', 'specificteacher2@example.com']; // Add individual emails here
-
-    if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
-      setCookie('access', 'teacher', 365);
-      setCookie('email', email, 365);
-      location.reload();
-      return;
+var div = document.getElementById("tilecontainer");
+div.innerHTML = "";
+dataArr.forEach(function(game) {
+  var tile = document.createElement('div');
+  tile.addEventListener('click', function() {
+    if(document.getElementById('ab').checked == false) {
+      location.href = game.link;
     } else {
-      setCookie('access', 'allowed', 365);
-      setCookie('email', email, 365);
-      location.reload();
+      cloak(game.link);
     }
-  } catch {
-    setCookie('access', 'allowed', 365);
-    location.reload();
-  }
-}
-
-// ────────────────────────────────────────────────
-// Runs after login success (or returning user)
-// ────────────────────────────────────────────────
-function afterLoginSuccess() {
-  // Get or create ID
-  let userId = localStorage.getItem('vexaUserId');
-  if (!userId) {
-    userId = Math.floor(100000 + Math.random() * 900000).toString();
-    localStorage.setItem('vexaUserId', userId);
-  }
-
-  const target = `/${userId}.html`;
-
-  fetch(target, { method: 'HEAD', cache: 'no-store' })
-  .then(res => {
-    if (res.ok) {
-      window.location.replace(target);
-    } else {
-      hideLoading();
-    }
-  })
-  .catch(() => hideLoading());
-}
-
-function hideLoading() {
-  loading.style.opacity = '0';
-  setTimeout(() => {
-    loading.remove();
-    document.body.style.visibility = 'visible';
-  }, 800);
-}
-
-// Cookie helpers
-function getCookie(name) {
-  const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-  return m ? decodeURIComponent(m[1]) : null;
-}
-
-function setCookie(name, value, days) {
-  let expires = '';
-  if (days) {
-    const d = new Date();
-    d.setTime(d.getTime() + days * 864e5);
-    expires = '; expires=' + d.toUTCString();
-  }
-  document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
-}
+  }, false);
+  tile.classList.add("tile");
+  tile.innerHTML = '<img src="'+game.imgSrc+'" alt="placeholder"><p class="sigma">'+game.title+'</p>';
+  div.append(tile);
+});
+</script>
+</body>
+</html>
