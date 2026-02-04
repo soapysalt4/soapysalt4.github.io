@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
 <script>
-  // ────────────────────────────────────────────────
-  //  Cookie & ID helpers
-  // ────────────────────────────────────────────────
+  // Cookie & ID helpers
   function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -17,13 +15,11 @@
   }
 
   function generateID() {
-    return String(Math.floor(100000 + Math.random() * 900000)); // 6-digit string
+    return String(100000 + Math.floor(Math.random() * 900000)); // always 6 digits
   }
 
-  // ────────────────────────────────────────────────
-  //  Main logic – runs immediately
-  // ────────────────────────────────────────────────
-  (function initUserID() {
+  // Main logic – IIFE so it runs right away
+  (function initUserIDAndBanCheck() {
     let userID = getCookie("userID");
 
     if (!userID) {
@@ -33,33 +29,34 @@
 
     const currentPath = window.location.pathname;
 
-    // Desired path = / + userid   (no .html, clean URL style)
-    const desiredPath = "/" + userID;
+    // Accept both styles (Cloudflare forces trailing slash)
+    const desiredPaths = ["/" + userID, "/" + userID + "/"];
 
-    // ── Ban file check (at root, no matter where current html lives) ──
-    const banFile = "/" + userID + ".html";
+    // Ban file = always at root with .html (scans outside folders)
+    const banFilePath = "/" + userID + ".html";
 
-    // First check if banned → redirect to ban page if exists
-    fetch(banFile, { method: "HEAD", cache: "no-store" })
+    // Step 1: Check if banned (fast HEAD request)
+    fetch(banFilePath, { method: "HEAD", cache: "no-store" })
       .then(res => {
         if (res.ok) {
-          window.location.replace(banFile);
-          return; // stop here
+          // Ban file exists → go there (replace so no back-button loop)
+          window.location.replace(banFilePath);
+          return;
         }
 
-        // Not banned → now fix URL if needed
-        if (currentPath !== desiredPath && currentPath !== desiredPath + "/") {
-          // Redirect to clean /123456 path (preserves search/query if any)
-          const newURL = desiredPath + window.location.search + window.location.hash;
-          window.location.replace(newURL);
+        // Not banned → fix path only if needed
+        if (!desiredPaths.includes(currentPath)) {
+          // Redirect to clean version WITH trailing slash (Cloudflare likes this)
+          const target = "/" + userID + "/";
+          window.location.replace(target + window.location.search + window.location.hash);
         }
-        // If already on correct path → do nothing (page loads normally)
+        // Already correct → do nothing, page loads normally
       })
       .catch(() => {
-        // Ban file fetch failed (404 or network error) → proceed normally
-        if (currentPath !== desiredPath && currentPath !== desiredPath + "/") {
-          const newURL = desiredPath + window.location.search + window.location.hash;
-          window.location.replace(newURL);
+        // Fetch error / 404 on ban file → proceed to path fix
+        if (!desiredPaths.includes(currentPath)) {
+          const target = "/" + userID + "/";
+          window.location.replace(target + window.location.search + window.location.hash);
         }
       });
   })();
