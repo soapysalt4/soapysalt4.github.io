@@ -18,7 +18,7 @@
   }
 
   // ────────────────────────────────────────────────
-  //  Cronitor setup (from your original code)
+  //  Cronitor setup
   // ────────────────────────────────────────────────
   function loadCronitor() {
     const s = document.createElement('script');
@@ -32,7 +32,7 @@
   }
 
   // ────────────────────────────────────────────────
-  //  Main logic – delayed to avoid resource race
+  //  Main logic
   // ────────────────────────────────────────────────
   function setupUserIDAndBanCheck() {
     let userID = getCookie("userID");
@@ -43,19 +43,18 @@
     }
 
     const currentPath = window.location.pathname;
-    const desiredPath = "/" + userID + "/";  // trailing slash preferred for CF Pages
+    const desiredPath = "/" + userID + "/";
 
-    const banFile = "/" + userID + ".html";
+    // UPDATED: check inside /banned/
+    const banFile = "/banned/" + userID + ".html";
 
-    // Check ban first (fast HEAD)
     fetch(banFile, { method: "HEAD", cache: "no-store" })
       .then(response => {
         if (response.ok) {
-          window.location.replace(banFile);  // go to ban page if exists
+          window.location.replace(banFile);
           return;
         }
 
-        // Not banned → update URL silently + ping cronitor
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
@@ -68,7 +67,6 @@
         });
       })
       .catch(() => {
-        // Ban file not found/error → proceed with URL update + ping
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
@@ -82,7 +80,6 @@
       });
   }
 
-  // Run after load to give resources time to start fetching
   if (document.readyState === 'complete') {
     setupUserIDAndBanCheck();
   } else {
