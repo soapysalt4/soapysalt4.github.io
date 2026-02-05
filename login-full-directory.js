@@ -62,7 +62,7 @@ function init() {
   </div>
   <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
   <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
-  Required to access VexaCloud. Please review the license at https://www.mozilla.org/en-US/MPL/2.0/ before entering!
+  Required to access VexaCloud. Please review the terms at evergreen-ps.github.io/vexacloud-terms! A link to the license is included in the terms of service@
   </div>
   `;
 
