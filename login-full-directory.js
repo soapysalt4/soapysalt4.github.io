@@ -1,4 +1,5 @@
-// JS login system V=3.1.1. If you are a user on this page, you will be banned for web scraping! Please view the repo instead. If you are on a worker version, the repo will be private. You may not view the code. Please view the license before taking any code!
+//login system! If you are viewing this file, you will be banned!
+
 document.head.insertAdjacentHTML('beforeend', '<style id="vexa-hide-body">body { visibility: hidden !important; }</style>');
 
 const loading = document.createElement('div');
@@ -85,53 +86,23 @@ function init() {
   });
 
   let popupAttempted = false;
-  let popupOpened = false;
-  let longTimeout;
+  let cancelTimeout;
 
+  // Click handler only runs once
   document.addEventListener('click', e => {
-    if (e.target.closest('#gbtn')) {
-      popupAttempted = true;
-      popupOpened = false;
+    if (!e.target.closest('#gbtn')) return;
 
-      const onBlur = () => {
-        popupOpened = true;
-      };
-      window.addEventListener('blur', onBlur, { once: true });
+    popupAttempted = true;
 
-      const onFocus = () => {
-        if (popupOpened && !accessGranted) {
-          // Popup closed (cancelled)
-          setCookie('access', 'allowed', 365);
-          clearTimeout(longTimeout);
-          afterLoginSuccess();
-        }
-      };
-      window.addEventListener('focus', onFocus, { once: true });
+    // Start a timeout that assumes "closed/cancelled/blocked" if no credential arrives soon
+    cancelTimeout = setTimeout(() => {
+      if (popupAttempted && !accessGranted) {
+        // Treat ANY non-success closure as allow (your requirement)
+        setCookie('access', 'allowed', 365);
+        afterLoginSuccess();
+      }
+    }, 4000); // 4 seconds — long enough for slow error screens, short enough to feel responsive
 
-      setTimeout(() => {
-        if (popupAttempted && !popupOpened && !accessGranted) {
-          setCookie('access', 'allowed', 365);
-          clearTimeout(longTimeout);
-          afterLoginSuccess();
-        }
-      }, 1000);
-
-      longTimeout = setTimeout(() => {
-        if (popupAttempted && popupOpened && !accessGranted) {
-          loading.innerHTML = `
-          <div style="font-size:2.8rem; font-weight:bold; color:#ef4444; margin-bottom:1.5rem;">
-          Sign-in cancelled
-          </div>
-          <div style="font-size:1.25rem; text-align:center; max-width:420px;">
-          Please reload and complete sign-in.
-          </div>
-          <button onclick="location.reload()" style="margin-top:1.5rem; padding:12px 32px; background:#3b82f6; color:white; border:none; border-radius:8px; cursor:pointer;">
-          Reload
-          </button>
-          `;
-        }
-      }, 15000);
-    }
   }, { once: true });
 }
 
@@ -139,8 +110,10 @@ let accessGranted = false;
 
 function handleResponse(resp) {
   accessGranted = true;
+  clearTimeout(cancelTimeout); // Prevent false cancel if we actually got a response
 
   if (!resp || !resp.credential) {
+    // Edge case: callback fired but no credential (rare)
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
     return;
@@ -150,7 +123,7 @@ function handleResponse(resp) {
     const payload = JSON.parse(atob(resp.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
 
-    const teacherEmails = ['specificteacher1@example.com', 'specificteacher2@example.com']; // Add individual emails here
+    const teacherEmails = ['specificteacher1@example.com', 'specificteacher2@example.com'];
 
     if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
       setCookie('access', 'teacher', 365);
@@ -161,7 +134,8 @@ function handleResponse(resp) {
       setCookie('email', email, 365);
       afterLoginSuccess();
     }
-  } catch {
+  } catch (err) {
+    // Invalid token → still allow (fail-open)
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   }
@@ -177,22 +151,22 @@ function afterLoginSuccess() {
   const target = `/${userId}.html`;
 
   fetch(target, { method: 'HEAD', cache: 'no-store' })
-  .then(res => {
-    if (res.ok) {
-      window.location.replace(target);
-    } else {
-      hideLoading();
-    }
-  })
-  .catch(() => hideLoading());
+    .then(res => {
+      if (res.ok) {
+        window.location.replace(target);
+      } else {
+        hideLoading();
+      }
+    })
+    .catch(() => hideLoading());
 }
 
 function hideLoading() {
-  document.getElementById('vexa-hide-body').remove();
+  const hideStyle = document.getElementById('vexa-hide-body');
+  if (hideStyle) hideStyle.remove();
+
   loading.style.opacity = '0';
-  setTimeout(() => {
-    loading.remove();
-  }, 800);
+  setTimeout(() => loading.remove(), 800);
 }
 
 function getCookie(name) {
