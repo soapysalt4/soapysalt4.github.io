@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
+  <script>
   // ────────────────────────────────────────────────
   //  Cookie & ID helpers
   // ────────────────────────────────────────────────
@@ -89,329 +89,193 @@
     window.addEventListener('load', setupUserIDAndBanCheck);
   }
 </script>
-  <script src="/login-full-directory.js"></script>
-  <script>
-    window.cronitor = window.cronitor || function() { (window.cronitor.q =       window.cronitor.q || []).push(arguments); };
-    cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
-  </script>
-
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/images/favicon.png">
-  <title>VexaCloud | 404</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 - Lost in Space</title>
   <style>
+    :root {
+      --bg: #0a0e17;
+      --accent: #3b82f6;
+      --accent-dark: #1e40af;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #2a0000 0, #0a0000 55%, #000 100%);
-      color: #f5f5f5;
-      overflow: hidden;
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 15% 50%, #1e293b 0%, transparent 25%),
+        radial-gradient(circle at 85% 30%, #1e293b 0%, transparent 35%);
     }
 
-    canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-    }
-
-    .overlay {
-      position: relative;
-      z-index: 1;
-      height: 100%;
+    .container {
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 2rem;
       text-align: center;
-      backdrop-filter: blur(4px);
-    }
-
-    .card {
-      max-width: 520px;
-      padding: 2.5rem 2.75rem;
-      border-radius: 24px;
-      background: rgba(20, 0, 0, 0.78);
-      border: 1px solid rgba(255, 80, 80, 0.35);
-      box-shadow:
-        0 0 40px rgba(0, 0, 0, 0.8),
-        0 0 80px rgba(255, 60, 60, 0.35);
       position: relative;
-      overflow: hidden;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 0 0, rgba(255, 0, 0, 0.18), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255, 60, 60, 0.18), transparent 55%);
-      opacity: 0.7;
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-
-    .card-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .glitch {
-      font-size: clamp(4rem, 10vw, 6rem);
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      position: relative;
-      display: inline-block;
-      color: #fff;
-      text-shadow:
-        0 0 12px rgba(255, 255, 255, 0.6),
-        0 0 40px rgba(255, 80, 80, 0.8);
-      margin-bottom: 0.5rem;
-    }
-
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      inset: 0;
-      mix-blend-mode: screen;
-      clip-path: inset(0 0 0 0);
-      animation: glitch 2.2s infinite linear alternate-reverse;
-    }
-
-    .glitch::before {
-      color: #ff4444;
-      transform: translate(-2px, -1px);
-    }
-
-    .glitch::after {
-      color: #ff0000;
-      transform: translate(2px, 1px);
-      animation-duration: 1.8s;
-    }
-
-    @keyframes glitch {
-      0% { clip-path: inset(0 0 80% 0); }
-      10% { clip-path: inset(10% 0 40% 0); }
-      20% { clip-path: inset(40% 0 20% 0); }
-      30% { clip-path: inset(80% 0 0 0); }
-      40% { clip-path: inset(0 0 60% 0); }
-      50% { clip-path: inset(20% 0 40% 0); }
-      60% { clip-path: inset(60% 0 10% 0); }
-      70% { clip-path: inset(10% 0 70% 0); }
-      80% { clip-path: inset(30% 0 30% 0); }
-      90% { clip-path: inset(50% 0 20% 0); }
-      100% { clip-path: inset(0 0 80% 0); }
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: #ff8a8a;
+    .big-404 {
+      font-size: clamp(10rem, 25vw, 18rem);
+      font-weight: 900;
+      line-height: 0.85;
+      letter-spacing: -0.5rem;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6, #1e40af);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 40px rgba(59,130,246,0.4);
+      user-select: none;
       margin-bottom: 1.5rem;
     }
 
-    .message {
-      font-size: 0.98rem;
-      line-height: 1.6;
-      color: #e0b3b3;
-      margin-bottom: 2rem;
+    .title {
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: white;
     }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
+    .subtitle {
+      font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+      color: var(--text-dim);
+      max-width: 480px;
+      line-height: 1.5;
+      margin-bottom: 2.5rem;
     }
 
-    .btn {
-      position: relative;
-      padding: 0.75rem 1.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 120, 120, 0.7);
-      background: radial-gradient(circle at top left, #b30000, #3a0000);
-      color: #fff;
-      font-size: 0.9rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+    .home-btn {
+      display: inline-block;
+      padding: 1rem 2.2rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
       text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(59,130,246,0.35);
+      position: relative;
       overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-      box-shadow:
-        0 0 18px rgba(255, 60, 60, 0.6),
-        0 0 40px rgba(255, 60, 60, 0.35);
     }
 
-    .btn::before {
-      content: "";
+    .home-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 35px rgba(59,130,246,0.45);
+      background: #60a5fa;
+    }
+
+    .home-btn:active {
+      transform: translateY(-1px);
+    }
+
+    /* Floating astronaut */
+    .astronaut {
       position: absolute;
+      width: 180px;
+      height: 180px;
+      opacity: 0.25;
+      pointer-events: none;
+      animation: float 18s infinite ease-in-out;
+      filter: drop-shadow(0 0 30px rgba(59,130,246,0.6));
+    }
+
+    .astronaut.left  { bottom: 12%; left: 8%;  animation-delay: 0s;    }
+    .astronaut.right { top:  15%; right: 6%; animation-delay: -9s; }
+
+    @keyframes float {
+      0%, 100%   { transform: translateY(0) rotate(0deg); }
+      50%        { transform: translateY(-45px) rotate(8deg); }
+    }
+
+    /* Stars */
+    .stars {
+      position: fixed;
       inset: 0;
-      background: linear-gradient(120deg, rgba(255, 255, 255, 0.3), transparent 60%);
-      transform: translateX(-120%);
-      transition: transform 0.4s ease;
+      pointer-events: none;
+      background: transparent;
+      z-index: -1;
     }
 
-    .btn:hover::before {
-      transform: translateX(120%);
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 6s infinite alternate;
     }
 
-    .btn:hover {
-      transform: translateY(-1px) scale(1.02);
-      box-shadow:
-        0 0 24px rgba(255, 60, 60, 0.9),
-        0 0 60px rgba(255, 60, 60, 0.5);
-      border-color: rgba(255, 180, 180, 0.9);
+    @keyframes twinkle {
+      0%,100% { opacity: 0.4; }
+      50%     { opacity: 1; }
     }
 
-    @media (max-width: 600px) {
-      .card {
-        padding: 2rem 1.75rem;
-        border-radius: 20px;
-      }
-      .subtitle {
-        font-size: 0.9rem;
-        letter-spacing: 0.14em;
-      }
-      .message {
-        font-size: 0.9rem;
-      }
+    @media (max-width: 640px) {
+      .astronaut { width: 120px; height: 120px; }
+      .big-404 { letter-spacing: -0.3rem; }
     }
   </style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
 
-  <div class="overlay">
-    <div class="card">
-      <div class="card-inner">
-        <div class="glitch" data-text="404">404</div>
-        <div class="subtitle">Page not found</div>
-        <p class="message">
-          The page you requested doesn't exist!
-        </p>
-        <div class="actions">
-          <a href="/" class="btn">Return</a>
-        </div>
-      </div>
+  <div class="stars"></div>
+
+  <div class="container">
+    <div class="astronaut left">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="78" stroke="#60a5fa" stroke-width="6" opacity="0.7"/>
+        <circle cx="100" cy="100" r="52" fill="#1e293b" stroke="#3b82f6" stroke-width="8"/>
+        <rect x="70" y="85" width="60" height="30" rx="6" fill="#0f172a"/>
+        <circle cx="100" cy="70" r="18" fill="#60a5fa" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <div class="big-404">404</div>
+    <h1 class="title">THIS PAGE DOES NOT EXIST</h1>
+    <p class="subtitle">
+      The page you're looking for has been moved, deleted, or never existed<br>
+     
+    </p>
+
+    <a href="/" class="home-btn">Return Home</a>
+
+    <div class="astronaut right">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="78" stroke="#60a5fa" stroke-width="6" opacity="0.7"/>
+        <circle cx="100" cy="100" r="52" fill="#1e293b" stroke="#3b82f6" stroke-width="8"/>
+        <rect x="70" y="85" width="60" height="30" rx="6" fill="#0f172a"/>
+        <circle cx="100" cy="70" r="18" fill="#60a5fa" opacity="0.9"/>
+      </svg>
     </div>
   </div>
 
   <script>
-    // Particle background (red variant)
-    const canvas = document.getElementById("particles");
-    const ctx = canvas.getContext("2d");
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const particleCount = 140;
-    const particles = [];
-    const mouse = { x: null, y: null, radius: 120 };
-
-    class Particle {
-      constructor() {
-        this.reset(true);
-      }
-
-      reset(initial = false) {
-        this.x = initial ? Math.random() * width : (Math.random() < 0.5 ? 0 : width);
-        this.y = Math.random() * height;
-        this.size = Math.random() * 2.2 + 0.4;
-        this.baseSpeed = Math.random() * 0.6 + 0.2;
-        this.vx = (Math.random() - 0.5) * this.baseSpeed;
-        this.vy = (Math.random() - 0.5) * this.baseSpeed;
-        this.alpha = Math.random() * 0.7 + 0.3;
-        this.pulse = Math.random() * Math.PI * 2;
-        this.hue = 0 + Math.random() * 20; // red tones
-      }
-
-      draw() {
-        const pulseSize = this.size + Math.sin(this.pulse) * 0.3;
-        ctx.beginPath();
-        const gradient = ctx.createRadialGradient(
-          this.x, this.y, 0,
-          this.x, this.y, pulseSize * 3
-        );
-        gradient.addColorStop(0, `hsla(${this.hue}, 90%, 60%, ${this.alpha})`);
-        gradient.addColorStop(1, "transparent");
-        ctx.fillStyle = gradient;
-        ctx.arc(this.x, this.y, pulseSize * 3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      update() {
-        this.pulse += 0.03;
-        this.x += this.vx;
-        this.y += this.vy;
-
-        if (this.x < -50 || this.x > width + 50 || this.y < -50 || this.y > height + 50) {
-          this.reset();
-        }
-
-        if (mouse.x !== null && mouse.y !== null) {
-          const dx = this.x - mouse.x;
-          const dy = this.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < mouse.radius) {
-            const force = (mouse.radius - dist) / mouse.radius;
-            const angle = Math.atan2(dy, dx);
-            this.x += Math.cos(angle) * force * 2.2;
-            this.y += Math.sin(angle) * force * 2.2;
-          }
-        }
-      }
+    // Optional: few twinkling stars
+    const starsContainer = document.querySelector('.stars');
+    for(let i = 0; i < 80; i++){
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.width = star.style.height = Math.random() * 2.5 + 'px';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 5 + 's';
+      starsContainer.appendChild(star);
     }
-
-    function initParticles() {
-      particles.length = 0;
-      for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      ctx.globalCompositeOperation = "lighter";
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      ctx.globalCompositeOperation = "source-over";
-      requestAnimationFrame(animate);
-    }
-
-    initParticles();
-    animate();
-
-    window.addEventListener("resize", () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      initParticles();
-    });
-
-    window.addEventListener("mousemove", e => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    window.addEventListener("mouseleave", () => {
-      mouse.x = null;
-      mouse.y = null;
-    });
   </script>
+
 </body>
 </html>
