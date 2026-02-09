@@ -1,90 +1,206 @@
-// ===============================
-// Lockdown Overlay Script
-// ===============================
+===========================================
+// FULL DIRECTORY LOCKDOWN SCREEN
+// ===========================================
 
-// Easily add/remove admin codes here
+// Add/remove admin codes here
 const ADMIN_CODES = new Set(["893880", "199032"]);
 
-// Create overlay container
-const overlay = document.createElement("div");
-overlay.id = "lockdown-overlay";
-overlay.style.cssText = `
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 10, 15, 0.96);
-    backdrop-filter: blur(6px);
-    color: #e6e6e6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 999999;
-    font-family: 'Segoe UI', sans-serif;
-`;
-
-// Title
-const title = document.createElement("h1");
-title.textContent = "Only admins have access to this site";
-title.style.cssText = `
-    font-size: 3rem;
-    letter-spacing: 3px;
-    margin-bottom: 20px;
-    color: #4da6ff;
-`;
-
-// Subtitle
-const subtitle = document.createElement("p");
-subtitle.textContent = "If you are admin, type your ID to enter.";
-subtitle.style.cssText = `
-    font-size: 1.2rem;
-    opacity: 0.8;
-    margin-bottom: 30px;
-`;
-
-// Input
-const input = document.createElement("input");
-input.type = "password";
-input.placeholder = "Admin ID";
-input.style.cssText = `
-    padding: 12px 18px;
-    font-size: 1.1rem;
-    border-radius: 6px;
-    border: 1px solid #4da6ff;
-    background: #0f0f15;
-    color: #e6e6e6;
-    outline: none;
-    width: 260px;
-    text-align: center;
-    margin-bottom: 15px;
-`;
-
-// Status text
-const status = document.createElement("div");
-status.style.cssText = `
-    height: 20px;
-    font-size: 0.95rem;
-    color: #ff4d4d;
-    margin-top: 5px;
-`;
-
-// Handle login attempt
-input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-        const code = input.value.trim();
-        if (ADMIN_CODES.has(code)) {
-            overlay.style.opacity = "0";
-            setTimeout(() => overlay.remove(), 300);
-        } else {
-            status.textContent = "Invalid ID";
-            input.value = "";
-        }
+// Ensure script runs after DOM is ready
+(function () {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initLockdown);
+    } else {
+        initLockdown();
     }
-});
+})();
 
-// Assemble overlay
-overlay.appendChild(title);
-overlay.appendChild(subtitle);
-overlay.appendChild(input);
-overlay.appendChild(status);
+function initLockdown() {
+    // Disable all page interaction
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.pointerEvents = "none";
 
-document.body.appendChild(overlay);
+    // Create overlay
+    const overlay = document.createElement("div");
+    overlay.id = "lockdown-overlay";
+    overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at top, #ff1a1a 0%, #000 60%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999999;
+        pointer-events: all;
+        font-family: 'Segoe UI', sans-serif;
+        color: white;
+    `;
+
+    // Panel
+    const panel = document.createElement("div");
+    panel.style.cssText = `
+        background: rgba(0,0,0,0.82);
+        border: 1px solid rgba(255,50,50,0.7);
+        padding: 40px 50px;
+        border-radius: 14px;
+        text-align: center;
+        box-shadow: 0 0 40px rgba(255,0,0,0.35);
+        position: relative;
+        overflow: hidden;
+        min-width: 340px;
+    `;
+
+    // Animated accent
+    const accent = document.createElement("div");
+    accent.style.cssText = `
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(255,0,0,0.2), transparent, rgba(255,0,0,0.2));
+        animation: sweep 6s linear infinite;
+        pointer-events: none;
+    `;
+
+    // Keyframes
+    const style = document.createElement("style");
+    style.textContent = `
+        @keyframes sweep {
+            0% { transform: translateX(-40%); }
+            100% { transform: translateX(40%); }
+        }
+        @keyframes fadeText {
+            0% { opacity: 0; transform: translateY(4px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-4px); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+            100% { transform: translateX(0); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Lock icon
+    const lock = document.createElement("div");
+    lock.innerHTML = "&#128274;";
+    lock.style.cssText = `
+        font-size: 3rem;
+        margin-bottom: 12px;
+        color: #ff4d4d;
+        text-shadow: 0 0 18px rgba(255,0,0,0.7);
+    `;
+
+    // Title
+    const title = document.createElement("div");
+    title.textContent = "LOCKDOWN ACTIVE";
+    title.style.cssText = `
+        font-size: 1.9rem;
+        letter-spacing: 0.18em;
+        margin-bottom: 12px;
+    `;
+
+    // Rotating text
+    const rotating = document.createElement("div");
+    rotating.style.cssText = `
+        font-size: 1rem;
+        color: #ff9999;
+        margin-bottom: 20px;
+        min-height: 1.2em;
+        animation: fadeText 4s ease-in-out infinite;
+    `;
+    const messages = [
+        "System access restricted.",
+        "You will know if you are admin!",
+        "All activity is monitored",
+        "Admin verification required."
+    ];
+    let idx = 0;
+    rotating.textContent = messages[idx];
+    setInterval(() => {
+        idx = (idx + 1) % messages.length;
+        rotating.textContent = messages[idx];
+    }, 4000);
+
+    // Static instruction
+    const instruction = document.createElement("div");
+    instruction.textContent = "If you are admin, type your ID to enter!";
+    instruction.style.cssText = `
+        font-size: 0.95rem;
+        color: #cccccc;
+        margin-bottom: 16px;
+    `;
+
+    // Input
+    const input = document.createElement("input");
+    input.type = "password";
+    input.placeholder = "Admin ID";
+    input.style.cssText = `
+        padding: 12px 16px;
+        width: 240px;
+        font-size: 1rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255,80,80,0.9);
+        background: #111;
+        color: white;
+        text-align: center;
+        outline: none;
+        margin-bottom: 10px;
+        box-shadow: 0 0 12px rgba(255,0,0,0.35);
+    `;
+
+    // Status
+    const status = document.createElement("div");
+    status.style.cssText = `
+        height: 18px;
+        font-size: 0.85rem;
+        color: #ff6666;
+        margin-top: 4px;
+    `;
+
+    // Handle login
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            const code = input.value.trim();
+            if (ADMIN_CODES.has(code)) {
+                status.style.color = "#66ff99";
+                status.textContent = "Access granted.";
+
+                overlay.style.transition = "opacity 0.35s ease-out";
+                overlay.style.opacity = "0";
+
+                setTimeout(() => {
+                    overlay.remove();
+                    document.documentElement.style.overflow = "";
+                    document.body.style.overflow = "";
+                    document.body.style.pointerEvents = "";
+                }, 350);
+            } else {
+                status.textContent = "Invalid ID.";
+                input.value = "";
+                panel.style.animation = "shake 0.35s";
+                panel.addEventListener("animationend", () => {
+                    panel.style.animation = "";
+                }, { once: true });
+            }
+        }
+    });
+
+    // Focus trap
+    overlay.addEventListener("click", () => input.focus());
+    setTimeout(() => input.focus(), 50);
+
+    // Build DOM
+    panel.appendChild(accent);
+    panel.appendChild(lock);
+    panel.appendChild(title);
+    panel.appendChild(rotating);
+    panel.appendChild(instruction);
+    panel.appendChild(input);
+    panel.appendChild(status);
+    overlay.appendChild(panel);
+    document.body.appendChild(overlay);
+}
