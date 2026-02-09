@@ -1,15 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     const ADMIN_CODES = new Set(["893880", "199032", "296260"]);
-    const STORAGE_KEY = "admin_authenticated";  // key we store in localStorage
+    const STORAGE_KEY = "admin_authenticated";
 
     // Check if already authenticated
     if (localStorage.getItem(STORAGE_KEY) === "true") {
-        // Skip lockdown entirely if previously logged in successfully
         return;
     }
 
     function initLockdown() {
-        // Disable all page interaction
+        // Disable page interaction
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
         document.body.style.pointerEvents = "none";
@@ -119,9 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
             rotating.textContent = messages[idx];
         }, 4000);
 
-        // Static instruction
+        // Instruction (slightly updated for clarity)
         const instruction = document.createElement("div");
-        instruction.textContent = "If you are admin, type your ID to enter!";
+        instruction.textContent = "Enter your admin ID (must match your current URL)";
         instruction.style.cssText = `
             font-size: 0.95rem;
             color: #cccccc;
@@ -158,12 +157,23 @@ document.addEventListener("DOMContentLoaded", () => {
         // Handle login
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
-                const code = input.value.trim();
-                if (ADMIN_CODES.has(code)) {
+                const enteredCode = input.value.trim();
+
+                // Get current path (without query/hash)
+                const currentPath = window.location.pathname;
+
+                let isValid = false;
+
+                // Check if entered code is in the allowed set AND appears in the current URL path
+                if (ADMIN_CODES.has(enteredCode)) {
+                    if (currentPath.includes(enteredCode)) {
+                        isValid = true;
+                    }
+                }
+
+                if (isValid) {
                     status.style.color = "#66ff99";
                     status.textContent = "Access granted.";
-
-                    // Remember successful login
                     localStorage.setItem(STORAGE_KEY, "true");
 
                     overlay.style.transition = "opacity 0.35s ease-out";
@@ -175,7 +185,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         document.body.style.pointerEvents = "";
                     }, 350);
                 } else {
-                    status.textContent = "Invalid ID.";
+                    status.textContent = enteredCode 
+                        ? "Invalid ID or URL mismatch." 
+                        : "Please enter your ID.";
                     input.value = "";
                     panel.style.animation = "shake 0.35s";
                     panel.addEventListener("animationend", () => {
@@ -201,6 +213,5 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(overlay);
     }
 
-    // Start lockdown only if not already authenticated
     initLockdown();
 });
