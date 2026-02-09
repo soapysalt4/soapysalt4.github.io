@@ -1,5 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
+
+
+    // --- CHECK IF USER ALREADY LOGGED IN ---
+    const loggedIn = document.cookie
+        .split("; ")
+        .find(c => c.startsWith("loggedIn="));
+
+    if (loggedIn && loggedIn.split("=")[1] === "true") {
+        // User already logged in → hide overlay immediately
+        const overlay = document.getElementById("login-overlay");
+        if (overlay) overlay.style.display = "none";
+        return; // stop the login script from running
+    }
+
 const ADMIN_CODES = new Set(["893880", "199032"]);
 
 // Ensure script runs after DOM is ready
