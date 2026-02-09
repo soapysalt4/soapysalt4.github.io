@@ -1,8 +1,5 @@
-===========================================
-// FULL DIRECTORY LOCKDOWN SCREEN
-// ===========================================
-
-// Add/remove admin codes here
+document.addEventListener("DOMContentLoaded", () => {
+    
 const ADMIN_CODES = new Set(["893880", "199032"]);
 
 // Ensure script runs after DOM is ready
@@ -204,3 +201,5 @@ function initLockdown() {
     overlay.appendChild(panel);
     document.body.appendChild(overlay);
 }
+    
+});
