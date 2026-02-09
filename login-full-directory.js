@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const ADMIN_CODES = new Set(["893880", "199032", "296260"]);
+    const ADMIN_CODES = new Set(["893880", "199032", "296260", "127074"]);
     const STORAGE_KEY = "admin_authenticated";
 
     // Check if already authenticated
