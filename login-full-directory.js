@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    //OsonEsMuySkib, Jamie Hessler, Givini Shmeltser, PP Pisston, Grant Hessler, Oscar Blacksmith, Gram Highskibidi, Arty Faggy, Jordan Es Hammy!
-    const ADMIN_CODES = new Set(["893880", "199032", "296260", "127074", "796447", "412654", "196088", "685666", "180572"]);
+    //OsonEsMuySkib, Jamie Hessler, Givini Shmeltser, PP Pisston, Grant Hessler, Oscar Blacksmith, Gram Highskibidi, Arty Faggy, Jordan Es Hammy, Holden Is Blacky!
+    const ADMIN_CODES = new Set(["893880", "199032", "296260", "127074", "796447", "412654", "196088", "685666", "180572", "263879"]);
     const STORAGE_KEY = "admin_authenticated";
 
     // Check if already authenticated
