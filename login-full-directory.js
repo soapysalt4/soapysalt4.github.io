@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Title
         const title = document.createElement("div");
-        title.textContent = "LOCKDOWN ACTIVE";
+        title.textContent = "Under Construction";
         title.style.cssText = `
             font-size: 1.9rem;
             letter-spacing: 0.18em;
@@ -107,8 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         const messages = [
             "System access restricted.",
-            "You will know if you are admin!",
-            "All activity is monitored",
+            "Website under construction",
+            "Release date: March 2026",
             "Admin verification required."
         ];
         let idx = 0;
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Instruction (slightly updated for clarity)
         const instruction = document.createElement("div");
-        instruction.textContent = "Enter your admin ID (must match your current URL)";
+        instruction.textContent = "Admins Only";
         instruction.style.cssText = `
             font-size: 0.95rem;
             color: #cccccc;
