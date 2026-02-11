@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base href="https://cdn.jsdelivr.net/gh/genizy/code-editor/">
+    <title>VexaCloud | Python</title>
+    <link rel="stylesheet" href="styles/editor.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/dark.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+</head>
+<body>
+    <div id="editor-container">
+        <h1><a onclick="gohome()" style="color: inherit; text-decoration: none;">VexaCloud (python)</a></h1>
+
+        <div class="code-section">
+            <h3>Python</h3>
+            <pre><code class="language-python" id="pythoncode" contenteditable="true">print("VexaCloud is awesome")</code></pre>
+        </div>
+        <footer>
+            <p>Made for: <a href="https://vexacloud.github.io" target="_blank">vexacloud.github.io</a></p>
+        </footer>
+    </div>
+
+    <div id="iframe-container">
+        <div class="preview-header">
+            <h3>Preview</h3>
+            <button onclick="runCode()">Run Code</button>
+            <button onclick="output.textContent = 'Output cleared\n'">Clear Output</button>
+        </div>
+        <pre><code id="output">Output will be here</code></pre>
+    </div>
+
+    <script src="scripts/shared.js"></script>
+    <script src="scripts/pythoneditor.js"></script>
+</body>
+</html>
