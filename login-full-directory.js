@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }, 350);
                 } else {
                     status.textContent = enteredCode 
-                        ? "Invalid ID or URL mismatch." 
+                        ? "Invalid Credentials." 
                         : "Please enter your ID.";
                     input.value = "";
                     panel.style.animation = "shake 0.35s";
