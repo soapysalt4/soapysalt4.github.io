@@ -5,18 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const ADMIN_CODES = new Set(["893880", "199032", "296260", "127074", "796447", "412654", "196088", "685666", "180572", "263879", "152160"]);
     const STORAGE_KEY = "lockdown_entrance_true";
 
-    // Check if already authenticated
     if (localStorage.getItem(STORAGE_KEY) === "true") {
         return;
     }
 
     function initLockdown() {
-        // Disable page interaction
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
         document.body.style.pointerEvents = "none";
 
-        // Create overlay
         const overlay = document.createElement("div");
         overlay.id = "lockdown-overlay";
         overlay.style.cssText = `
@@ -31,8 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
             font-family: 'Segoe UI', sans-serif;
             color: white;
         `;
-
-        // Panel
         const panel = document.createElement("div");
         panel.style.cssText = `
             background: rgba(0,0,0,0.82);
@@ -46,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
             min-width: 340px;
         `;
 
-        // Animated accent
         const accent = document.createElement("div");
         accent.style.cssText = `
             position: absolute;
@@ -56,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
             pointer-events: none;
         `;
 
-        // Keyframes
         const style = document.createElement("style");
         style.textContent = `
             @keyframes sweep {
@@ -80,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         document.head.appendChild(style);
 
-        // Lock icon
         const lock = document.createElement("div");
         lock.innerHTML = "&#128274;";
         lock.style.cssText = `
@@ -90,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
             text-shadow: 0 0 18px rgba(255,0,0,0.7);
         `;
 
-        // Title
         const title = document.createElement("div");
         title.textContent = "Under Construction";
         title.style.cssText = `
@@ -99,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-bottom: 12px;
         `;
 
-        // Rotating text
         const rotating = document.createElement("div");
         rotating.style.cssText = `
             font-size: 1rem;
@@ -121,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
             rotating.textContent = messages[idx];
         }, 4000);
 
-        // Instruction (slightly updated for clarity)
         const instruction = document.createElement("div");
         instruction.textContent = "Admins Only";
         instruction.style.cssText = `
@@ -130,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-bottom: 16px;
         `;
 
-        // Input
         const input = document.createElement("input");
         input.type = "password";
         input.placeholder = "Admin ID";
@@ -148,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
             box-shadow: 0 0 12px rgba(255,0,0,0.35);
         `;
 
-        // Status
         const status = document.createElement("div");
         status.style.cssText = `
             height: 18px;
@@ -157,17 +144,14 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-top: 4px;
         `;
 
-        // Handle login
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 const enteredCode = input.value.trim();
 
-                // Get current path (without query/hash)
                 const currentPath = window.location.pathname;
 
                 let isValid = false;
 
-                // Check if entered code is in the allowed set AND appears in the current URL path
                 if (ADMIN_CODES.has(enteredCode)) {
                     if (currentPath.includes(enteredCode)) {
                         isValid = true;
@@ -200,11 +184,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Focus trap
         overlay.addEventListener("click", () => input.focus());
         setTimeout(() => input.focus(), 50);
 
-        // Build DOM
         panel.appendChild(accent);
         panel.appendChild(lock);
         panel.appendChild(title);
