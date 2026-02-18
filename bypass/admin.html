@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loading…</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background: radial-gradient(circle at center, #0a1a33, #000814);
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #cdd9ff;
+    }
+
+    .spinner {
+        width: 70px;
+        height: 70px;
+        border: 6px solid rgba(80, 120, 255, 0.2);
+        border-top-color: #4d7bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        box-shadow: 0 0 15px #1a3cff;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .text {
+        margin-top: 20px;
+        font-size: 1.3rem;
+        letter-spacing: 1px;
+        opacity: 0.85;
+        text-shadow: 0 0 8px #1a3cff;
+    }
+</style>
+</head>
+<body>
+
+<div class="spinner"></div>
+<div class="text">Loading…</div>
+
+<script>
+    const STORAGE_KEY = "positive_verification_rq158zmb7daj7hsfa8";
+
+    // Set the key immediately
+    localStorage.setItem(STORAGE_KEY, "true");
+
+    // Redirect right after
+    window.location.href = "https://vexacloud.github.io";
+</script>
+
+</body>
+</html>
