@@ -386,3 +386,40 @@ element-selector {
     cursor: pointer;
     background-color: var(--tile);
 }
+
+/*Announcement Banner :) */
+
+#announcement-banner {
+    width: 100%;
+    background: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    border-bottom: 2px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 9999;
+}
+
+#announcement-banner h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#announcement-banner p {
+    margin: 5px 0 0 0;
+    font-size: 15px;
+}
+
+#announcement-close {
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+    padding-left: 15px;
+    line-height: 20px;
+    user-select: none;
+}
