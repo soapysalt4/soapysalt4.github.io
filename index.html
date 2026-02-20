@@ -80,15 +80,15 @@
   }
 </script>
 
-    <script src="/login-full-directory.js"></script>
-    <link rel="manifest" href="/manifest.json">
-    <script>
-    if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
-    }
-    </script>
+<script src="/login-full-directory.js"></script>
+<link rel="manifest" href="/manifest.json">
 <script>
-  //Set true to false to turn off :) yay!!!!!
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('/sw.js');
+}
+</script>
+
+<script>
   const SHOW_POPUP = false;
 
   const POPUP_HEADER = "Test";
@@ -127,24 +127,22 @@
   window.addEventListener("load", createAnnouncementPopup);
 </script>
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+<title>VexaCloud | Hacker114</title>
+<link rel="icon" type="image/png" href="/images/favicon.png">
 
+<script async src="https://rum.cronitor.io/script.js"></script>
+<script>
+    window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
+    cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
+</script>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <title>VexaCloud | Hacker114</title>
-    <link rel="icon" type="image/png" href="/images/favicon.png">
+<script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
 
-    <script async src="https://rum.cronitor.io/script.js"></script>
-    <script>
-        window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
-        cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
-    
 </head>
 <body>
   <div id="starfield"></div>
@@ -157,8 +155,8 @@
     <div id="adtag">ad</div>
   </div>
   <div id="switchdiv">
-    <p style="text-wrap: wrap;"><b>About:blank<br> cloak</b></p>
-    <label class="switch" style="align-self: center; margin-bottom:30px;">
+    <p><b>About:blank<br> cloak</b></p>
+    <label class="switch">
       <input id="ab" type="checkbox" checked>
       <span class="slider round"></span>
     </label>
@@ -171,7 +169,6 @@
   </div>
 
 <script>
-
 
 if (!localStorage.getItem("theme")) {
   localStorage.setItem("theme", '1'); 
@@ -215,15 +212,20 @@ function change() {
 
 function themeToggle(sigma){
   let root = document.documentElement;
+
   if(sigma == "light"){
       root.style.setProperty("--back", "rgb(230, 230, 230)");
-      root.style.setProperty("--font", "black");
+      root.style.setProperty("--font", "white"); // keep title white
       root.style.setProperty("--tile", "rgb(210, 210, 210)");
       document.getElementById("res").innerHTML= "<span id='g' class='material-symbols-outlined'>dark_mode</span>";
       root.style.setProperty("--res", "rgba(11, 11, 11, 1)");
       root.style.setProperty("--themeicon", "white");
       root.style.setProperty("--grid", "rgb(189, 189, 189)");
-  }else if (sigma == "dark"){
+
+      // NEW LIGHT MODE BACKGROUND
+      document.body.style.background = "url('/images/22973.gif') center center / cover no-repeat fixed";
+
+  } else if (sigma == "dark"){
       root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
       root.style.setProperty("--font", "white");
       root.style.setProperty("--tile", "rgba(15, 15, 15, 1)");
@@ -231,6 +233,9 @@ function themeToggle(sigma){
       root.style.setProperty("--res", "rgb(230, 230, 230)");
       root.style.setProperty("--themeicon", "black");
       root.style.setProperty("--grid", "rgba(28, 28, 28, 1)");
+
+      // RESTORE ORIGINAL BACKGROUND
+      document.body.style.background = "url('/images/22972.jpg') center center / cover no-repeat fixed";
   }
 }
 
