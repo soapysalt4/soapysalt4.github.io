@@ -88,25 +88,25 @@
     }
     </script>
 <script>
-  //Set true to false to turn off :) yay!
+  //Set true to false to turn off :) yay!!!!!
   const SHOW_POPUP = true;
 
-  const POPUP_HEADER = "Test";
-  const POPUP_BODY = "Hopefully this announcement shows!!!";
+  const POPUP_HEADER = "Important Update";
+  const POPUP_BODY = "This is your popup announcement. Customize this text to say whatever you want.";
 
   function createAnnouncementPopup() {
     if (!SHOW_POPUP) return;
 
-  
+    if (document.getElementById("announcement-overlay")) return;
+
     const overlay = document.createElement("div");
     overlay.id = "announcement-overlay";
 
-  
     const popup = document.createElement("div");
     popup.id = "announcement-popup";
 
     popup.innerHTML = `
-      <span id="announcement-close">&times;</span>
+      <span class="announcement-close">&times;</span>
       <h2>${POPUP_HEADER}</h2>
       <p>${POPUP_BODY}</p>
     `;
@@ -114,12 +114,19 @@
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
 
-  
-    document.getElementById("announcement-close").onclick = () => overlay.remove();
+    const closeBtn = popup.querySelector(".announcement-close");
+    closeBtn.addEventListener("click", () => {
+      overlay.remove();
+    });
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
   }
 
   window.addEventListener("load", createAnnouncementPopup);
 </script>
+
 
 
     <meta charset="UTF-8">
