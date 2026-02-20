@@ -87,6 +87,39 @@
     navigator.serviceWorker.register('/sw.js');
     }
     </script>
+  <script>
+  // 🔧 SUPER EASY TOGGLE — set to true or false
+  const SHOW_ANNOUNCEMENT = true;
+
+  // 🔧 Customize your announcement text here
+  const ANNOUNCEMENT_HEADER = "Test";
+  const ANNOUNCEMENT_BODY = "Hopefully this announcement shows!";
+
+  function createAnnouncementBanner() {
+    if (!SHOW_ANNOUNCEMENT) return;
+
+    const banner = document.createElement("div");
+    banner.id = "announcement-banner";
+
+    const textContainer = document.createElement("div");
+    textContainer.innerHTML = `
+      <h2>${ANNOUNCEMENT_HEADER}</h2>
+      <p>${ANNOUNCEMENT_BODY}</p>
+    `;
+
+    const closeBtn = document.createElement("div");
+    closeBtn.id = "announcement-close";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.onclick = () => banner.remove();
+
+    banner.appendChild(textContainer);
+    banner.appendChild(closeBtn);
+
+    document.body.prepend(banner);
+  }
+
+  window.addEventListener("load", createAnnouncementBanner);
+</script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
