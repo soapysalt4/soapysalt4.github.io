@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     //Other: pppistonhasaccess witthout id!
     //OsonEsMuySkib, Jamie Hessler, Givini Shmeltser, OsonEsMuySkibCloudflare, Grant Hessler, Oscar Blacksmith, Gram Highskibidi, Arty Faggy, Jordan Es Hammy, Holden Is Blacky, Jaredy Jaspery, tristan is righty, Adrian Skibidi!
-    const ADMIN_CODES = new Set(["893880", "199032", "296260", "127074", "796447", "412654", "830912", "685666", "180572", "263879", "152160", "764110", "312208"]);
+    const ADMIN_CODES = new Set(["939168", "199032", "296260", "699119", "796447", "412654", "830912", "685666", "180572", "263879", "152160", "764110", "312208"]);
     const STORAGE_KEY = "positive_verification_rq158zmb7daj7hsfa8";
 
     if (localStorage.getItem(STORAGE_KEY) === "true") {
