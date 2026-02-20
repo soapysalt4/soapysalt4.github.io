@@ -87,39 +87,40 @@
     navigator.serviceWorker.register('/sw.js');
     }
     </script>
-  <script>
-  // 🔧 SUPER EASY TOGGLE — set to true or false
-  const SHOW_ANNOUNCEMENT = true;
+<script>
+  //Set true to false to turn off :) yay!
+  const SHOW_POPUP = true;
 
-  // 🔧 Customize your announcement text here
-  const ANNOUNCEMENT_HEADER = "Test";
-  const ANNOUNCEMENT_BODY = "Hopefully this announcement shows!";
+  const POPUP_HEADER = "Important Update";
+  const POPUP_BODY = "This is your popup announcement. Customize this text to say whatever you want.";
 
-  function createAnnouncementBanner() {
-    if (!SHOW_ANNOUNCEMENT) return;
+  function createAnnouncementPopup() {
+    if (!SHOW_POPUP) return;
 
-    const banner = document.createElement("div");
-    banner.id = "announcement-banner";
+  
+    const overlay = document.createElement("div");
+    overlay.id = "announcement-overlay";
 
-    const textContainer = document.createElement("div");
-    textContainer.innerHTML = `
-      <h2>${ANNOUNCEMENT_HEADER}</h2>
-      <p>${ANNOUNCEMENT_BODY}</p>
+  
+    const popup = document.createElement("div");
+    popup.id = "announcement-popup";
+
+    popup.innerHTML = `
+      <span id="announcement-close">&times;</span>
+      <h2>${POPUP_HEADER}</h2>
+      <p>${POPUP_BODY}</p>
     `;
 
-    const closeBtn = document.createElement("div");
-    closeBtn.id = "announcement-close";
-    closeBtn.innerHTML = "&times;";
-    closeBtn.onclick = () => banner.remove();
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
 
-    banner.appendChild(textContainer);
-    banner.appendChild(closeBtn);
-
-    document.body.prepend(banner);
+  
+    document.getElementById("announcement-close").onclick = () => overlay.remove();
   }
 
-  window.addEventListener("load", createAnnouncementBanner);
+  window.addEventListener("load", createAnnouncementPopup);
 </script>
+
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
