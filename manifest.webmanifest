@@ -1,0 +1,13 @@
+{
+  "name": "VexaCloud | Hacker114",
+  "short_name": "VexaCloud",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+  {
+    "src": "/images/favicon.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }
+]
+}
