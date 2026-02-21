@@ -112,7 +112,7 @@
   <div id="switchdiv">
     <p><b>About:blank<br> cloak</b></p>
     <label class="switch">
-      <input id="ab" type="checkbox" checked>
+      <input id="ab" type="checkbox">
       <span class="slider round"></span>
     </label>
   </div>
@@ -162,6 +162,16 @@ var gamelist = [
 
 var ab = false;
 
+let savedAB = localStorage.getItem("aboutBlankEnabled");
+if (savedAB === null) {
+  localStorage.setItem("aboutBlankEnabled", "0");
+  savedAB = "0";
+}
+document.getElementById("ab").checked = savedAB === "1";
+document.getElementById("ab").addEventListener("change", function () {
+  localStorage.setItem("aboutBlankEnabled", this.checked ? "1" : "0");
+});
+
 function change() {
   if (localStorage.getItem('theme') == '1') {
     localStorage.setItem("theme", '0');
@@ -177,14 +187,12 @@ function themeToggle(sigma){
 
   if(sigma == "light"){
       root.style.setProperty("--back", "rgb(230, 230, 230)");
-      root.style.setProperty("--font", "white"); // keep title white
+      root.style.setProperty("--font", "white");
       root.style.setProperty("--tile", "rgb(210, 210, 210)");
       document.getElementById("res").innerHTML= "<span id='g' class='material-symbols-outlined'>dark_mode</span>";
       root.style.setProperty("--res", "rgba(11, 11, 11, 1)");
       root.style.setProperty("--themeicon", "white");
       root.style.setProperty("--grid", "rgb(189, 189, 189)");
-
-      // NEW LIGHT MODE BACKGROUND
       document.body.style.background = "url('/images/22973.gif') center center / cover no-repeat fixed";
 
   } else if (sigma == "dark"){
@@ -195,8 +203,6 @@ function themeToggle(sigma){
       root.style.setProperty("--res", "rgb(230, 230, 230)");
       root.style.setProperty("--themeicon", "black");
       root.style.setProperty("--grid", "rgba(28, 28, 28, 1)");
-
-      // RESTORE ORIGINAL BACKGROUND
       document.body.style.background = "url('/images/22972.jpg') center center / cover no-repeat fixed";
   }
 }
@@ -235,7 +241,7 @@ function cloak(game) {
   win.document.body.appendChild(iframe);
   setTimeout(function() {
     if (win.closed) {
-      showPopup("The about:blank page was closed too quickly. Your school might be blocking this feature. Toggle the About:Blank cloak in the bottom right to resolve this issue. Note: Securly blocks about blank tabs when a classroom session is active, but it won't block them outside of a session or close open tabs when a session is started.");
+      showPopup("The about:blank page was closed too quickly. Your school might be blocking this feature. Toggle the About:Blank cloak in the bottom right to resolve this issue.");
     }
   }, 500);
 }
