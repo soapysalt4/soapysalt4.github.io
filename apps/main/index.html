@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div id="switchdiv">
   <p><b>About:blank<br> cloak</b></p>
   <label class="switch" style="align-self: center;margin-bottom:30px;"> 
-    <input id="ab" type="checkbox" checked>
+    <input id="ab" type="checkbox">
     <span class="slider round"></span>
   </label>
 </div>
@@ -236,10 +236,20 @@ var gamelist = [
     "link": "/apps/youtube-pass.html",
     "imgSrc": "/images/app-images/youtube.svg",
     "title": "Youtube Unblocker"
-  },
+  }
 ];
 
 var ab = false;
+
+let savedAB = localStorage.getItem("aboutBlankEnabled");
+if (savedAB === null) {
+  localStorage.setItem("aboutBlankEnabled", "0");
+  savedAB = "0";
+}
+document.getElementById("ab").checked = savedAB === "1";
+document.getElementById("ab").addEventListener("change", function () {
+  localStorage.setItem("aboutBlankEnabled", this.checked ? "1" : "0");
+});
 
 function change() {
   if (localStorage.getItem('theme') == '1') {
