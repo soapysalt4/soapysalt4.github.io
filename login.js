@@ -1,5 +1,3 @@
-//login system! If you are viewing this file, you will be banned!
-
 document.head.insertAdjacentHTML('beforeend', '<style id="vexa-hide-body">body { visibility: hidden !important; }</style>');
 
 const loading = document.createElement('div');
