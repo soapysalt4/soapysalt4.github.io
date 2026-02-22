@@ -86,20 +86,17 @@ function init() {
   let popupAttempted = false;
   let cancelTimeout;
 
-  // Click handler only runs once
   document.addEventListener('click', e => {
     if (!e.target.closest('#gbtn')) return;
 
     popupAttempted = true;
 
-    // Start a timeout that assumes "closed/cancelled/blocked" if no credential arrives soon
     cancelTimeout = setTimeout(() => {
       if (popupAttempted && !accessGranted) {
-        // Treat ANY non-success closure as allow (your requirement)
         setCookie('access', 'allowed', 365);
         afterLoginSuccess();
       }
-    }, 4000); // 4 seconds — long enough for slow error screens, short enough to feel responsive
+    }, 4000);
 
   }, { once: true });
 }
@@ -108,10 +105,9 @@ let accessGranted = false;
 
 function handleResponse(resp) {
   accessGranted = true;
-  clearTimeout(cancelTimeout); // Prevent false cancel if we actually got a response
+  clearTimeout(cancelTimeout);
 
   if (!resp || !resp.credential) {
-    // Edge case: callback fired but no credential (rare)
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
     return;
