@@ -117,7 +117,7 @@ function handleResponse(resp) {
     const payload = JSON.parse(atob(resp.credential.split('.')[1]));
     const email = payload.email?.toLowerCase() || '';
 
-    const teacherEmails = ['specificteacher1@example.com', 'specificteacher2@example.com'];
+    const teacherEmails = ['william.rea@evergreenps.org', 'sandeors000@gmail.com'];
 
     if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
       setCookie('access', 'teacher', 365);
