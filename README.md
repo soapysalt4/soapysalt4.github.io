@@ -16,7 +16,7 @@
 - All games included are **not illegally pirated**; they contain ads from the original game creators. I am not the owner of any of the apps. If an app violates copyright laws, it     falls under the responsibility of the user to recognize this!
 - Credits for game code go to **Hacker114**, **UCBG**, and **The Ultimate Game Stash**.
 - Fork this repository at your **own risk**.
-- This repository is intended for deployment on a **static platform**. Node.js compatibility is not required.
+- This repository is intended for deployment on a **static platform**. Node.js compatibility is not recommended or required.
 
 ---
 
