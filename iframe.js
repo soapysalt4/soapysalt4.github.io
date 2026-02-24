@@ -6,31 +6,6 @@
     iframed = true;
   }
 
-  let allowFromAboutBlank = false;
-
-  try {
-    let openerOrigin = null;
-    try {
-      openerOrigin = window.opener?.location?.origin || null;
-    } catch (e) {
-      openerOrigin = null;
-    }
-
-    const trustedOrigins = [
-      "https://vexacloud.github.io",
-      "https://vexacloud.orson-sander.workers.dev"
-    ];
-
-    allowFromAboutBlank =
-      document.referrer === "" &&
-      window.opener &&
-      openerOrigin &&
-      trustedOrigins.includes(openerOrigin);
-  } catch (e) {
-    allowFromAboutBlank = false;
-  }
-
-  if (iframed && allowFromAboutBlank) return;
   if (!iframed) return;
 
   const overlay = document.createElement("div");
