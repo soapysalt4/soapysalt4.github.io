@@ -9,25 +9,27 @@
   let allowFromAboutBlank = false;
 
   try {
-    const isAboutBlank = document.referrer === "";
-
+    const isAboutBlank = location.href === "about:blank" || location.protocol === "about:";
     const hasOpener = !!window.opener;
 
-    let openerOrigin = null;
-    if (hasOpener) {
-      try {
-        openerOrigin = window.opener.location.origin;
-      } catch (e) {
-        openerOrigin = null;
-      }
+    let iframeSrc = null;
+    try {
+      iframeSrc = window.frameElement?.src || null;
+    } catch (e) {
+      iframeSrc = null;
     }
 
-    const trustedOrigins = [
-      "https://vexacloud.github.io",
-      "https://vexacloud.orson-sander.workers.dev"
+    const trustedPatterns = [
+      "vexacloud.github.io",
+      "vexacloud.orson-sander.workers.dev"
     ];
 
-    if (isAboutBlank && hasOpener && trustedOrigins.includes(openerOrigin)) {
+    if (
+      isAboutBlank &&
+      hasOpener &&
+      iframeSrc &&
+      trustedPatterns.some(domain => iframeSrc.includes(domain))
+    ) {
       allowFromAboutBlank = true;
     }
   } catch (e) {
@@ -35,7 +37,6 @@
   }
 
   if (iframed && allowFromAboutBlank) return;
-
   if (!iframed) return;
 
   const overlay = document.createElement("div");
