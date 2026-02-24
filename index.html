@@ -8,16 +8,13 @@
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
   }
-
   function getCookie(name) {
     const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     return match ? match[2] : null;
   }
-
   function generateID() {
     return String(100000 + Math.floor(Math.random() * 900000));
   }
-
   function loadCronitor() {
     const s = document.createElement('script');
     s.async = true;
@@ -28,31 +25,24 @@
     };
     cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
   }
-
   function setupUserIDAndBanCheck() {
     let userID = getCookie("userID");
-
     if (!userID) {
       userID = generateID();
       setCookie("userID", userID, 365);
     }
-
     const currentPath = window.location.pathname;
     const desiredPath = "/" + userID + "/";
-
     const banFile = "/banned/" + userID + ".html";
-
     fetch(banFile, { method: "HEAD", cache: "no-store" })
       .then(response => {
         if (response.ok) {
           window.location.replace(banFile);
           return;
         }
-
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
-
         loadCronitor();
         cronitor('ping', {
           monitor: 'user-id-' + userID,
@@ -64,7 +54,6 @@
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
-
         loadCronitor();
         cronitor('ping', {
           monitor: 'user-id-' + userID,
@@ -73,14 +62,12 @@
         });
       });
   }
-
   if (document.readyState === 'complete') {
     setupUserIDAndBanCheck();
   } else {
     window.addEventListener('load', setupUserIDAndBanCheck);
   }
 </script>
-
 <script src="/login-full-directory.js"></script>
 <link rel="manifest" href="/manifest.json">
 <script>
@@ -88,46 +75,34 @@ if ('serviceWorker' in navigator) {
 navigator.serviceWorker.register('/sw.js');
 }
 </script>
-
 <script>
   const SHOW_POPUP = false;
-
   const POPUP_HEADER = "Test";
   const POPUP_BODY = "This announcement should hopefully show";
-
   function createAnnouncementPopup() {
     if (!SHOW_POPUP) return;
-
     if (document.getElementById("announcement-overlay")) return;
-
     const overlay = document.createElement("div");
     overlay.id = "announcement-overlay";
-
     const popup = document.createElement("div");
     popup.id = "announcement-popup";
-
     popup.innerHTML = `
       <span class="announcement-close">&times;</span>
       <h2>${POPUP_HEADER}</h2>
       <p>${POPUP_BODY}</p>
     `;
-
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
-
     const closeBtn = popup.querySelector(".announcement-close");
     closeBtn.addEventListener("click", () => {
       overlay.remove();
     });
-
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) overlay.remove();
     });
   }
-
   window.addEventListener("load", createAnnouncementPopup);
 </script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/style.css">
@@ -135,15 +110,12 @@ navigator.serviceWorker.register('/sw.js');
 <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
 <title>VexaCloud | Hacker114</title>
 <link rel="icon" type="image/png" href="/images/favicon.png">
-
 <script async src="https://rum.cronitor.io/script.js"></script>
 <script>
     window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
     cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
-
 </head>
 <body>
   <div id="starfield"></div>
@@ -170,11 +142,9 @@ navigator.serviceWorker.register('/sw.js');
   </div>
 
 <script>
-
 if (!localStorage.getItem("theme")) {
-  localStorage.setItem("theme", '1'); 
+  localStorage.setItem("theme", '1');
 }
-
 const starCount = 1000;
 const starfield = document.getElementById('starfield');
 function random(min, max) {
@@ -192,15 +162,12 @@ for (let i = 0; i < starCount; i++) {
   star.style.animationDuration = `${random(3, 8)}s`;
   starfield.appendChild(star);
 }
-
 var gamelist = [
   { "link": "/apps/main/index.html", "imgSrc": "/images/apps.png", "title": "Apps" },
   { "link": "/games/main/index.html", "imgSrc": "/images/game-logo.png", "title": "Games" },
   { "link": "/links/main/index.html", "imgSrc": "/images/links.jpg", "title": "Link Hub" }
 ];
-
 var ab = false;
-
 let savedAB = localStorage.getItem("aboutBlankEnabled");
 if (savedAB === null) {
   localStorage.setItem("aboutBlankEnabled", "0");
@@ -210,7 +177,6 @@ document.getElementById("ab").checked = savedAB === "1";
 document.getElementById("ab").addEventListener("change", function () {
   localStorage.setItem("aboutBlankEnabled", this.checked ? "1" : "0");
 });
-
 function change() {
   if (localStorage.getItem('theme') == '1') {
     localStorage.setItem("theme", '0');
@@ -220,10 +186,8 @@ function change() {
     themeToggle("dark");
   }
 }
-
 function themeToggle(sigma){
   let root = document.documentElement;
-
   if(sigma == "light"){
       root.style.setProperty("--back", "rgb(230, 230, 230)");
       root.style.setProperty("--font", "white");
@@ -233,7 +197,6 @@ function themeToggle(sigma){
       root.style.setProperty("--themeicon", "white");
       root.style.setProperty("--grid", "rgb(189, 189, 189)");
       document.body.style.background = "url('/images/22973.gif') center center / cover no-repeat fixed";
-
   } else if (sigma == "dark"){
       root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
       root.style.setProperty("--font", "white");
@@ -245,13 +208,10 @@ function themeToggle(sigma){
       document.body.style.background = "url('/images/22972.jpg') center center / cover no-repeat fixed";
   }
 }
-
 var localskib = localStorage.getItem('theme')=="1" ? "dark" : "light";
 themeToggle(localskib);
-
 var dataArr = {};
 window.dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
-
 $("#search").on('keypress keyup change input', function() {
   var div = document.getElementById("tilecontainer");
   var arrival = $(this).val().toLowerCase();
@@ -268,21 +228,21 @@ $("#search").on('keypress keyup change input', function() {
 });
 
 function cloak(game) {
-  var win = window.open();
-  var url = game;
-  var iframe = win.document.createElement('iframe');
-  iframe.style.width = "100%";
-  iframe.style.height = "100%";
-  iframe.style.border = "none";
-  iframe.src = url;
-  win.document.body.style.padding = "0";
-  win.document.body.style.margin = "0";
-  win.document.body.appendChild(iframe);
+  var win = window.open('about:blank', '_blank');
+  if (!win) {
+    showPopup("Popup blocked – please allow popups for this site or disable About:blank cloak.");
+    return;
+  }
+
+  win.location.href = game;
+
   setTimeout(function() {
-    if (win.closed) {
-      showPopup("The about:blank page was closed too quickly. Your school might be blocking this feature. Toggle the About:Blank cloak in the bottom right to resolve this issue. Note: Securly blocks about blank tabs when a classroom session is active, but it won't block them outside of a session or close open tabs when a session is started.");
+    if (!win.closed) {
+      win.postMessage({
+        type: "vexa-cloaking-allowed"
+      }, "*");
     }
-  }, 500);
+  }, 600);
 }
 
 function showPopup(message) {
