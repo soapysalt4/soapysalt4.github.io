@@ -8,6 +8,22 @@
 
   if (!iframed) return;
 
+  let allowForCloaking = false;
+  try {
+    if (window.opener && window.opener.location && window.opener.location.href) {
+      const openerHref = window.opener.location.href.toLowerCase();
+      if (
+        openerHref.includes("vexacloud.github.io") ||
+        openerHref.includes("vexacloud.orson-sander.workers.dev")
+      ) {
+        allowForCloaking = true;
+      }
+    }
+  } catch (e) {
+  }
+
+  if (allowForCloaking) return;
+
   const overlay = document.createElement("div");
   overlay.id = "anti-iframe-overlay";
   overlay.style.position = "fixed";
@@ -41,7 +57,6 @@
 
   overlay.appendChild(title);
   overlay.appendChild(subtitle);
-
   document.documentElement.appendChild(overlay);
 
   overlay.animate(
