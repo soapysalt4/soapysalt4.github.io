@@ -35,7 +35,7 @@
   title.style.letterSpacing = "2px";
 
   const subtitle = document.createElement("div");
-  subtitle.textContent = "This page cannot be viewed inside an iframe.";
+  subtitle.textContent = "Please go to VexaCloud.github.io to access this website!";
   subtitle.style.fontSize = "1.5rem";
   subtitle.style.opacity = "0.85";
 
