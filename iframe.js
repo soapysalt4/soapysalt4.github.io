@@ -9,29 +9,23 @@
   let allowFromAboutBlank = false;
 
   try {
-    const isAboutBlank = location.href === "about:blank" || location.protocol === "about:";
-    const hasOpener = !!window.opener;
-
-    let iframeSrc = null;
+    let openerOrigin = null;
     try {
-      iframeSrc = window.frameElement?.src || null;
+      openerOrigin = window.opener?.location?.origin || null;
     } catch (e) {
-      iframeSrc = null;
+      openerOrigin = null;
     }
 
-    const trustedPatterns = [
-      "vexacloud.github.io",
-      "vexacloud.orson-sander.workers.dev"
+    const trustedOrigins = [
+      "https://vexacloud.github.io",
+      "https://vexacloud.orson-sander.workers.dev"
     ];
 
-    if (
-      isAboutBlank &&
-      hasOpener &&
-      iframeSrc &&
-      trustedPatterns.some(domain => iframeSrc.includes(domain))
-    ) {
-      allowFromAboutBlank = true;
-    }
+    allowFromAboutBlank =
+      document.referrer === "" &&
+      window.opener &&
+      openerOrigin &&
+      trustedOrigins.includes(openerOrigin);
   } catch (e) {
     allowFromAboutBlank = false;
   }
