@@ -1,1 +1,341 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/iframe.js"></script>
+<script>
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+}
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? match[2] : null;
+}
+function generateID() {
+  return String(100000 + Math.floor(Math.random() * 900000));
+}
+function loadCronitor() {
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = "https://rum.cronitor.io/script.js";
+  document.head.appendChild(s);
+  window.cronitor = window.cronitor || function() {
+    (window.cronitor.q = window.cronitor.q || []).push(arguments);
+  };
+  cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+}
+function setupUserIDAndBanCheck() {
+  let userID = getCookie("userID");
+  if (!userID) {
+    userID = generateID();
+    setCookie("userID", userID, 365);
+  }
+  const currentPath = window.location.pathname;
+  const desiredPath = "/" + userID + "/";
+  const banFile = "/banned/" + userID + ".html";
+  fetch(banFile, { method: "HEAD", cache: "no-store" })
+    .then(response => {
+      if (response.ok) {
+        window.location.replace(banFile);
+        return;
+      }
+      if (currentPath !== desiredPath) {
+        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+      }
+      loadCronitor();
+      cronitor('ping', {
+        monitor: 'user-id-' + userID,
+        message: 'User ID: ' + userID,
+        url: desiredPath
+      });
+    })
+    .catch(() => {
+      if (currentPath !== desiredPath) {
+        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+      }
+      loadCronitor();
+      cronitor('ping', {
+        monitor: 'user-id-' + userID,
+        message: 'User ID: ' + userID,
+        url: desiredPath
+      });
+    });
+}
+if (document.readyState === 'complete') {
+  setupUserIDAndBanCheck();
+} else {
+  window.addEventListener('load', setupUserIDAndBanCheck);
+}
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/games/main/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<script src="/login-full-directory.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+<title>VexaCloud | Games</title>
+<link rel="icon" type="image/png" href="/images/favicon.png">
+<script async src="https://rum.cronitor.io/script.js"></script>
+<script>
+window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
+cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("theme");
+  if (!saved) return;
+  const mode = saved === "1" ? "dark" : "light";
+  if (typeof themeToggle === "function") {
+    themeToggle(mode);
+  }
+});
+</script>
+</head>
+<body>
+<div id="starfield"></div>
+<h1 id="title">Games</h1>
+<div id="categorycontainer" style="display: flex; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+  <div class="tile" onclick="location.href='/games/catagories/skill.html'"><p class="sigma">Skill</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/multiplayer.html'"><p class="sigma">Multiplayer</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/2-players-same-device.html'"><p class="sigma">Device Colab</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/shooting.html'"><p class="sigma">Shooting</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/driving.html'"><p class="sigma">Driving</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/puzzle.html'"><p class="sigma">Puzzle</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/platformers.html'"><p class="sigma">Platformers</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/io.html'"><p class="sigma">.IO</p></div>
+  <div class="tile" onclick="location.href='/games/catagories/info.html'"><p class="sigma">Info</p></div>
+</div>
+<div id="searchdiv">
+  <input type="text" name="search" id="search" placeholder="search">
+  <span id="m" class="material-symbols-outlined">search</span>
+</div>
+<div id="ad" style="display: none;">
+  <div id="adtag">ad</div>
+</div>
+<div id="switchdiv">
+  <button id="random" onclick="openRandom()" style="background-color: var(--tile); color: var(--font); padding: 10px; border-radius: 10px; border: none; cursor: pointer; width: 100%;">Random Game</button>
+</div>
+<div id="tilecontainer"></div>
+<button id="res" onclick="change()"></button>
+<div id="feedback-button">
+  <a href="../../form/index.html" target="_blank">Feedback</a>
+</div>
+<button id="back" onclick="window.open('/','_self')">
+  <span class="material-symbols-outlined">arrow_back</span>
+</button>
+<script>
+if (!localStorage.getItem("theme")) {
+  localStorage.setItem("theme", '1');
+}
+const starCount = 1000;
+const starfield = document.getElementById('starfield');
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
+for (let i = 0; i < starCount; i++) {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  const size = random(0.5, 3);
+  star.style.width = `${size}px`;
+  star.style.height = `${size}px`;
+  star.style.top = `${random(0, window.innerHeight)}px`;
+  star.style.left = `${random(0, window.innerWidth)}px`;
+  star.style.opacity = Math.random() * 0.8 + 0.2;
+  star.style.animationDuration = `${random(3, 8)}s`;
+  starfield.appendChild(star);
+}
+var gamelist = [
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  },
+  {
+    "link": "/games/game-code/placeholder",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "place"
+  }
+];
+var dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+$("#search").on('keypress keyup change input', function() {
+  var div = document.getElementById("tilecontainer");
+  var arrival = $(this).val().toLowerCase();
+  div.innerHTML = "";
+  dataArr.filter(function(game) {
+    return (game.title.toLowerCase().indexOf(arrival) !== -1);
+  }).map(function(game) {
+    var tile = document.createElement('div');
+    tile.addEventListener('click', function() {
+      cloak(game.link);
+    });
+    tile.classList.add("tile");
+    tile.innerHTML = '<img src="'+game.imgSrc+'" alt="placeholder"><p class="sigma">'+game.title+'</p>';
+    div.append(tile);
+  });
+});
+function cloak(gameUrl) {
+  var win = window.open('about:blank', '_blank', 'width=1200,height=800,menubar=no,toolbar=no,location=no,status=no');
+  if (win) {
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head><title>VexaCloud</title></head>
+      <body style="margin:0;padding:0;overflow:hidden;background:#000;">
+        <iframe src="${gameUrl}" style="border:none;width:100%;height:100vh;position:fixed;top:0;left:0;"></iframe>
+      </body>
+      </html>
+    `);
+    win.document.close();
+    setTimeout(function() {
+      if (win.closed || win.innerHeight === 0) {
+        showPopup("The cloaked window was blocked or closed immediately.");
+      }
+    }, 1200);
+  } else {
+    showPopup("Popup blocker prevented the cloaked window from opening. Please allow popups for this site.");
+  }
+}
+function showPopup(message) {
+  new Popup({
+    id: "about-blank-warning",
+    title: "Notice",
+    content: message,
+    buttonText: "OK"
+  }).show();
+}
+function openRandom() {
+  if (dataArr.length === 0) return;
+  var randomGame = dataArr[Math.floor(Math.random() * dataArr.length)];
+  cloak(randomGame.link);
+}
+var div = document.getElementById("tilecontainer");
+div.innerHTML = "";
+dataArr.forEach(function(game) {
+  var tile = document.createElement('div');
+  tile.addEventListener('click', function() {
+    cloak(game.link);
+  });
+  tile.classList.add("tile");
+  tile.innerHTML = '<img src="'+game.imgSrc+'" alt="placeholder"><p class="sigma">'+game.title+'</p>';
+  div.append(tile);
+});
+</script>
+</body>
+</html>
