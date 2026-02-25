@@ -2,82 +2,81 @@
 <html lang="en">
 <head>
   <script>
-function setCookie(name, value, days) {
-  const d = new Date();
-  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
-}
-
-function getCookie(name) {
-  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? match[2] : null;
-}
-
-function generateID() {
-  return String(100000 + Math.floor(Math.random() * 900000));
-}
-
-function loadCronitor() {
-  const s = document.createElement('script');
-  s.async = true;
-  s.src = "https://rum.cronitor.io/script.js";
-  document.head.appendChild(s);
-  window.cronitor = window.cronitor || function() {
-    (window.cronitor.q = window.cronitor.q || []).push(arguments);
-  };
-  cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
-}
-
-function setupUserIDAndBanCheck() {
-  let userID = getCookie("userID");
-
-  if (!userID) {
-    userID = generateID();
-    setCookie("userID", userID, 365);
-  }
-
-  const currentPath = window.location.pathname;
-  const desiredPath = "/" + userID + "/";
-  const banFile = "/banned/" + userID + ".html";
-
-  fetch(banFile, { method: "HEAD", cache: "no-store" })
-    .then(response => {
-      if (response.ok) {
-        window.location.replace(banFile);
-        return;
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+    function generateID() {
+      return String(100000 + Math.floor(Math.random() * 900000));
+    }
+    // ────────────────────────────────────────────────
+    // Cronitor setup
+    // ────────────────────────────────────────────────
+    function loadCronitor() {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = "https://rum.cronitor.io/script.js";
+      document.head.appendChild(s);
+      window.cronitor = window.cronitor || function() {
+        (window.cronitor.q = window.cronitor.q || []).push(arguments);
+      };
+      cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+    }
+    // ────────────────────────────────────────────────
+    // Main logic
+    // ────────────────────────────────────────────────
+    function setupUserIDAndBanCheck() {
+      let userID = getCookie("userID");
+      if (!userID) {
+        userID = generateID();
+        setCookie("userID", userID, 365);
       }
+      const currentPath = window.location.pathname;
+      const desiredPath = "/" + userID + "/";
+      // UPDATED: check inside /banned/
+      const banFile = "/banned/" + userID + ".html";
+      fetch(banFile, { method: "HEAD", cache: "no-store" })
+        .then(response => {
+          if (response.ok) {
+            window.location.replace(banFile);
+            return;
+          }
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        })
+        .catch(() => {
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        });
+    }
+    if (document.readyState === 'complete') {
+      setupUserIDAndBanCheck();
+    } else {
+      window.addEventListener('load', setupUserIDAndBanCheck);
+    }
+  </script>
 
-      if (currentPath !== desiredPath) {
-        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
-      }
+  <script async src="https://rum.cronitor.io/script.js"></script>
 
-      loadCronitor();
-      cronitor('ping', {
-        monitor: 'user-id-' + userID,
-        message: 'User ID: ' + userID,
-        url: desiredPath
-      });
-    })
-    .catch(() => {
-      if (currentPath !== desiredPath) {
-        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
-      }
-
-      loadCronitor();
-      cronitor('ping', {
-        monitor: 'user-id-' + userID,
-        message: 'User ID: ' + userID,
-        url: desiredPath
-      });
-    });
-}
-
-if (document.readyState === 'complete') {
-  setupUserIDAndBanCheck();
-} else {
-  window.addEventListener('load', setupUserIDAndBanCheck);
-}
-</script>
   <script src="/iframe.js"></script>
   <script src="/login-full-directory.js"></script>
   <meta charset="UTF-8">
@@ -135,6 +134,7 @@ for (let i = 0; i < starCount; i++) {
   star.style.animationDuration = rand(4, 12) + 's';
   starfield.appendChild(star);
 }
+
 var gamelist = [
   {
     "link": "/games/game-code/placeholder",
@@ -262,7 +262,9 @@ var gamelist = [
     "title": "place"
   }
 ];
+
 const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+
 function applyTheme(mode) {
   const root = document.documentElement;
   if (mode === "light") {
@@ -283,12 +285,15 @@ function applyTheme(mode) {
   document.body.style.backgroundRepeat = "no-repeat";
   document.body.style.backgroundAttachment = "fixed";
 }
+
 function change() {
   const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
   localStorage.setItem("theme", current);
   applyTheme(current);
 }
+
 applyTheme(localStorage.getItem("theme") || "dark");
+
 $("#search").on("input", function() {
   const val = $(this).val().toLowerCase().trim();
   $("#tilecontainer").empty();
@@ -299,6 +304,7 @@ $("#search").on("input", function() {
       $("#tilecontainer").append(tile);
     });
 });
+
 function cloak(url) {
   const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
   if (win) {
@@ -313,10 +319,12 @@ function cloak(url) {
     alert("Popup blocked – please allow popups for this site.");
   }
 }
+
 function openRandom() {
   const idx = Math.floor(Math.random() * dataArr.length);
   cloak(dataArr[idx].link);
 }
+
 $(document).ready(() => {
   dataArr.forEach(game => {
     const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
