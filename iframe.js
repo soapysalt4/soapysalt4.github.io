@@ -8,6 +8,13 @@
 
   if (!iframed) return;
 
+  try {
+    if (window.top.location.href === "about:blank") {
+      return;
+    }
+  } catch (e) {
+  }
+
   let allowForCloaking = false;
 
   const onMessage = function(event) {
