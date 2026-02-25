@@ -7,18 +7,15 @@
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
   }
-
   function getCookie(name) {
     const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     return match ? match[2] : null;
   }
-
   function generateID() {
     return String(100000 + Math.floor(Math.random() * 900000));
   }
-
   // ────────────────────────────────────────────────
-  //  Cronitor setup
+  // Cronitor setup
   // ────────────────────────────────────────────────
   function loadCronitor() {
     const s = document.createElement('script');
@@ -30,35 +27,28 @@
     };
     cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
   }
-
   // ────────────────────────────────────────────────
-  //  Main logic
+  // Main logic
   // ────────────────────────────────────────────────
   function setupUserIDAndBanCheck() {
     let userID = getCookie("userID");
-
     if (!userID) {
       userID = generateID();
       setCookie("userID", userID, 365);
     }
-
     const currentPath = window.location.pathname;
     const desiredPath = "/" + userID + "/";
-
     // UPDATED: check inside /banned/
     const banFile = "/banned/" + userID + ".html";
-
     fetch(banFile, { method: "HEAD", cache: "no-store" })
       .then(response => {
         if (response.ok) {
           window.location.replace(banFile);
           return;
         }
-
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
-
         loadCronitor();
         cronitor('ping', {
           monitor: 'user-id-' + userID,
@@ -70,7 +60,6 @@
         if (currentPath !== desiredPath) {
           history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
         }
-
         loadCronitor();
         cronitor('ping', {
           monitor: 'user-id-' + userID,
@@ -79,7 +68,6 @@
         });
       });
   }
-
   if (document.readyState === 'complete') {
     setupUserIDAndBanCheck();
   } else {
@@ -104,9 +92,7 @@ async src="https://rum.cronitor.io/script.js"></script>
 </head>
 <body>
 <div id="starfield"></div>
-
 <h1 id="title">Games</h1>
-
 <div id="categorycontainer">
   <div class="tile" onclick="location.href='/games/catagories/skill.html'"><p class="sigma">Skill</p></div>
   <div class="tile" onclick="location.href='/games/catagories/multiplayer.html'"><p class="sigma">Multiplayer</p></div>
@@ -118,31 +104,24 @@ async src="https://rum.cronitor.io/script.js"></script>
   <div class="tile" onclick="location.href='/games/catagories/io.html'"><p class="sigma">.IO</p></div>
   <div class="tile" onclick="location.href='/games/catagories/info.html'"><p class="sigma">Info</p></div>
 </div>
-
 <div id="searchdiv">
   <input type="text" id="search" placeholder="search">
   <span id="m" class="material-symbols-outlined">search</span>
 </div>
-
 <div id="switchdiv">
   <button id="random" onclick="openRandom()">Random Game</button>
 </div>
-
 <div id="tilecontainer"></div>
-
 <button id="res" onclick="change()"></button>
-
 <div id="feedback-button">
   <a href="/form/index.html" target="_blank">Feedback</a>
 </div>
-
 <button id="back" onclick="window.open('/','_self')">
   <span class="material-symbols-outlined">arrow_back</span>
 </button>
 
 <script>
 if (!localStorage.getItem("theme")) localStorage.setItem("theme", "dark");
-
 const starCount = 800;
 const starfield = document.getElementById('starfield');
 function rand(min, max) { return Math.random() * (max - min) + min; }
@@ -157,7 +136,6 @@ for (let i = 0; i < starCount; i++) {
   star.style.animationDuration = rand(4, 12) + 's';
   starfield.appendChild(star);
 }
-
 var gamelist = [
   {
     "link": "/games/game-code/placeholder",
@@ -285,21 +263,19 @@ var gamelist = [
     "title": "place"
   }
 ];
-
 const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
-
 function applyTheme(mode) {
   const root = document.documentElement;
   if (mode === "light") {
     root.style.setProperty("--back", "rgb(230, 230, 230)");
     root.style.setProperty("--font", "#111");
-    root.style.setProperty("--tile", "rgb(210, 210, 210)");
+    root.style.setProperty("--tile", "rgba(210, 210, 210, 0.92)");
     document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
     document.body.style.backgroundImage = "url('/images/22973.gif')";
   } else {
     root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
     root.style.setProperty("--font", "white");
-    root.style.setProperty("--tile", "rgba(15, 15, 15, 1)");
+    root.style.setProperty("--tile", "rgba(15, 15, 15, 0.88)");
     document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
     document.body.style.backgroundImage = "url('/images/22972.jpg')";
   }
@@ -308,15 +284,12 @@ function applyTheme(mode) {
   document.body.style.backgroundRepeat = "no-repeat";
   document.body.style.backgroundAttachment = "fixed";
 }
-
 function change() {
   const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
   localStorage.setItem("theme", current);
   applyTheme(current);
 }
-
 applyTheme(localStorage.getItem("theme") || "dark");
-
 $("#search").on("input", function() {
   const val = $(this).val().toLowerCase().trim();
   $("#tilecontainer").empty();
@@ -327,7 +300,6 @@ $("#search").on("input", function() {
       $("#tilecontainer").append(tile);
     });
 });
-
 function cloak(url) {
   const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
   if (win) {
@@ -342,12 +314,10 @@ function cloak(url) {
     alert("Popup blocked – please allow popups for this site.");
   }
 }
-
 function openRandom() {
   const idx = Math.floor(Math.random() * dataArr.length);
   cloak(dataArr[idx].link);
 }
-
 $(document).ready(() => {
   dataArr.forEach(game => {
     const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
