@@ -1,7 +1,7 @@
 :root {
     --back: rgba(11, 11, 11, 1);
     --font: white;
-    --tile: rgba(15, 15, 15, 1);
+    --tile: rgba(15, 15, 15, 0.88);
     --res: rgb(230, 230, 230);
     --themeicon: black;
 }
@@ -36,31 +36,31 @@ body {
 
 @keyframes twinkle {
     0%,100% { opacity: 0.4; }
-    50%     { opacity: 0.95; }
+    50% { opacity: 0.95; }
 }
 
 #title {
     font-size: clamp(2.8rem, 9vw, 5rem);
     text-align: center;
     margin: 1.5rem 0 1rem;
-    color: white !important;           /* forced white in ALL modes */
+    color: white !important; /* forced white in ALL modes */
     text-shadow: 0 2px 10px #000c;
 }
 
 #categorycontainer {
     display: flex;
-    flex-wrap: nowrap;                 /* try to keep in one row */
+    flex-wrap: nowrap; /* try to keep in one row */
     justify-content: center;
     gap: 0.8rem;
     margin: 1rem auto;
     padding: 0 1rem;
-    overflow-x: auto;                  /* scroll horizontally if too many */
+    overflow-x: auto; /* scroll horizontally if too many */
     max-width: 100%;
 }
 
 #categorycontainer .tile {
     flex: 0 0 auto;
-    width: 110px;                      /* much smaller */
+    width: 110px; /* much smaller */
     height: 50px;
     font-size: 0.9rem;
     padding: 0.6rem;
@@ -124,7 +124,7 @@ body {
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     color: white;
     border: none;
-    border-radius: 999px;              /* pill shape */
+    border-radius: 999px; /* pill shape */
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
     transition: all 0.25s ease;
@@ -218,25 +218,33 @@ body {
     transform: scale(1.1);
 }
 
+/* ────────────────────────────────
+   Updated feedback button
+───────────────────────────────── */
 #feedback-button {
     position: fixed;
-    right: -48px;
-    top: 45%;
-    transform: rotate(-90deg);
+    bottom: 1.2rem;
+    right: 1.2rem;
     z-index: 150;
 }
 
 #feedback-button a {
     background: #0066ff;
     color: white;
-    padding: 10px 18px;
-    border-radius: 6px 6px 0 0;
+    padding: 0.9rem 1.4rem;
+    border-radius: 50px;
     text-decoration: none;
     font-weight: 500;
-    transition: all 0.25s;
+    font-size: 1rem;
+    box-shadow: 0 4px 14px rgba(0, 102, 255, 0.35);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 #feedback-button a:hover {
     background: #0055dd;
     transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 102, 255, 0.5);
 }
