@@ -34,6 +34,7 @@ script.async = true;
 script.defer = true;
 script.onload = init;
 document.head.appendChild(script);
+
 function init() {
   const access = getCookie('access');
   if (access === 'teacher') {
@@ -48,6 +49,7 @@ function init() {
     afterLoginSuccess();
     return;
   }
+
   loading.innerHTML = `
   <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
   Sign in with Google
@@ -57,6 +59,7 @@ function init() {
   Please review the Terms of Service: evergreen-ps.github.io/vexacloud-terms! Login is required for entry!
   </div>
   `;
+
   google.accounts.id.initialize({
     client_id: '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com',
     callback: handleResponse,
@@ -64,6 +67,7 @@ function init() {
     cancel_on_tap_outside: false,
     ux_mode: 'popup'
   });
+
   google.accounts.id.renderButton(document.getElementById('gbtn'), {
     type: 'standard',
     theme: 'outline',
@@ -74,13 +78,17 @@ function init() {
     width: 340
   });
 }
+
 function handleResponse(resp) {
-  console.log('Google response:', resp); // Debug: Check what error is returned when blocked
+  console.log('Google callback response:', resp);  // Open console (F12) to see what Google returns
+
   if (resp.credential) {
+    // Successful login → check email
     try {
       const payload = JSON.parse(atob(resp.credential.split('.')[1]));
       const email = payload.email?.toLowerCase() || '';
       const teacherEmails = ['william.rea@evergreenps.org', 'sandeors000@gmail.com'];
+
       if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
         setCookie('access', 'teacher', 365);
         setCookie('email', email, 365);
@@ -91,18 +99,20 @@ function handleResponse(resp) {
         afterLoginSuccess();
       }
     } catch (err) {
+      // Bad token → treat as non-teacher
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else if (resp.error === 'admin_policy_enforced' || resp.error === 'access_denied') {
-    // Allow access when blocked by admin policy
+  } else if (resp.error === 'popup_closed_by_user') {
+    // User started login but closed popup (including after seeing block message) → allow as student/non-teacher
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   } else {
-    // Other errors, including popup_closed_by_user if not handled above
-    loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed. Please try again.</div>';
+    // Other failures (e.g. user denies permission, network error) → stay on login, show message
+    loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed or cancelled. Please try again.</div>';
   }
 }
+
 function afterLoginSuccess() {
   let userId = localStorage.getItem('vexaUserId');
   if (!userId) {
@@ -120,16 +130,19 @@ function afterLoginSuccess() {
     })
     .catch(() => hideLoading());
 }
+
 function hideLoading() {
   const hideStyle = document.getElementById('vexa-hide-body');
   if (hideStyle) hideStyle.remove();
   loading.style.opacity = '0';
   setTimeout(() => loading.remove(), 800);
 }
+
 function getCookie(name) {
   const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
   return m ? decodeURIComponent(m[1]) : null;
 }
+
 function setCookie(name, value, days) {
   let expires = '';
   if (days) {
