@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         const title = document.createElement("div");
-        title.textContent = "Under Construction";
+        title.textContent = "LOCKDOWN";
         title.style.cssText = `
             font-size: 1.9rem;
             letter-spacing: 0.18em;
@@ -99,8 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         const messages = [
             "System access restricted.",
-            "Website under construction",
-            "Release date: March 2026",
+            "Website on lockdown",
+            "Site will hopefully be back soon",
             "Admin verification required."
         ];
         let idx = 0;
