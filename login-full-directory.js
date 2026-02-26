@@ -1,5 +1,4 @@
 document.head.insertAdjacentHTML('beforeend', '<style id="vexa-hide-body">body { visibility: hidden !important; }</style>');
-
 const loading = document.createElement('div');
 loading.id = 'vexa-loading';
 Object.assign(loading.style, {
@@ -15,7 +14,6 @@ Object.assign(loading.style, {
   fontFamily: 'system-ui, sans-serif',
   transition: 'opacity 0.7s'
 });
-
 loading.innerHTML = `
 <div style="font-size:3.5rem; font-weight:bold; margin-bottom:1.8rem;">
 Loading VexaCloud...
@@ -26,22 +24,18 @@ Loading VexaCloud...
 </style>
 `;
 document.documentElement.appendChild(loading);
-
 const meta = document.createElement('meta');
 meta.name = 'google-signin-client_id';
 meta.content = '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com';
 document.head.appendChild(meta);
-
 const script = document.createElement('script');
 script.src = 'https://accounts.google.com/gsi/client';
 script.async = true;
 script.defer = true;
 script.onload = init;
 document.head.appendChild(script);
-
 function init() {
   const access = getCookie('access');
-
   if (access === 'teacher') {
     if (window.location.pathname.endsWith('/teacher.html')) {
       hideLoading();
@@ -54,7 +48,6 @@ function init() {
     afterLoginSuccess();
     return;
   }
-
   loading.innerHTML = `
   <div style="font-size:2.4rem; font-weight:bold; margin-bottom:1.5rem; color:#60a5fa;">
   Sign in with Google
@@ -64,7 +57,6 @@ function init() {
   Please review the Terms of Service: evergreen-ps.github.io/vexacloud-terms! Login is required for entry!
   </div>
   `;
-
   google.accounts.id.initialize({
     client_id: '1009780597482-i6k7vuq1us9u1oiqenbdklj1hbv711pq.apps.googleusercontent.com',
     callback: handleResponse,
@@ -72,7 +64,6 @@ function init() {
     cancel_on_tap_outside: false,
     ux_mode: 'popup'
   });
-
   google.accounts.id.renderButton(document.getElementById('gbtn'), {
     type: 'standard',
     theme: 'outline',
@@ -82,68 +73,43 @@ function init() {
     logo_alignment: 'center',
     width: 340
   });
-
-  let popupAttempted = false;
-  let cancelTimeout;
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#gbtn')) return;
-
-    popupAttempted = true;
-
-    cancelTimeout = setTimeout(() => {
-      if (popupAttempted && !accessGranted) {
+}
+function handleResponse(resp) {
+  if (resp && resp.credential) {
+    try {
+      const payload = JSON.parse(atob(resp.credential.split('.')[1]));
+      const email = payload.email?.toLowerCase() || '';
+      const teacherEmails = ['william.rea@evergreenps.org', 'sandeors000@gmail.com'];
+      if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
+        setCookie('access', 'teacher', 365);
+        setCookie('email', email, 365);
+        window.location.replace('/teacher.html');
+      } else {
         setCookie('access', 'allowed', 365);
+        setCookie('email', email, 365);
         afterLoginSuccess();
       }
-    }, 4000);
-
-  }, { once: true });
-}
-
-let accessGranted = false;
-
-function handleResponse(resp) {
-  accessGranted = true;
-  clearTimeout(cancelTimeout);
-
-  if (!resp || !resp.credential) {
-    setCookie('access', 'allowed', 365);
-    afterLoginSuccess();
-    return;
-  }
-
-  try {
-    const payload = JSON.parse(atob(resp.credential.split('.')[1]));
-    const email = payload.email?.toLowerCase() || '';
-
-    const teacherEmails = ['william.rea@evergreenps.org', 'sandeors000@gmail.com'];
-
-    if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
-      setCookie('access', 'teacher', 365);
-      setCookie('email', email, 365);
-      window.location.replace('/teacher.html');
-    } else {
+    } catch (err) {
+      // Invalid token → fail-open to allowed
       setCookie('access', 'allowed', 365);
-      setCookie('email', email, 365);
       afterLoginSuccess();
     }
-  } catch (err) {
-    // Invalid token → still allow (fail-open)
+  } else if (resp && resp.error === 'access_not_configured') {
+    // Specific error for institution block → allow as 'allowed'
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
+  } else {
+    // Other errors (e.g., popup_closed_by_user, access_denied, etc.) → do not allow, stay on login screen
+    // Optionally, you could add a message here, like updating the loading.innerHTML to show an error
   }
 }
-
 function afterLoginSuccess() {
   let userId = localStorage.getItem('vexaUserId');
   if (!userId) {
     userId = Math.floor(100000 + Math.random() * 900000).toString();
     localStorage.setItem('vexaUserId', userId);
   }
-
   const target = `/${userId}.html`;
-
   fetch(target, { method: 'HEAD', cache: 'no-store' })
     .then(res => {
       if (res.ok) {
@@ -154,20 +120,16 @@ function afterLoginSuccess() {
     })
     .catch(() => hideLoading());
 }
-
 function hideLoading() {
   const hideStyle = document.getElementById('vexa-hide-body');
   if (hideStyle) hideStyle.remove();
-
   loading.style.opacity = '0';
   setTimeout(() => loading.remove(), 800);
 }
-
 function getCookie(name) {
   const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
   return m ? decodeURIComponent(m[1]) : null;
 }
-
 function setCookie(name, value, days) {
   let expires = '';
   if (days) {
