@@ -94,13 +94,10 @@ function handleResponse(resp) {
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else if (resp && resp.error === 'access_not_configured') {
-    // Specific error for institution block → allow as 'allowed'
+  } else {
+    // Any error, including access_not_configured or admin_policy_enforced or popup closed → allow as 'allowed'
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
-  } else {
-    // Other errors (e.g., popup_closed_by_user, access_denied, etc.) → do not allow, stay on login screen
-    // Optionally, you could add a message here, like updating the loading.innerHTML to show an error
   }
 }
 function afterLoginSuccess() {
