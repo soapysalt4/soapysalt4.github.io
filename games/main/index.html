@@ -87,6 +87,39 @@
   <title>VexaCloud | Games</title>
   <link rel="icon" type="image/png" href="/images/favicon.png">
   <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+      <script>
+        const SHOW_POPUP = true;
+        const POPUP_HEADER = "Under Construction";
+        const POPUP_BODY  = "Please use the game sites in Apps! This section of the website is still under construction. Use at your own risk! ";
+
+        function createAnnouncementPopup() {
+            if (!SHOW_POPUP) return;
+            if (document.getElementById("announcement-overlay")) return;
+
+            const overlay = document.createElement("div");
+            overlay.id = "announcement-overlay";
+
+            const popup = document.createElement("div");
+            popup.id = "announcement-popup";
+            popup.innerHTML = `
+                <span class="announcement-close">&times;</span>
+                <h2>${POPUP_HEADER}</h2>
+                <p>${POPUP_BODY}</p>
+            `;
+
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+
+            const closeBtn = popup.querySelector(".announcement-close");
+            closeBtn.addEventListener("click", () => overlay.remove());
+
+            overlay.addEventListener("click", (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+        }
+
+        window.addEventListener("load", createAnnouncementPopup);
+    </script>
 </head>
 <body>
 <div id="starfield"></div>
