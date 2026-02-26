@@ -53,9 +53,6 @@ function init() {
   Sign in with Google
   </div>
   <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
-  <div style="margin-top:1rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
-  If you see "Access blocked: Your institution’s admin needs to review vexacloud.github.io", close the popup and <a href="#" id="bypass-link" style="color:#60a5fa; text-decoration:underline;">click here to enter</a>.
-  </div>
   <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
   Please review the Terms of Service: evergreen-ps.github.io/vexacloud-terms! Login is required for entry!
   </div>
@@ -76,14 +73,9 @@ function init() {
     logo_alignment: 'center',
     width: 340
   });
-  document.getElementById('bypass-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    setCookie('access', 'allowed', 365);
-    afterLoginSuccess();
-  });
 }
 function handleResponse(resp) {
-  if (resp.credential) {
+  if (resp && resp.credential) {
     try {
       const payload = JSON.parse(atob(resp.credential.split('.')[1]));
       const email = payload.email?.toLowerCase() || '';
@@ -101,12 +93,12 @@ function handleResponse(resp) {
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else if (resp.error === 'access_not_configured' || resp.error === 'admin_policy_enforced') {
+  } else if (resp && resp.error === 'access_not_configured') {
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   } else {
-    // Optionally show error message
-    loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed. Please try again or use the bypass if applicable.</div>';
+    // Other errors, show message
+    loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed. Please try again.</div>';
   }
 }
 function afterLoginSuccess() {
