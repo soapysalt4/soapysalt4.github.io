@@ -53,6 +53,9 @@ function init() {
   Sign in with Google
   </div>
   <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
+  <div id="bypass-message" style="margin-top:1rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px; display:none;">
+  If you see "Access blocked: Your institution’s admin needs to review vexacloud.github.io", close the popup to enter.
+  </div>
   <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
   Please review the Terms of Service: evergreen-ps.github.io/vexacloud-terms! Login is required for entry!
   </div>
@@ -73,9 +76,21 @@ function init() {
     logo_alignment: 'center',
     width: 340
   });
+  let showTimeout;
+  let accessGranted = false;
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#gbtn')) return;
+    showTimeout = setTimeout(() => {
+      if (!accessGranted) {
+        document.getElementById('bypass-message').style.display = 'block';
+      }
+    }, 3000);
+  }, { once: true });
 }
 function handleResponse(resp) {
+  clearTimeout(showTimeout);
   if (resp && resp.credential) {
+    accessGranted = true;
     try {
       const payload = JSON.parse(atob(resp.credential.split('.')[1]));
       const email = payload.email?.toLowerCase() || '';
@@ -93,11 +108,10 @@ function handleResponse(resp) {
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else if (resp && resp.error === 'access_not_configured') {
+  } else if (resp && (resp.error === 'popup_closed_by_user' || resp.error === 'access_not_configured' || resp.error === 'admin_policy_enforced' || resp.error === 'access_denied')) {
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   } else {
-    // Other errors, show message
     loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed. Please try again.</div>';
   }
 }
