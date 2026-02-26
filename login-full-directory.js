@@ -73,9 +73,22 @@ function init() {
     logo_alignment: 'center',
     width: 340
   });
+  let popupAttempted = false;
+  let cancelTimeout;
+  let accessGranted = false;
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#gbtn')) return;
+    popupAttempted = true;
+    cancelTimeout = setTimeout(() => {
+      if (popupAttempted && !accessGranted) {
+        setCookie('access', 'allowed', 365);
+        afterLoginSuccess();
+      }
+    }, 3000);
+  }, { once: true });
 }
 function handleResponse(resp) {
-  if (resp && resp.credential) {
+  if (resp.credential) {
     try {
       const payload = JSON.parse(atob(resp.credential.split('.')[1]));
       const email = payload.email?.toLowerCase() || '';
@@ -83,21 +96,29 @@ function handleResponse(resp) {
       if (teacherEmails.includes(email) || email.endsWith('@evergreenps.org')) {
         setCookie('access', 'teacher', 365);
         setCookie('email', email, 365);
+        clearTimeout(cancelTimeout);
+        accessGranted = true;
         window.location.replace('/teacher.html');
       } else {
         setCookie('access', 'allowed', 365);
         setCookie('email', email, 365);
+        clearTimeout(cancelTimeout);
+        accessGranted = true;
         afterLoginSuccess();
       }
     } catch (err) {
-      // Invalid token → fail-open to allowed
+      clearTimeout(cancelTimeout);
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else {
-    // Any error, including access_not_configured or admin_policy_enforced or popup closed → allow as 'allowed'
+  } else if (resp.error === 'access_not_configured' || resp.error === 'admin_policy_enforced') {
+    clearTimeout(cancelTimeout);
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
+  } else {
+    clearTimeout(cancelTimeout);
+    // Optionally show error message
+    // loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login cancelled or failed. Please try again.</div>';
   }
 }
 function afterLoginSuccess() {
