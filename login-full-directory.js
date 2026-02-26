@@ -77,13 +77,13 @@ function init() {
     width: 340
   });
   let showTimeout;
+  let isPotentiallyBlocked = false;
   let accessGranted = false;
   document.addEventListener('click', e => {
     if (!e.target.closest('#gbtn')) return;
     showTimeout = setTimeout(() => {
-      if (!accessGranted) {
-        document.getElementById('bypass-message').style.display = 'block';
-      }
+      isPotentiallyBlocked = true;
+      document.getElementById('bypass-message').style.display = 'block';
     }, 3000);
   }, { once: true });
 }
@@ -108,10 +108,11 @@ function handleResponse(resp) {
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else if (resp && (resp.error === 'popup_closed_by_user' || resp.error === 'access_not_configured' || resp.error === 'admin_policy_enforced' || resp.error === 'access_denied')) {
+  } else if (resp && (resp.error === 'admin_policy_enforced' || (resp.error === 'popup_closed_by_user' && isPotentiallyBlocked))) {
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   } else {
+    // Other errors
     loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed. Please try again.</div>';
   }
 }
