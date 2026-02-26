@@ -53,9 +53,6 @@ function init() {
   Sign in with Google
   </div>
   <div id="gbtn" style="background:white; border-radius:10px; padding:24px; box-shadow:0 6px 20px rgba(0,0,0,0.25); min-width:300px; display:flex; justify-content:center;"></div>
-  <div id="bypass-message" style="margin-top:1rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px; display:none;">
-  If you see "Access blocked: Your institution’s admin needs to review vexacloud.github.io", close the popup to enter.
-  </div>
   <div style="margin-top:2rem; font-size:1.05rem; opacity:0.8; text-align:center; max-width:380px;">
   Please review the Terms of Service: evergreen-ps.github.io/vexacloud-terms! Login is required for entry!
   </div>
@@ -76,21 +73,10 @@ function init() {
     logo_alignment: 'center',
     width: 340
   });
-  let showTimeout;
-  let isPotentiallyBlocked = false;
-  let accessGranted = false;
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#gbtn')) return;
-    showTimeout = setTimeout(() => {
-      isPotentiallyBlocked = true;
-      document.getElementById('bypass-message').style.display = 'block';
-    }, 3000);
-  }, { once: true });
 }
 function handleResponse(resp) {
-  clearTimeout(showTimeout);
-  if (resp && resp.credential) {
-    accessGranted = true;
+  console.log('Google response:', resp); // Debug: Check what error is returned when blocked
+  if (resp.credential) {
     try {
       const payload = JSON.parse(atob(resp.credential.split('.')[1]));
       const email = payload.email?.toLowerCase() || '';
@@ -108,11 +94,12 @@ function handleResponse(resp) {
       setCookie('access', 'allowed', 365);
       afterLoginSuccess();
     }
-  } else if (resp && (resp.error === 'admin_policy_enforced' || (resp.error === 'popup_closed_by_user' && isPotentiallyBlocked))) {
+  } else if (resp.error === 'admin_policy_enforced' || resp.error === 'access_denied') {
+    // Allow access when blocked by admin policy
     setCookie('access', 'allowed', 365);
     afterLoginSuccess();
   } else {
-    // Other errors
+    // Other errors, including popup_closed_by_user if not handled above
     loading.innerHTML += '<div style="margin-top:1rem; color:#ef4444;">Login failed. Please try again.</div>';
   }
 }
