@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudmoon | VexaCloud</title>
+  <link rel="icon" href="/images/favicon.png">
+  <style>
+    body, html { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
+    #container { width:100%; height:100vh; position:relative; }
+    #frame { width:100%; height:100%; border:none; display:block; }
+    #status {
+      position:fixed; top:10px; left:10px; background:rgba(0,0,0,0.95); color:#0ff; 
+      padding:10px 16px; border-radius:8px; font-family:Arial; font-size:14px; z-index:999;
+      max-width:420px; word-break:break-all; box-shadow:0 0 20px rgba(0,255,255,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div id="status">Loading Cloudmoon...<br></div>
+
+<div id="container">
+  <iframe id="frame" src="https://web.cloudmoonapp.com/"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-storage-access-by-user-activation">
+          <!-- NO allow-popups = browser HARD blocks every window.open and target=_blank -->
+  </iframe>
+</div>
+
+<script>
+const iframe = document.getElementById('frame');
+const status = document.getElementById('status');
+const BASE = 'https://web.cloudmoonapp.com';
+
+function setStatus(txt, ms = 5000) {
+  status.innerHTML = txt;
+  setTimeout(() => { if (status.innerHTML === txt) status.textContent = ''; }, ms);
+}
+
+function forceReloadWithLink(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url, BASE);
+    if (u.origin === BASE) {
+      setStatus('<br>Launching Game...');
+      console.log('Game Launched u.href);
+      iframe.src = u.href;
+      return true;
+    }
+  } catch (e) {}
+  setStatus('Blocked external attempt');
+  return false;
+}
+
+// Parent safety
+const realOpen = window.open;
+window.open = function(url) {
+  if (forceReloadWithLink(url)) return null;
+  return realOpen.apply(this, arguments);
+};
+
+iframe.addEventListener('load', () => {
+  setStatus('Made by Hacker114');
+  
+  try {
+    const doc = iframe.contentDocument;
+    if (!doc) throw new Error('cross-origin limit');
+
+    const catchEverything = () => {
+      // Links
+      doc.querySelectorAll('a[href]').forEach(a => {
+        a.target = '_self';
+        a.addEventListener('click', e => {
+          if (forceReloadWithLink(a.href)) e.preventDefault();
+        }, { once: true });
+      });
+
+      // Buttons + any element with data or onclick (this is what CloudMoon uses)
+      doc.querySelectorAll('button, [onclick], [data-href], [data-url], [data-game], [href]').forEach(el => {
+        const url = el.href || el.getAttribute('href') || 
+                    el.dataset?.href || el.dataset?.url || 
+                    el.dataset?.game || el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/);
+        if (url) {
+          el.addEventListener('click', e => {
+            if (forceReloadWithLink(typeof url === 'string' ? url : url[1])) {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+            }
+          }, { once: true });
+        }
+      });
+    };
+
+    catchEverything();
+
+    // Watch for new game buttons (CloudMoon loads games dynamically)
+    new MutationObserver(catchEverything).observe(doc.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['href', 'target', 'onclick', 'data-href', 'data-url', 'data-game']
+    });
+
+    // Ultimate click catcher (catches 99% of buttons even if no data attr)
+    doc.addEventListener('click', e => {
+      let el = e.target.closest('a, button, div, span, [onclick], [data-*]');
+      if (!el) return;
+      const possibleUrl = el.href || el.getAttribute('href') || 
+                         el.dataset?.href || el.dataset?.url || 
+                         el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/);
+      if (possibleUrl && forceReloadWithLink(typeof possibleUrl === 'string' ? possibleUrl : possibleUrl[1])) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+
+  } catch (e) {
+    console.warn('Deep access limited (normal for CloudMoon)');
+  }
+});
+
+// Fallback: if somehow a popup slips through, kill it instantly
+window.addEventListener('beforeunload', () => false);
+</script>
+</body>
+</html>
