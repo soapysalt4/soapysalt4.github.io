@@ -6,121 +6,111 @@
   <title>Cloudmoon | VexaCloud</title>
   <link rel="icon" href="/images/favicon.png">
   <style>
-    body, html { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
-    #container { width:100%; height:100vh; position:relative; }
-    #frame { width:100%; height:100%; border:none; display:block; }
+    body, html { margin:0; padding:0; height:100%; overflow:hidden; background:#000; font-family:Arial,sans-serif; }
+    #frame { width:100%; height:100vh; border:none; display:block; }
+    #madeby {
+      position:fixed; top:8px; left:8px; color:#aaa; background:rgba(0,0,0,0.6);
+      padding:4px 8px; border-radius:4px; font-size:12px; z-index:1000;
+      pointer-events:none;
+    }
     #status {
-      position:fixed; top:10px; left:10px; background:rgba(0,0,0,0.95); color:#0ff; 
-      padding:10px 16px; border-radius:8px; font-family:Arial; font-size:14px; z-index:999;
-      max-width:420px; word-break:break-all; box-shadow:0 0 20px rgba(0,255,255,0.3);
+      position:fixed; top:8px; right:8px; color:#0f0; background:rgba(0,0,0,0.7);
+      padding:6px 10px; border-radius:4px; font-size:13px; z-index:999;
+      max-width:300px; word-break:break-all; pointer-events:none;
     }
   </style>
 </head>
 <body>
 
-<div id="status">Loading Cloudmoon...<br></div>
+<div id="madeby">Made by Grok</div>
+<div id="status">Loading... Click buttons → frame reloads with link (popups blocked)</div>
 
-<div id="container">
-  <iframe id="frame" src="https://web.cloudmoonapp.com/"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-storage-access-by-user-activation">
-          <!-- NO allow-popups = browser HARD blocks every window.open and target=_blank -->
-  </iframe>
-</div>
+<iframe id="frame" src="https://web.cloudmoonapp.com/"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-storage-access-by-user-activation">
+  <!-- No allow-popups → browser blocks window.open / _blank attempts -->
+</iframe>
 
 <script>
 const iframe = document.getElementById('frame');
 const status = document.getElementById('status');
 const BASE = 'https://web.cloudmoonapp.com';
 
-function setStatus(txt, ms = 5000) {
-  status.innerHTML = txt;
-  setTimeout(() => { if (status.innerHTML === txt) status.textContent = ''; }, ms);
+function show(txt, dur=4000) {
+  status.textContent = txt;
+  setTimeout(() => status.textContent = '', dur);
 }
 
-function forceReloadWithLink(url) {
+function reloadFrame(url) {
   if (!url) return false;
   try {
-    const u = new URL(url, BASE);
-    if (u.origin === BASE) {
-      setStatus('<br>Launching Game...');
-      console.log('Game Launched u.href);
-      iframe.src = u.href;
+    const target = new URL(url, BASE);
+    if (target.origin === BASE) {
+      show('Button/popup caught → reloading frame with new link');
+      iframe.src = target.href;
       return true;
     }
-  } catch (e) {}
-  setStatus('Blocked external attempt');
+  } catch {}
+  show('Blocked (external or invalid)');
   return false;
 }
 
-// Parent safety
-const realOpen = window.open;
-window.open = function(url) {
-  if (forceReloadWithLink(url)) return null;
-  return realOpen.apply(this, arguments);
-};
-
 iframe.addEventListener('load', () => {
-  setStatus('Made by Hacker114');
-  
+  show('Frame ready — watching clicks');
   try {
     const doc = iframe.contentDocument;
-    if (!doc) throw new Error('cross-origin limit');
+    if (!doc) return;
 
-    const catchEverything = () => {
-      // Links
+    const hookClicks = () => {
+      // Catch links
       doc.querySelectorAll('a[href]').forEach(a => {
         a.target = '_self';
-        a.addEventListener('click', e => {
-          if (forceReloadWithLink(a.href)) e.preventDefault();
-        }, { once: true });
+        a.onclick = e => { if (reloadFrame(a.href)) e.preventDefault(); };
       });
 
-      // Buttons + any element with data or onclick (this is what CloudMoon uses)
-      doc.querySelectorAll('button, [onclick], [data-href], [data-url], [data-game], [href]').forEach(el => {
-        const url = el.href || el.getAttribute('href') || 
-                    el.dataset?.href || el.dataset?.url || 
-                    el.dataset?.game || el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/);
-        if (url) {
-          el.addEventListener('click', e => {
-            if (forceReloadWithLink(typeof url === 'string' ? url : url[1])) {
+      // Catch buttons / elements with possible URLs
+      doc.querySelectorAll('button, [onclick], [data-href], [data-url], [data-link], [href]').forEach(el => {
+        let urlSrc = el.href || el.getAttribute('href') ||
+                     el.dataset?.href || el.dataset?.url || el.dataset?.link ||
+                     (el.onclick ? el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/i)?.[1] : null);
+
+        if (urlSrc) {
+          el.onclick = e => {
+            if (reloadFrame(urlSrc)) {
               e.preventDefault();
-              e.stopImmediatePropagation();
+              e.stopPropagation();
             }
-          }, { once: true });
+          };
         }
       });
     };
 
-    catchEverything();
+    hookClicks();
 
-    // Watch for new game buttons (CloudMoon loads games dynamically)
-    new MutationObserver(catchEverything).observe(doc.documentElement, {
+    // Re-apply on dynamic changes (games list loads async)
+    new MutationObserver(hookClicks).observe(doc.body, {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['href', 'target', 'onclick', 'data-href', 'data-url', 'data-game']
+      attributeFilter: ['href','onclick','data-href','data-url','data-link']
     });
 
-    // Ultimate click catcher (catches 99% of buttons even if no data attr)
+    // Super broad click listener as last resort
     doc.addEventListener('click', e => {
-      let el = e.target.closest('a, button, div, span, [onclick], [data-*]');
-      if (!el) return;
-      const possibleUrl = el.href || el.getAttribute('href') || 
-                         el.dataset?.href || el.dataset?.url || 
-                         el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/);
-      if (possibleUrl && forceReloadWithLink(typeof possibleUrl === 'string' ? possibleUrl : possibleUrl[1])) {
+      let tgt = e.target.closest('a,button,[onclick],[data-href],[data-url],[href]');
+      if (!tgt) return;
+      let url = tgt.href || tgt.getAttribute('href') ||
+                tgt.dataset?.href || tgt.dataset?.url ||
+                (tgt.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/i)?.[1]);
+      if (url && reloadFrame(url)) {
         e.preventDefault();
         e.stopImmediatePropagation();
       }
     }, true);
 
-  } catch (e) {
-    console.warn('Deep access limited (normal for CloudMoon)');
+  } catch (err) {
+    show('Limited inspect (cross-origin ok)');
   }
 });
-
-// Fallback: if somehow a popup slips through, kill it instantly
-window.addEventListener('beforeunload', () => false);
 </script>
 </body>
 </html>
