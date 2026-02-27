@@ -3,35 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cloudmoon | VexaCloud</title>
-  <link rel="icon" href="/images/favicon.png">
+  <title>Cloudmoon - In-Frame Navigation (about:blank style)</title>
   <style>
-    body, html { margin:0; padding:0; height:100%; overflow:hidden; background:#000; font-family:Arial,sans-serif; }
-    #frame { width:100%; height:100vh; border:none; display:block; }
+    body, html { margin:0; padding:0; height:100%; overflow:hidden; background:#111; font-family:Arial,sans-serif; }
+    #frame-container { width:100%; height:100vh; position:relative; }
+    #frame { width:100%; height:100%; border:none; display:block; background:#000; }
     #madeby {
-      position:fixed; top:8px; left:8px; color:#aaa; background:rgba(0,0,0,0.6);
-      padding:4px 8px; border-radius:4px; font-size:12px; z-index:1000;
+      position:fixed; top:8px; left:8px; color:#ccc; background:rgba(0,0,0,0.7);
+      padding:4px 10px; border-radius:4px; font-size:12px; z-index:1000;
       pointer-events:none;
     }
     #status {
-      position:fixed; top:8px; right:8px; color:#0f0; background:rgba(0,0,0,0.7);
-      padding:6px 10px; border-radius:4px; font-size:13px; z-index:999;
-      max-width:300px; word-break:break-all; pointer-events:none;
+      position:fixed; top:8px; right:8px; color:#0f8; background:rgba(0,0,0,0.8);
+      padding:6px 12px; border-radius:6px; font-size:13px; z-index:999;
+      max-width:320px; word-break:break-all; pointer-events:none;
     }
   </style>
 </head>
 <body>
 
 <div id="madeby">Made by Grok</div>
-<div id="status">Loading... Click buttons → frame reloads with link (popups blocked)</div>
+<div id="status">Loading Cloudmoon... Navigation attempts → reload inside frame (popups blocked)</div>
 
-<iframe id="frame" src="https://web.cloudmoonapp.com/"
-  sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-storage-access-by-user-activation">
-  <!-- No allow-popups → browser blocks window.open / _blank attempts -->
-</iframe>
+<div id="frame-container">
+  <iframe id="frame" src="https://web.cloudmoonapp.com/"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-storage-access-by-user-activation">
+          <!-- No allow-popups → blocks real popups/new tabs -->
+  </iframe>
+</div>
 
 <script>
-const iframe = document.getElementById('frame');
+const container = document.getElementById('frame-container');
 const status = document.getElementById('status');
 const BASE = 'https://web.cloudmoonapp.com';
 
@@ -40,42 +42,58 @@ function show(txt, dur=4000) {
   setTimeout(() => status.textContent = '', dur);
 }
 
-function reloadFrame(url) {
-  if (!url) return false;
+function createOrReplaceIframe(url) {
   try {
-    const target = new URL(url, BASE);
-    if (target.origin === BASE) {
-      show('Button/popup caught → reloading frame with new link');
-      iframe.src = target.href;
-      return true;
+    const u = new URL(url, BASE);
+    if (u.origin !== BASE) {
+      show('Blocked external URL');
+      return;
     }
-  } catch {}
-  show('Blocked (external or invalid)');
-  return false;
+    show('Navigation caught → loading in frame');
+    console.log('Loading:', u.href);
+
+    // Remove old iframe if exists
+    const old = document.getElementById('frame');
+    if (old) old.remove();
+
+    // Create fresh one (mimics "about:blank" start then set src)
+    const newFrame = document.createElement('iframe');
+    newFrame.id = 'frame';
+    newFrame.src = u.href;
+    newFrame.sandbox = 'allow-scripts allow-same-origin allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-storage-access-by-user-activation';
+    newFrame.style.width = '100%';
+    newFrame.style.height = '100%';
+    newFrame.style.border = 'none';
+    container.appendChild(newFrame);
+
+    // Re-attach load listener
+    newFrame.addEventListener('load', onFrameLoad);
+  } catch (e) {
+    show('Invalid URL attempt');
+  }
 }
 
-iframe.addEventListener('load', () => {
-  show('Frame ready — watching clicks');
+function onFrameLoad() {
+  show('Frame loaded');
   try {
-    const doc = iframe.contentDocument;
+    const doc = this.contentDocument;
     if (!doc) return;
 
-    const hookClicks = () => {
-      // Catch links
+    const intercept = () => {
+      // Links
       doc.querySelectorAll('a[href]').forEach(a => {
         a.target = '_self';
-        a.onclick = e => { if (reloadFrame(a.href)) e.preventDefault(); };
+        a.onclick = e => { if (tryCaptureUrl(a.href)) e.preventDefault(); };
       });
 
-      // Catch buttons / elements with possible URLs
+      // Buttons/elements with URLs
       doc.querySelectorAll('button, [onclick], [data-href], [data-url], [data-link], [href]').forEach(el => {
-        let urlSrc = el.href || el.getAttribute('href') ||
-                     el.dataset?.href || el.dataset?.url || el.dataset?.link ||
-                     (el.onclick ? el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/i)?.[1] : null);
-
-        if (urlSrc) {
+        let url = el.href || el.getAttribute('href') ||
+                  el.dataset?.href || el.dataset?.url || el.dataset?.link ||
+                  (el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/i)?.[1]);
+        if (url) {
           el.onclick = e => {
-            if (reloadFrame(urlSrc)) {
+            if (tryCaptureUrl(url)) {
               e.preventDefault();
               e.stopPropagation();
             }
@@ -84,33 +102,45 @@ iframe.addEventListener('load', () => {
       });
     };
 
-    hookClicks();
+    intercept();
 
-    // Re-apply on dynamic changes (games list loads async)
-    new MutationObserver(hookClicks).observe(doc.body, {
+    new MutationObserver(intercept).observe(doc.body, {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ['href','onclick','data-href','data-url','data-link']
     });
 
-    // Super broad click listener as last resort
+    // Broad click catch
     doc.addEventListener('click', e => {
-      let tgt = e.target.closest('a,button,[onclick],[data-href],[data-url],[href]');
-      if (!tgt) return;
-      let url = tgt.href || tgt.getAttribute('href') ||
-                tgt.dataset?.href || tgt.dataset?.url ||
-                (tgt.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/i)?.[1]);
-      if (url && reloadFrame(url)) {
+      let el = e.target.closest('a,button,[onclick],[data-href],[data-url],[href]');
+      if (!el) return;
+      let url = el.href || el.getAttribute('href') ||
+                el.dataset?.href || el.dataset?.url ||
+                (el.getAttribute('onclick')?.match(/['"](https?:\/\/[^'"]+)['"]/i)?.[1]);
+      if (url && tryCaptureUrl(url)) {
         e.preventDefault();
         e.stopImmediatePropagation();
       }
     }, true);
 
-  } catch (err) {
-    show('Limited inspect (cross-origin ok)');
-  }
-});
+  } catch {}
+}
+
+function tryCaptureUrl(url) {
+  if (!url) return false;
+  try {
+    const u = new URL(url, BASE);
+    if (u.origin === BASE) {
+      createOrReplaceIframe(u.href);
+      return true;
+    }
+  } catch {}
+  return false;
+}
+
+// Initial load listener
+document.getElementById('frame').addEventListener('load', onFrameLoad);
 </script>
 </body>
 </html>
