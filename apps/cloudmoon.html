@@ -7,30 +7,6 @@
         <link rel="stylesheet" href="/iframe.css">
     </head>
 <body>
-<iframe id="cloudmoon" src="https://web.cloudmoonapp.com"></iframe>
-
-<script>
-const frame = document.getElementById("cloudmoon");
-
-frame.onload = () => {
-    const doc = frame.contentDocument || frame.contentWindow.document;
-
-    // Intercept ALL link clicks inside Cloudmoon
-    doc.addEventListener("click", (e) => {
-        const link = e.target.closest("a");
-        if (!link) return;
-
-        const url = link.href;
-        if (!url) return;
-
-        // Stop Cloudmoon from opening a new tab
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Force the iframe to navigate instead
-        frame.src = url;
-    });
-};
-</script>
+<iframe src="https://d1srn6k5rwdbiy.cloudfront.net/"></iframe>
 </body>
 </html>
