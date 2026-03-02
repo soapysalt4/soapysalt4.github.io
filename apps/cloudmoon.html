@@ -1,103 +1,103 @@
+<!DOCTYPE html>
 <html>
-    <head>
+<head>
     <script>
-function setCookie(name, value, days) {
-  const d = new Date();
-  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
-}
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+        }
 
-function getCookie(name) {
-  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? match[2] : null;
-}
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+            return match ? match[2] : null;
+        }
 
-function generateID() {
-  return String(100000 + Math.floor(Math.random() * 900000));
-}
+        function generateID() {
+            return String(100000 + Math.floor(Math.random() * 900000));
+        }
 
-function loadCronitor() {
-  const s = document.createElement('script');
-  s.async = true;
-  s.src = "https://rum.cronitor.io/script.js";
-  document.head.appendChild(s);
-  window.cronitor = window.cronitor || function() {
-    (window.cronitor.q = window.cronitor.q || []).push(arguments);
-  };
-  cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
-}
+        function loadCronitor() {
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = "https://rum.cronitor.io/script.js";
+            document.head.appendChild(s);
 
-function setupUserIDAndBanCheck() {
-  let userID = getCookie("userID");
+            window.cronitor = window.cronitor || function() {
+                (window.cronitor.q = window.cronitor.q || []).push(arguments);
+            };
 
-  if (!userID) {
-    userID = generateID();
-    setCookie("userID", userID, 365);
-  }
+            cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+        }
 
-  const currentPath = window.location.pathname;
-  const desiredPath = "/" + userID + "/";
-  const banFile = "/banned/" + userID + ".html";
+        function setupUserIDAndBanCheck() {
+            let userID = getCookie("userID");
+            if (!userID) {
+                userID = generateID();
+                setCookie("userID", userID, 365);
+            }
 
-  fetch(banFile, { method: "HEAD", cache: "no-store" })
-    .then(response => {
-      if (response.ok) {
-        window.location.replace(banFile);
-        return;
-      }
+            const currentPath = window.location.pathname;
+            const desiredPath = "/" + userID + "/";
+            const banFile = "/banned/" + userID + ".html";
 
-      if (currentPath !== desiredPath) {
-        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
-      }
+            fetch(banFile, { method: "HEAD", cache: "no-store" })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.replace(banFile);
+                        return;
+                    }
+                    if (currentPath !== desiredPath) {
+                        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+                    }
+                    loadCronitor();
+                    cronitor('ping', {
+                        monitor: 'user-id-' + userID,
+                        message: 'User ID: ' + userID,
+                        url: desiredPath
+                    });
+                })
+                .catch(() => {
+                    if (currentPath !== desiredPath) {
+                        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+                    }
+                    loadCronitor();
+                    cronitor('ping', {
+                        monitor: 'user-id-' + userID,
+                        message: 'User ID: ' + userID,
+                        url: desiredPath
+                    });
+                });
+        }
 
-      loadCronitor();
-      cronitor('ping', {
-        monitor: 'user-id-' + userID,
-        message: 'User ID: ' + userID,
-        url: desiredPath
-      });
-    })
-    .catch(() => {
-      if (currentPath !== desiredPath) {
-        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
-      }
-
-      loadCronitor();
-      cronitor('ping', {
-        monitor: 'user-id-' + userID,
-        message: 'User ID: ' + userID,
-        url: desiredPath
-      });
-    });
-}
-
-if (document.readyState === 'complete') {
-  setupUserIDAndBanCheck();
-} else {
-  window.addEventListener('load', setupUserIDAndBanCheck);
-}
-</script>
-
-<script src="/iframe.js"></script>
-<script src="/login-full-directory.js"></script>
-<title>Cloudmoon | VexaCloud</title>
-<link rel="icon" href="/images/favicon.png">
-<link rel="stylesheet" href="/iframe.css">
+        if (document.readyState === 'complete') {
+            setupUserIDAndBanCheck();
+        } else {
+            window.addEventListener('load', setupUserIDAndBanCheck);
+        }
+    </script>
+    <script src="/login-full-directory.js"></script>
+    <script src="/iframe.js"></script>
+    <title>VexaCloud | Cloudmoon</title>
+    <link rel="icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="/iframe.css">
 </head>
-
 <body>
 
 <iframe id="mainFrame"></iframe>
 
 <script>
-fetch("/apps/ek0asj17agv/cloudmoon/linksec.txt", { cache: "no-store" })
+fetch("/apps/ek0asj17agv/cloudmoon/security.php?key=ag91jagg1", { cache: "no-store" })
   .then(r => r.text())
-  .then(url => {
-    document.getElementById("mainFrame").src = url.trim();
+  .then(html => {
+    const match = html.match(/<!--\s*URL:(.*?)\s*-->/);
+    if (match) {
+      document.getElementById("mainFrame").src = match[1].trim();
+    } else {
+      console.error("No URL returned (wrong or missing API key)");
+    }
   })
-  .catch(err => {
-    console.error("Failed to load iframe link:", err);
-  });
+  .catch(err => console.error("Error fetching hidden link:", err));
 </script>
 
 </body>
