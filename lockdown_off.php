@@ -1,3 +1,4 @@
+<script>
 document.addEventListener("DOMContentLoaded", () => {
     
     //OsonEsMuySkib, Jamie Hessler, Givini Shmeltser, OsonEsMuySkibCloudflare, Grant Hessler, Oscar Blacksmith, Gram Highskibidi, Arty Faggy, Jordan Es Hammy, Holden Is Blacky, Jaredy Jaspery, tristan is righty, Adrian Skibidi!
@@ -199,3 +200,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initLockdown();
 });
+</script>
