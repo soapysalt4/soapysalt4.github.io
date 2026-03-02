@@ -1,7 +1,15 @@
-<script>
+<?php
+
+if (!isset($_SERVER['HTTP_REFERER'])) {
+    http_response_code(403);
+    exit('Forbidden');
+}
+
+header("Content-Type: application/javascript");
+?>
+
 document.addEventListener("DOMContentLoaded", () => {
     
-    //OsonEsMuySkib, Jamie Hessler, Givini Shmeltser, OsonEsMuySkibCloudflare, Grant Hessler, Oscar Blacksmith, Gram Highskibidi, Arty Faggy, Jordan Es Hammy, Holden Is Blacky, Jaredy Jaspery, tristan is righty, Adrian Skibidi!
     const ADMIN_CODES = new Set(["939168", "199032", "296260", "699119", "796447", "412654", "830912", "685666", "180572", "263879", "152160", "764110", "312208"]);
     const STORAGE_KEY = "positive_verification_rq158zmb7daj7hsfa8";
 
@@ -147,7 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 const enteredCode = input.value.trim();
-
                 const currentPath = window.location.pathname;
 
                 let isValid = false;
@@ -200,4 +207,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initLockdown();
 });
-</script>
