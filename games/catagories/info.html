@@ -1,1 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="https://vexacloud.github.io">
+  <meta charset="UTF-8">
+  <title>VexaCloud | Info</title>
+  <link rel="icon" href="/images/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #0a0e1f;
+      --card: rgba(20, 30, 70, 0.55);
+      --accent: #5c8aff;
+      --accent-glow: #3b82f680;
+      --text: #e0f0ff;
+      --text-light: #a3c9ff;
+      --border: #2a4a9a;
+    }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg), #0f172a);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    header {
+      padding: 1.5rem 2rem;
+      background: rgba(10, 15, 40, 0.6);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #a5b4fc, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .back-home {
+      padding: 0.6rem 1.2rem;
+      background: rgba(30, 60, 140, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--accent);
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .back-home:hover {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 18px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .container {
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 0;
+    }
+
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.2rem 1.8rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.35s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(59,130,246,0.12), transparent);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(59,130,246,0.25);
+      border-color: #60a5fa;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.8rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .card p {
+      color: var(--text-light);
+      font-size: 0.98rem;
+      opacity: 0.85;
+    }
+
+    /* Panel */
+    .panel {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 12, 35, 0.96);
+      backdrop-filter: blur(12px);
+      color: var(--text);
+      padding: 3rem 2rem;
+      display: none;
+      flex-direction: column;
+      z-index: 200;
+      animation: panelFade 0.4s ease forwards;
+      overflow-y: auto;
+    }
+
+    @keyframes panelFade {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .panel-back {
+      font-size: 1.6rem;
+      color: var(--accent);
+      cursor: pointer;
+      margin-right: 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .panel-back:hover {
+      color: #93c5fd;
+      transform: translateX(-4px);
+    }
+
+    .panel h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #c7d2fe, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .panel-content {
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--text-light);
+    }
+
+    .panel-content p {
+      margin-bottom: 1.6rem;
+    }
+
+    .panel img {
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+      margin: 2.5rem auto 1rem;
+      display: block;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(96,165,250,0.3);
+    }
+
+    @media (max-width: 600px) {
+      .panel { padding: 2rem 1.2rem; }
+      .panel h1 { font-size: 2rem; }
+      header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>VexaCloud</h1>
+  <a href="/games/main/index.html" class="back-home">← Back to Main</a>
+</header>
+
+<div class="container">
+  <div class="grid">
+    <div class="card" onclick="openPanel('p1')">
+      <h2>Legal Information</h2>
+      <p>Terms, Privacy Policy & License</p>
+    </div>
+    <div class="card" onclick="openPanel('p2')">
+      <h2>Copyright Policy</h2>
+      <p>Important copyright notice</p>
+    </div>
+    <div class="card" onclick="openPanel('p3')">
+      <h2>Credits & Ownership</h2>
+      <p>Who owns and maintains this site</p>
+    </div>
+    <div class="card" onclick="openPanel('p4')">
+      <h2>Other Info</h2>
+      <p>School district usage & link updates</p>
+    </div>
+  </div>
+</div>
+
+<!-- Panels -->
+<div id="p1" class="panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closePanel()">←</div>
+    <h1>Terms, Privacy Policy, and License</h1>
+  </div>
+  <div class="panel-content">
+    <p>For complete legal information, please visit:</p>
+    <p><strong>evergreen-ps.github.io/vexacloud-terms</strong></p>
+    <img src="/images/favicon.png" alt="VexaCloud Logo">
+  </div>
+</div>
+
+<div id="p2" class="panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closePanel()">←</div>
+    <h1>Copyright Policy</h1>
+  </div>
+  <div class="panel-content">
+    <p>Any unauthorized copying, reproduction, or distribution of this website or its contents may constitute a violation of Title 17 of the United States Code.</p>
+    <p>Violations may result in legal action and/or access restrictions until resolved.</p>
+    <img src="/images/favicon.png" alt="Copyright Symbol">
+  </div>
+</div>
+
+<div id="p3" class="panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closePanel()">←</div>
+    <h1>Credits and Ownership</h1>
+  </div>
+  <div class="panel-content">
+    <p>This website is owned and maintained by <strong>Hacker114</strong>.</p>
+    <p>Formerly associated with Rebel Games.</p>
+    <p>Any attempt to leak admin identities or sensitive information will result in a permanent ban.</p>
+    <img src="/images/favicon.png" alt="Ownership Icon">
+  </div>
+</div>
+
+<div id="p4" class="panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closePanel()">←</div>
+    <h1>Other Information</h1>
+  </div>
+  <div class="panel-content">
+    <p>This website was created for use by the Evergreen School District.</p>
+    <p>If this link becomes blocked or inaccessible, please visit:</p>
+    <p><strong>hacker-114.github.io/vexa-links</strong> for updated locations.</p>
+    <img src="/images/favicon.png" alt="Info Icon">
+  </div>
+</div>
+
+<script>
+function openPanel(id) {
+  document.getElementById(id).style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closePanel() {
+  document.querySelectorAll('.panel').forEach(p => {
+    p.style.display = "none";
+  });
+  document.body.style.overflow = "";
+}
+</script>
+
+</body>
+</html>
