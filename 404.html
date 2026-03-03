@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    try {
+      if (window.top !== window.self) {
+        window.top.location.href = "https://vexacloud.github.io";
+      } else {
+        window.location.href = "https://vexacloud.github.io";
+      }
+    } catch (e) {
+      alert("Popup blocked! Please go to VexaCloud.github.io");
+    }
+  </script>
   <script src="/iframe.js"></script>
   <script>
   // ────────────────────────────────────────────────
