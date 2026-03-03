@@ -14,9 +14,6 @@
     function generateID() {
       return String(100000 + Math.floor(Math.random() * 900000));
     }
-    // ────────────────────────────────────────────────
-    // Cronitor setup
-    // ────────────────────────────────────────────────
     function loadCronitor() {
       const s = document.createElement('script');
       s.async = true;
@@ -27,9 +24,6 @@
       };
       cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
     }
-    // ────────────────────────────────────────────────
-    // Main logic
-    // ────────────────────────────────────────────────
     function setupUserIDAndBanCheck() {
       let userID = getCookie("userID");
       if (!userID) {
@@ -38,7 +32,6 @@
       }
       const currentPath = window.location.pathname;
       const desiredPath = "/" + userID + "/";
-      // UPDATED: check inside /banned/
       const banFile = "/banned/" + userID + ".html";
       fetch(banFile, { method: "HEAD", cache: "no-store" })
         .then(response => {
@@ -582,10 +575,17 @@ function cloak(url) {
   const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
   if (win) {
     win.document.write(`
-      <!DOCTYPE html><html><head><title>VexaCloud</title></head>
-      <body style="margin:0;padding:0;background:#000;overflow:hidden;">
-        <iframe src="${url}" style="border:0;width:100%;height:100vh;"></iframe>
-      </body></html>
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <link rel="icon" href="/images/favicon.png">
+          <link rel="stylesheet" href="/iframe.css">
+          <title>VexaCloud</title>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
     `);
     win.document.close();
   } else {
