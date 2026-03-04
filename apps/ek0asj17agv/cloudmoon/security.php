@@ -7,4 +7,4 @@ if (!isset($_GET['key']) || $_GET['key'] !== 'ag91jagg1') {
 header('Content-Type: text/html; charset=UTF-8');
 ?>
 
-<!-- URL:https://d1srn6k5rwdbiy.cloudfront.net/ -->
+<!-- URL:https://hacker-114.github.io -->
