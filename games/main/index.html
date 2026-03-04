@@ -67,9 +67,7 @@
       window.addEventListener('load', setupUserIDAndBanCheck);
     }
   </script>
-
   <script async src="https://rum.cronitor.io/script.js"></script>
-
   <script src="/iframe.js"></script>
   <script src="/login-full-directory.js"></script>
   <meta charset="UTF-8">
@@ -83,15 +81,12 @@
       <script>
         const SHOW_POPUP = true;
         const POPUP_HEADER = "Under Construction";
-        const POPUP_BODY  = "Please use the game sites in Apps! This section of the website is still under construction. Use at your own risk! ";
-
+        const POPUP_BODY = "Please use the game sites in Apps! This section of the website is still under construction. Use at your own risk! ";
         function createAnnouncementPopup() {
             if (!SHOW_POPUP) return;
             if (document.getElementById("announcement-overlay")) return;
-
             const overlay = document.createElement("div");
             overlay.id = "announcement-overlay";
-
             const popup = document.createElement("div");
             popup.id = "announcement-popup";
             popup.innerHTML = `
@@ -99,18 +94,14 @@
                 <h2>${POPUP_HEADER}</h2>
                 <p>${POPUP_BODY}</p>
             `;
-
             overlay.appendChild(popup);
             document.body.appendChild(overlay);
-
             const closeBtn = popup.querySelector(".announcement-close");
             closeBtn.addEventListener("click", () => overlay.remove());
-
             overlay.addEventListener("click", (e) => {
                 if (e.target === overlay) overlay.remove();
             });
         }
-
         window.addEventListener("load", createAnnouncementPopup);
     </script>
 </head>
@@ -143,7 +134,6 @@
 <button id="back" onclick="window.open('/','_self')">
   <span class="material-symbols-outlined">arrow_back</span>
 </button>
-
 <script>
 if (!localStorage.getItem("theme")) localStorage.setItem("theme", "dark");
 const starCount = 800;
@@ -160,7 +150,6 @@ for (let i = 0; i < starCount; i++) {
   star.style.animationDuration = rand(4, 12) + 's';
   starfield.appendChild(star);
 }
-
 var gamelist = [
   {
     "link": "/games/game-code/1-on-1-soccer.html",
@@ -200,7 +189,7 @@ var gamelist = [
   {
     "link": "/games/game-code/1v1-lol.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "1v1 LOL"
+    "title": "1V1 LOL"
   },
   {
     "link": "/games/game-code/2048-cubes.html",
@@ -215,12 +204,12 @@ var gamelist = [
   {
     "link": "/games/game-code/3d-bowling.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "3d Bowling"
+    "title": "3D Bowling"
   },
   {
     "link": "/games/game-code/4th-and-goal.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "4th and Goal"
+    "title": "4Th And Goal"
   },
   {
     "link": "/games/game-code/8-ball-pool.html",
@@ -240,12 +229,12 @@ var gamelist = [
   {
     "link": "/games/game-code/a-dance-of-fire-and-ice.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "A Dance of Fire and Ice"
+    "title": "A Dance Of Fire And Ice"
   },
   {
     "link": "/games/game-code/a-day-in-the-office.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "A Day in the Office"
+    "title": "A Day In The Office"
   },
   {
     "link": "/games/game-code/a-difficult-game-about-climbing.html",
@@ -308,229 +297,1522 @@ var gamelist = [
     "title": "Agar.io"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/age-of-war.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Age Of War"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/ahoy-survival.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Ahoy Survival"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/air-wars-3.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Air Wars 3"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/airport-clash-3d.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Airport Clash 3D"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/alien-hominid.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Alien Hominid"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/alien-sky-invasion.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Alien Sky Invasion"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/amazing-strange-rope-police.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Amazing Strange Rope Police"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/amigo-pancho.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Amigo Pancho"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/among-us.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Among Us"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/angry-birds.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Angry Birds"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/apple-shooter.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Apple Shooter"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/aquapark-io.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Aquapark.io"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/awesome-pirates.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Awesome Pirates"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/awesome-tanks-2.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Awesome Tanks 2"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/backrooms.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Backrooms"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bacon-may-die.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bacon May Die"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bad-ice-cream.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bad Ice Cream"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bad-time-simulator.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bad Time Simulator"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/baldis-basic.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Baldis Basic"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bank-robbery-1.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bank Robbery 1"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bank-robbery-2.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bank Robbery 2"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bank-robbery-3.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bank Robbery 3"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/barry-has-secret.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Barry Has Secret"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/baseball-bros.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Baseball Bros"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/basket-bros.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Basket Bros"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/basket-random.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Basket Random"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/basket-slam-dunk-2.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Basket Slam Dunk 2"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bazuka-boy.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bazuka Boy"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/big-ice-tower-tiny-square.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Big Ice Tower Tiny Square"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/big-tower-tiny-square.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Big Tower Tiny Square"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bitlife.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bitlife"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/blade-ball.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Blade Ball"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/block-blast.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Block Blast"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bloons-tower-defense-5.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bloons Tower Defense 5"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bloons.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bloons"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bloxd-io.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bloxd.io"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bloxorz.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bloxorz"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/blumgi-racers.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Blumgi Racers"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/bowmasters.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Bowmasters"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/boxing-random.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Boxing Random"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/buckshot-roulette.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Buckshot Roulette"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/buildnow-gg.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Buildnow Gg"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/burnin-rubber-5-xs.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Burnin Rubber 5 Xs"
   },
   {
-    "link": "/games/game-code/placeholder",
+    "link": "/games/game-code/burnin-rubber-crash-n-burn.html",
     "imgSrc": "/images/game-images/placeholder",
-    "title": "place"
+    "title": "Burnin Rubber Crash N Burn"
+  },
+  {
+    "link": "/games/game-code/burnin-rubber-multiplayer.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Burnin Rubber Multiplayer"
+  },
+  {
+    "link": "/games/game-code/capybara-clicker-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Capybara Clicker 2"
+  },
+  {
+    "link": "/games/game-code/car-king-arena-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Car King Arena 2"
+  },
+  {
+    "link": "/games/game-code/car-king-arena.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Car King Arena"
+  },
+  {
+    "link": "/games/game-code/celeste-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Celeste 2"
+  },
+  {
+    "link": "/games/game-code/cgfc-25.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Cgfc 25"
+  },
+  {
+    "link": "/games/game-code/champion-island.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Champion Island"
+  },
+  {
+    "link": "/games/game-code/chess.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Chess"
+  },
+  {
+    "link": "/games/game-code/chick-end.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Chick End"
+  },
+  {
+    "link": "/games/game-code/chrome-dino-game.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Chrome Dino Game"
+  },
+  {
+    "link": "/games/game-code/city-car-driving-simulator-stunt-master.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "City Car Driving Simulator Stunt Master"
+  },
+  {
+    "link": "/games/game-code/clash-of-vikings.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Clash Of Vikings"
+  },
+  {
+    "link": "/games/game-code/cluster-rush.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Cluster Rush"
+  },
+  {
+    "link": "/games/game-code/cookie-clicker.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Cookie Clicker"
+  },
+  {
+    "link": "/games/game-code/coreball.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Coreball"
+  },
+  {
+    "link": "/games/game-code/counter-strike.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Counter Strike"
+  },
+  {
+    "link": "/games/game-code/crazy-cars.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Crazy Cars"
+  },
+  {
+    "link": "/games/game-code/crazy-cattle-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Crazy Cattle 3D"
+  },
+  {
+    "link": "/games/game-code/crazy-for-speed.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Crazy For Speed"
+  },
+  {
+    "link": "/games/game-code/crossy-road.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Crossy Road"
+  },
+  {
+    "link": "/games/game-code/curve-ball.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Curve Ball"
+  },
+  {
+    "link": "/games/game-code/dashcraft-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Dashcraft.io"
+  },
+  {
+    "link": "/games/game-code/deadly-descent.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Deadly Descent"
+  },
+  {
+    "link": "/games/game-code/demolition-derby-crash-racing.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Demolition Derby Crash Racing"
+  },
+  {
+    "link": "/games/game-code/doblox.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Doblox"
+  },
+  {
+    "link": "/games/game-code/doodle-jump.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Doodle Jump"
+  },
+  {
+    "link": "/games/game-code/doom-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Doom 2"
+  },
+  {
+    "link": "/games/game-code/doomz-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Doomz.io"
+  },
+  {
+    "link": "/games/game-code/dragon-simulator-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Dragon Simulator 3D"
+  },
+  {
+    "link": "/games/game-code/drift-boss.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Drift Boss"
+  },
+  {
+    "link": "/games/game-code/drift-hunters.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Drift Hunters"
+  },
+  {
+    "link": "/games/game-code/drift-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Drift.io"
+  },
+  {
+    "link": "/games/game-code/drive-mad.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Drive Mad"
+  },
+  {
+    "link": "/games/game-code/driven-wild.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Driven Wild"
+  },
+  {
+    "link": "/games/game-code/ducklife-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife 2"
+  },
+  {
+    "link": "/games/game-code/ducklife-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife 3"
+  },
+  {
+    "link": "/games/game-code/ducklife-5.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife 5"
+  },
+  {
+    "link": "/games/game-code/ducklife-adventure.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife Adventure"
+  },
+  {
+    "link": "/games/game-code/ducklife-battles.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife Battles"
+  },
+  {
+    "link": "/games/game-code/ducklife-space.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife Space"
+  },
+  {
+    "link": "/games/game-code/ducklife.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ducklife"
+  },
+  {
+    "link": "/games/game-code/eaglercraft-1-12.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Eaglercraft 1 12"
+  },
+  {
+    "link": "/games/game-code/eaglercraft-1-8-8.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Eaglercraft 1 8 8"
+  },
+  {
+    "link": "/games/game-code/eaglercraft-hacks-v4.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Eaglercraft Hacks V4"
+  },
+  {
+    "link": "/games/game-code/eaglercraft-hacks.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Eaglercraft Hacks"
+  },
+  {
+    "link": "/games/game-code/earn-to-die-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Earn To Die 2"
+  },
+  {
+    "link": "/games/game-code/earn-to-die.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Earn To Die"
+  },
+  {
+    "link": "/games/game-code/effing-hail.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Effing Hail"
+  },
+  {
+    "link": "/games/game-code/effing-worms.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Effing Worms"
+  },
+  {
+    "link": "/games/game-code/effing-zombies.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Effing Zombies"
+  },
+  {
+    "link": "/games/game-code/eggy-car.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Eggy Car"
+  },
+  {
+    "link": "/games/game-code/escape-road-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Escape Road 2"
+  },
+  {
+    "link": "/games/game-code/escape-road.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Escape Road"
+  },
+  {
+    "link": "/games/game-code/fallout.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fallout"
+  },
+  {
+    "link": "/games/game-code/feed-us.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Feed Us"
+  },
+  {
+    "link": "/games/game-code/fifa-2000.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fifa 2000"
+  },
+  {
+    "link": "/games/game-code/final-earth-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Final Earth 2"
+  },
+  {
+    "link": "/games/game-code/fire-and-frost-master.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fire And Frost Master"
+  },
+  {
+    "link": "/games/game-code/fire-boy-and-water-girl-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fire Boy And Water Girl 2"
+  },
+  {
+    "link": "/games/game-code/fire-boy-and-water-girl-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fire Boy And Water Girl 3"
+  },
+  {
+    "link": "/games/game-code/fire-boy-and-water-girl.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fire Boy And Water Girl"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-candies.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Candies"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-epsteins.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Epsteins"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys 2"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys 3"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys-4-halloween.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys 4 Halloween"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys-4.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys 4"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys-sister-location.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys Sister Location"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys-ultimate-custom-night.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys Ultimate Custom Night"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-freddys.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Freddys"
+  },
+  {
+    "link": "/games/game-code/five-nights-at-winstons.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Five Nights At Winstons"
+  },
+  {
+    "link": "/games/game-code/football-bros.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Football Bros"
+  },
+  {
+    "link": "/games/game-code/fork-n-sausage.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fork N Sausage"
+  },
+  {
+    "link": "/games/game-code/fortzone.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Fortzone"
+  },
+  {
+    "link": "/games/game-code/freak-taxi-simulator.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Freak Taxi Simulator"
+  },
+  {
+    "link": "/games/game-code/free-kick-classic.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Free Kick Classic"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-breeze.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Geometry Dash Breeze"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-lite.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Geometry Dash Lite"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-meltdown.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Geometry Dash Meltdown"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-nemesis.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Geometry Dash Nemesis"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-world.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Geometry Dash World"
+  },
+  {
+    "link": "/games/game-code/gladihoppers.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Gladihoppers"
+  },
+  {
+    "link": "/games/game-code/gobble-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Gobble.io"
+  },
+  {
+    "link": "/games/game-code/golf-orbit.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Golf Orbit"
+  },
+  {
+    "link": "/games/game-code/google-doodle-baseball.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Google Doodle Baseball"
+  },
+  {
+    "link": "/games/game-code/google-feud.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Google Feud"
+  },
+  {
+    "link": "/games/game-code/gorilla-tag.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Gorilla Tag"
+  },
+  {
+    "link": "/games/game-code/grand-action-simulator-new-york.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Grand Action Simulator New York"
+  },
+  {
+    "link": "/games/game-code/granny-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Granny 2"
+  },
+  {
+    "link": "/games/game-code/granny-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Granny 3"
+  },
+  {
+    "link": "/games/game-code/granny.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Granny"
+  },
+  {
+    "link": "/games/game-code/gridpunk.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Gridpunk"
+  },
+  {
+    "link": "/games/game-code/gta.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Gta"
+  },
+  {
+    "link": "/games/game-code/gun-spin.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Gun Spin"
+  },
+  {
+    "link": "/games/game-code/happy-wheels.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Happy Wheels"
+  },
+  {
+    "link": "/games/game-code/helix-jump.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Helix Jump"
+  },
+  {
+    "link": "/games/game-code/highway-racer-2-remastered.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Highway Racer 2 Remastered"
+  },
+  {
+    "link": "/games/game-code/hill-climb-racing-lite.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hill Climb Racing Lite"
+  },
+  {
+    "link": "/games/game-code/hobo-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo 2"
+  },
+  {
+    "link": "/games/game-code/hobo-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo 3"
+  },
+  {
+    "link": "/games/game-code/hobo-4.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo 4"
+  },
+  {
+    "link": "/games/game-code/hobo-5.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo 5"
+  },
+  {
+    "link": "/games/game-code/hobo-6.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo 6"
+  },
+  {
+    "link": "/games/game-code/hobo-7.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo 7"
+  },
+  {
+    "link": "/games/game-code/hobo.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hobo"
+  },
+  {
+    "link": "/games/game-code/hole-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hole.io"
+  },
+  {
+    "link": "/games/game-code/hollow-knight.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hollow Knight"
+  },
+  {
+    "link": "/games/game-code/horse-simulator-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Horse Simulator 3D"
+  },
+  {
+    "link": "/games/game-code/house-of-hazards.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "House Of Hazards"
+  },
+  {
+    "link": "/games/game-code/hover-racer-drive.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hover Racer Drive"
+  },
+  {
+    "link": "/games/game-code/hover-racer.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Hover Racer"
+  },
+  {
+    "link": "/games/game-code/idle-breakout.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Idle Breakout"
+  },
+  {
+    "link": "/games/game-code/indian-truck-simulator.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Indian Truck Simulator"
+  },
+  {
+    "link": "/games/game-code/infinite-craft.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Infinite Craft"
+  },
+  {
+    "link": "/games/game-code/interactive-buddy.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Interactive Buddy"
+  },
+  {
+    "link": "/games/game-code/jacksmith.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Jacksmith"
+  },
+  {
+    "link": "/games/game-code/jailbreak-obby.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Jailbreak Obby"
+  },
+  {
+    "link": "/games/game-code/jetpack-joyride.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Jetpack Joyride"
+  },
+  {
+    "link": "/games/game-code/jetski-racing.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Jetski Racing"
+  },
+  {
+    "link": "/games/game-code/johnny-trigger.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Johnny Trigger"
+  },
+  {
+    "link": "/games/game-code/jumping-shell.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Jumping Shell"
+  },
+  {
+    "link": "/games/game-code/just-fall-lol.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Just Fall LOL"
+  },
+  {
+    "link": "/games/game-code/karate-bros.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Karate Bros"
+  },
+  {
+    "link": "/games/game-code/konkr-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Konkr.io"
+  },
+  {
+    "link": "/games/game-code/learn-to-fly-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Learn To Fly 2"
+  },
+  {
+    "link": "/games/game-code/learn-to-fly-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Learn To Fly 3"
+  },
+  {
+    "link": "/games/game-code/learn-to-fly.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Learn To Fly"
+  },
+  {
+    "link": "/games/game-code/level-devil.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Level Devil"
+  },
+  {
+    "link": "/games/game-code/line-rider.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Line Rider"
+  },
+  {
+    "link": "/games/game-code/mad-skill-moto-cross-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Mad Skill Moto Cross 2"
+  },
+  {
+    "link": "/games/game-code/madalin-stunt-cars-multiplayer.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Madalin Stunt Cars Multiplayer"
+  },
+  {
+    "link": "/games/game-code/magic-tiles-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Magic Tiles 3"
+  },
+  {
+    "link": "/games/game-code/mario-combat.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Mario Combat"
+  },
+  {
+    "link": "/games/game-code/masked-forces.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Masked Forces"
+  },
+  {
+    "link": "/games/game-code/mini-golf-master.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Mini Golf Master"
+  },
+  {
+    "link": "/games/game-code/monkey-mart.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Monkey Mart"
+  },
+  {
+    "link": "/games/game-code/monster-truck-port-stunt.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Monster Truck Port Stunt"
+  },
+  {
+    "link": "/games/game-code/moto-road-rash.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Moto Road Rash"
+  },
+  {
+    "link": "/games/game-code/moto-x3m-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Moto X3M 2"
+  },
+  {
+    "link": "/games/game-code/moto-x3m-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Moto X3M 3"
+  },
+  {
+    "link": "/games/game-code/moto-x3m-spooky-land.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Moto X3M Spooky Land"
+  },
+  {
+    "link": "/games/game-code/moto-x3m.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Moto X3M"
+  },
+  {
+    "link": "/games/game-code/mr-racer.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Mr Racer"
+  },
+  {
+    "link": "/games/game-code/ninja-brawl.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ninja Brawl"
+  },
+  {
+    "link": "/games/game-code/office-fight.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Office Fight"
+  },
+  {
+    "link": "/games/game-code/ovo-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ovo 2"
+  },
+  {
+    "link": "/games/game-code/ovo-3-dimensions.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ovo 3 Dimensions"
+  },
+  {
+    "link": "/games/game-code/ovo.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ovo"
+  },
+  {
+    "link": "/games/game-code/papas-burgeria.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Papas Burgeria"
+  },
+  {
+    "link": "/games/game-code/papas-pizzeria.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Papas Pizzeria"
+  },
+  {
+    "link": "/games/game-code/papas-sushiria.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Papas Sushiria"
+  },
+  {
+    "link": "/games/game-code/paper-io-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Paper Io 2"
+  },
+  {
+    "link": "/games/game-code/paper-io-mania.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Paper Io Mania"
+  },
+  {
+    "link": "/games/game-code/pixel-battlegrounds-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Pixel Battlegrounds.io"
+  },
+  {
+    "link": "/games/game-code/pixel-combat-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Pixel Combat 2"
+  },
+  {
+    "link": "/games/game-code/police-pursuit-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Police Pursuit 2"
+  },
+  {
+    "link": "/games/game-code/polytrack.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Polytrack"
+  },
+  {
+    "link": "/games/game-code/portal-flash.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Portal Flash"
+  },
+  {
+    "link": "/games/game-code/poxel-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Poxel.io"
+  },
+  {
+    "link": "/games/game-code/raft-wars-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Raft Wars 2"
+  },
+  {
+    "link": "/games/game-code/ragdoll-archers.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ragdoll Archers"
+  },
+  {
+    "link": "/games/game-code/ragdoll-hit.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ragdoll Hit"
+  },
+  {
+    "link": "/games/game-code/ragdoll-soccer.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Ragdoll Soccer"
+  },
+  {
+    "link": "/games/game-code/rally-point-4.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rally Point 4"
+  },
+  {
+    "link": "/games/game-code/real-flight-simulator.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Real Flight Simulator"
+  },
+  {
+    "link": "/games/game-code/red-ball-4.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Red Ball 4"
+  },
+  {
+    "link": "/games/game-code/red-vs-blue.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Red Vs Blue"
+  },
+  {
+    "link": "/games/game-code/retro-bowl-college.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Retro Bowl College"
+  },
+  {
+    "link": "/games/game-code/retro-bowl.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Retro Bowl"
+  },
+  {
+    "link": "/games/game-code/retro-ping-pong.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Retro Ping Pong"
+  },
+  {
+    "link": "/games/game-code/riddle-school-5.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Riddle School 5"
+  },
+  {
+    "link": "/games/game-code/rise-higher.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rise Higher"
+  },
+  {
+    "link": "/games/game-code/rocket-soccer-derby.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rocket Soccer Derby"
+  },
+  {
+    "link": "/games/game-code/rocketgoal-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rocketgoal.io"
+  },
+  {
+    "link": "/games/game-code/rogue-sergeant-the-final-operation.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rogue Sergeant The Final Operation"
+  },
+  {
+    "link": "/games/game-code/rogue-soul-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rogue Soul 2"
+  },
+  {
+    "link": "/games/game-code/rogue-soul.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rogue Soul"
+  },
+  {
+    "link": "/games/game-code/rooftop-snipers-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rooftop Snipers 2"
+  },
+  {
+    "link": "/games/game-code/rooftop-snipers.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Rooftop Snipers"
+  },
+  {
+    "link": "/games/game-code/run-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Run 3"
+  },
+  {
+    "link": "/games/game-code/russian-car-simulator.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Russian Car Simulator"
+  },
+  {
+    "link": "/games/game-code/russian-sandbox.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Russian Sandbox"
+  },
+  {
+    "link": "/games/game-code/sandbox-city.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Sandbox City"
+  },
+  {
+    "link": "/games/game-code/shell-shockers.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Shell Shockers"
+  },
+  {
+    "link": "/games/game-code/skibidi-in-the-backrooms.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Skibidi In The Backrooms"
+  },
+  {
+    "link": "/games/game-code/skibidi-shooter.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Skibidi Shooter"
+  },
+  {
+    "link": "/games/game-code/skibidi-toilet-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Skibidi Toilet.io"
+  },
+  {
+    "link": "/games/game-code/skinwalker.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Skinwalker"
+  },
+  {
+    "link": "/games/game-code/slice-it-all.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slice It All"
+  },
+  {
+    "link": "/games/game-code/slime-rancher.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slime Rancher"
+  },
+  {
+    "link": "/games/game-code/slither-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slither.io"
+  },
+  {
+    "link": "/games/game-code/slope-2-players.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slope 2 Players"
+  },
+  {
+    "link": "/games/game-code/slope-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slope 3"
+  },
+  {
+    "link": "/games/game-code/slope.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slope"
+  },
+  {
+    "link": "/games/game-code/slow-roads.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Slow Roads"
+  },
+  {
+    "link": "/games/game-code/smash-karts.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Smash Karts"
+  },
+  {
+    "link": "/games/game-code/snow-rider-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Snow Rider 3D"
+  },
+  {
+    "link": "/games/game-code/snowball-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Snowball.io"
+  },
+  {
+    "link": "/games/game-code/soccer-bros.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Soccer Bros"
+  },
+  {
+    "link": "/games/game-code/soccer-random.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Soccer Random"
+  },
+  {
+    "link": "/games/game-code/sonic.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Sonic"
+  },
+  {
+    "link": "/games/game-code/space-waves.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Space Waves"
+  },
+  {
+    "link": "/games/game-code/speed-stars.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Speed Stars"
+  },
+  {
+    "link": "/games/game-code/stabfish-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stabfish.io"
+  },
+  {
+    "link": "/games/game-code/steal-a-brainrot.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Steal A Brainrot"
+  },
+  {
+    "link": "/games/game-code/stick-fighter.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stick Fighter"
+  },
+  {
+    "link": "/games/game-code/stickman-and-guns.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stickman And Guns"
+  },
+  {
+    "link": "/games/game-code/stickman-clash.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stickman Clash"
+  },
+  {
+    "link": "/games/game-code/stickman-duel.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stickman Duel"
+  },
+  {
+    "link": "/games/game-code/stickman-gta-city.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stickman Gta City"
+  },
+  {
+    "link": "/games/game-code/stickman-hook.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Stickman Hook"
+  },
+  {
+    "link": "/games/game-code/strike-force-heroes-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Strike Force Heroes 2"
+  },
+  {
+    "link": "/games/game-code/subway-clash-remastered.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Subway Clash Remastered"
+  },
+  {
+    "link": "/games/game-code/subway-surfers-beijing.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Subway Surfers Beijing"
+  },
+  {
+    "link": "/games/game-code/subway-surfers-iceland.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Subway Surfers Iceland"
+  },
+  {
+    "link": "/games/game-code/subway-surfers-london.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Subway Surfers London"
+  },
+  {
+    "link": "/games/game-code/summer-rider.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Summer Rider"
+  },
+  {
+    "link": "/games/game-code/super-bike-the-champion.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Super Bike The Champion"
+  },
+  {
+    "link": "/games/game-code/super-mario-bros.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Super Mario Bros"
+  },
+  {
+    "link": "/games/game-code/super-star-car.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Super Star Car"
+  },
+  {
+    "link": "/games/game-code/swingo.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Swingo"
+  },
+  {
+    "link": "/games/game-code/table-tennis-world-tour.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Table Tennis World Tour"
+  },
+  {
+    "link": "/games/game-code/tag-new.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tag New"
+  },
+  {
+    "link": "/games/game-code/tag-old.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tag Old"
+  },
+  {
+    "link": "/games/game-code/tanuki-sunset.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tanuki Sunset"
+  },
+  {
+    "link": "/games/game-code/tap-tap-shots.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tap Tap Shots"
+  },
+  {
+    "link": "/games/game-code/temple-run-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Temple Run 2"
+  },
+  {
+    "link": "/games/game-code/territorial-io.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Territorial.io"
+  },
+  {
+    "link": "/games/game-code/tetris.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tetris"
+  },
+  {
+    "link": "/games/game-code/thats-not-my-neighbor.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Thats Not My Neighbor"
+  },
+  {
+    "link": "/games/game-code/the-impossible-quiz-2.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "The Impossible Quiz 2"
+  },
+  {
+    "link": "/games/game-code/the-impossible-quiz.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "The Impossible Quiz"
+  },
+  {
+    "link": "/games/game-code/the-man-in-the-window.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "The Man In The Window"
+  },
+  {
+    "link": "/games/game-code/they-are-coming.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "They Are Coming"
+  },
+  {
+    "link": "/games/game-code/tiger-simulator-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tiger Simulator 3D"
+  },
+  {
+    "link": "/games/game-code/time-shooter-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Time Shooter 3"
+  },
+  {
+    "link": "/games/game-code/tiny-fishing.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tiny Fishing"
+  },
+  {
+    "link": "/games/game-code/tomb-of-the-mask.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Tomb Of The Mask"
+  },
+  {
+    "link": "/games/game-code/top-speed-racing-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Top Speed Racing 3D"
+  },
+  {
+    "link": "/games/game-code/torture-chamber-1.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Torture Chamber 1"
+  },
+  {
+    "link": "/games/game-code/torture-chamber-3.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Torture Chamber 3"
+  },
+  {
+    "link": "/games/game-code/traffic-jam-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Traffic Jam 3D"
+  },
+  {
+    "link": "/games/game-code/unicycle-hero.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Unicycle Hero"
+  },
+  {
+    "link": "/games/game-code/uno.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Uno"
+  },
+  {
+    "link": "/games/game-code/vegas-clash-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Vegas Clash 3D"
+  },
+  {
+    "link": "/games/game-code/vex-6.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Vex 6"
+  },
+  {
+    "link": "/games/game-code/vex-7.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Vex 7"
+  },
+  {
+    "link": "/games/game-code/vex-8.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Vex 8"
+  },
+  {
+    "link": "/games/game-code/vex-challenges.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Vex Challenges"
+  },
+  {
+    "link": "/games/game-code/vex-x3m.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Vex X3M"
+  },
+  {
+    "link": "/games/game-code/volley-random.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Volley Random"
+  },
+  {
+    "link": "/games/game-code/war-the-knights.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "War The Knights"
+  },
+  {
+    "link": "/games/game-code/wheelie-bike.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Wheelie Bike"
+  },
+  {
+    "link": "/games/game-code/wheely-8.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Wheely 8"
+  },
+  {
+    "link": "/games/game-code/winter-clash-3d.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Winter Clash 3D"
+  },
+  {
+    "link": "/games/game-code/wordle.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Wordle"
+  },
+  {
+    "link": "/games/game-code/world-geussr.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "World Geussr"
+  },
+  {
+    "link": "/games/game-code/worlds-hardest-game.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Worlds Hardest Game"
+  },
+  {
+    "link": "/games/game-code/wrestle-bros.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "Wrestle Bros"
   }
 ];
-
 const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
-
 function applyTheme(mode) {
   const root = document.documentElement;
   if (mode === "light") {
@@ -551,15 +1833,12 @@ function applyTheme(mode) {
   document.body.style.backgroundRepeat = "no-repeat";
   document.body.style.backgroundAttachment = "fixed";
 }
-
 function change() {
   const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
   localStorage.setItem("theme", current);
   applyTheme(current);
 }
-
 applyTheme(localStorage.getItem("theme") || "dark");
-
 $("#search").on("input", function() {
   const val = $(this).val().toLowerCase().trim();
   $("#tilecontainer").empty();
@@ -570,7 +1849,6 @@ $("#search").on("input", function() {
       $("#tilecontainer").append(tile);
     });
 });
-
 function cloak(url) {
   const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
   if (win) {
@@ -592,12 +1870,10 @@ function cloak(url) {
     alert("Popup blocked – please allow popups for this site.");
   }
 }
-
 function openRandom() {
   const idx = Math.floor(Math.random() * dataArr.length);
   cloak(dataArr[idx].link);
 }
-
 $(document).ready(() => {
   dataArr.forEach(game => {
     const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
