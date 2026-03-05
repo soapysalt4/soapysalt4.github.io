@@ -1,4 +1,3 @@
-<script>
 (function() {
     'use strict';
     let isAllowed = false;
@@ -65,4 +64,3 @@
         return;
     }
 })();
-</script>
