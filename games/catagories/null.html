@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+    function generateID() {
+      return String(100000 + Math.floor(Math.random() * 900000));
+    }
+    function loadCronitor() {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = "https://rum.cronitor.io/script.js";
+      document.head.appendChild(s);
+      window.cronitor = window.cronitor || function() {
+        (window.cronitor.q = window.cronitor.q || []).push(arguments);
+      };
+      cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+    }
+    function setupUserIDAndBanCheck() {
+      let userID = getCookie("userID");
+      if (!userID) {
+        userID = generateID();
+        setCookie("userID", userID, 365);
+      }
+      const currentPath = window.location.pathname;
+      const desiredPath = "/" + userID + "/";
+      const banFile = "/banned/" + userID + ".html";
+      fetch(banFile, { method: "HEAD", cache: "no-store" })
+        .then(response => {
+          if (response.ok) {
+            window.location.replace(banFile);
+            return;
+          }
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        })
+        .catch(() => {
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        });
+    }
+    if (document.readyState === 'complete') {
+      setupUserIDAndBanCheck();
+    } else {
+      window.addEventListener('load', setupUserIDAndBanCheck);
+    }
+  </script>
+  <script async src="https://rum.cronitor.io/script.js"></script>
+  <script src="/iframe.js"></script>
+  <script src="/login-full-directory.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/games/main/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+  <title>VexaCloud | Null</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+</head>
+<body>
+<div id="starfield"></div>
+<h1 id="title">Games | Null</h1>
+<div id="categorycontainer">
+</div>
+<div id="searchdiv">
+  <input type="text" id="search" placeholder="search">
+  <span id="m" class="material-symbols-outlined">search</span>
+</div>
+<div id="switchdiv">
+  <button id="random" onclick="openRandom()">Random Game</button>
+</div>
+<div id="tilecontainer"></div>
+<button id="res" onclick="change()"></button>
+<div id="feedback-button">
+  <a href="/form/index.html" target="_blank">Feedback</a>
+</div>
+<button id="back" onclick="window.open('/games/main/index.html','_self')">
+  <span class="material-symbols-outlined">arrow_back</span>
+</button>
+<script>
+if (!localStorage.getItem("theme")) localStorage.setItem("theme", "dark");
+const starCount = 800;
+const starfield = document.getElementById('starfield');
+function rand(min, max) { return Math.random() * (max - min) + min; }
+for (let i = 0; i < starCount; i++) {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  const size = rand(0.6, 2.8);
+  star.style.width = star.style.height = size + 'px';
+  star.style.top = rand(0, window.innerHeight) + 'px';
+  star.style.left = rand(0, window.innerWidth) + 'px';
+  star.style.opacity = rand(0.3, 0.9);
+  star.style.animationDuration = rand(4, 12) + 's';
+  starfield.appendChild(star);
+}
+var gamelist = [
+  {
+    "link": "/games/game-code/placeholder.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "placeholder"
+  },
+  {
+    "link": "/games/game-code/placeholder.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "placeholder"
+  },
+  {
+    "link": "/games/game-code/placeholder.html",
+    "imgSrc": "/images/game-images/placeholder",
+    "title": "placeholder"
+  }
+];
+const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+function applyTheme(mode) {
+  const root = document.documentElement;
+  if (mode === "light") {
+    root.style.setProperty("--back", "rgb(230, 230, 230)");
+    root.style.setProperty("--font", "#111");
+    root.style.setProperty("--tile", "rgba(210, 210, 210, 0.92)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22973.gif')";
+  } else {
+    root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
+    root.style.setProperty("--font", "white");
+    root.style.setProperty("--tile", "rgba(15, 15, 15, 0.88)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22972.jpg')";
+  }
+  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundPosition = "center";
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.backgroundAttachment = "fixed";
+}
+function change() {
+  const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", current);
+  applyTheme(current);
+}
+applyTheme(localStorage.getItem("theme") || "dark");
+$("#search").on("input", function() {
+  const val = $(this).val().toLowerCase().trim();
+  $("#tilecontainer").empty();
+  dataArr.filter(g => g.title.toLowerCase().includes(val))
+    .forEach(game => {
+      const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+      tile.on("click", () => cloak(game.link));
+      $("#tilecontainer").append(tile);
+    });
+});
+function cloak(url) {
+  const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
+  if (win) {
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <link rel="icon" href="/images/favicon.png">
+          <link rel="stylesheet" href="/iframe.css">
+          <title>VexaCloud</title>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+    win.document.close();
+  } else {
+    alert("Popup blocked – please allow popups for this site.");
+  }
+}
+function openRandom() {
+  const idx = Math.floor(Math.random() * dataArr.length);
+  cloak(dataArr[idx].link);
+}
+$(document).ready(() => {
+  dataArr.forEach(game => {
+    const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+    tile.on("click", () => cloak(game.link));
+    $("#tilecontainer").append(tile);
+  });
+});
+</script>
+</body>
+</html>
