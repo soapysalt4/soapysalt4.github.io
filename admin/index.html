@@ -117,7 +117,7 @@
   <div class="status">You will be redirected automatically in</div>
   <div class="countdown" id="count">10</div>
 
-  <a href="https://vexacloud.github.io" class="btn" id="goBtn">
+  <a href="https://admin.orrysander.workers.dev" class="btn" id="goBtn">
     Go Now (<span id="countSmall">10</span>)
   </a>
 
@@ -128,8 +128,7 @@
 </div>
 
 <script>
-// ────────────────────────────────────────────────
-const TARGET = "https://vexacloud.github.io";
+const TARGET = "https://admin.orrysander.workers.dev";
 let seconds = 10;
 let redirectAttempted = false;
 
@@ -153,20 +152,16 @@ function tryBreakoutAndRedirect() {
   if (redirectAttempted) return;
   redirectAttempted = true;
 
-  // 1. Normal redirect
   window.location.replace(TARGET);
 
-  // 2. Top frame redirect (most effective breakout)
   if (window.top && window.top !== window.self) {
     try {
       window.top.location.replace(TARGET);
     } catch(e) {
-      // blocked → fallback
       setTimeout(showFallback, 600);
     }
   }
 
-  // 3. Open in new tab as fallback (popup)
   setTimeout(() => {
     if (!redirectAttempted) return;
     const w = window.open(TARGET, "_blank");
@@ -176,7 +171,6 @@ function tryBreakoutAndRedirect() {
   }, 400);
 }
 
-// Countdown
 const timer = setInterval(() => {
   seconds--;
   updateDisplay();
