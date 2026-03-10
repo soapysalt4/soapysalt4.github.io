@@ -1,0 +1,106 @@
+<html>
+<head>
+  <script src="/login-full-directory.js"></script>
+  <script src="/iframe.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verification Required</title>
+  <link rel="icon" href="https://vexacloud.github.io/images/favicon.png">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #0d1b2a;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacOSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 600px;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+    }
+    #okButton {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 180px;
+    }
+    #okButton:hover:not(:disabled) {
+      background-color: #45a049;
+      transform: translateY(-1px);
+    }
+    #okButton:disabled {
+      background-color: #2e7d32;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .countdown {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      min-height: 1.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Info</h1>
+   
+    <div class="countdown" id="countdown">Please wait 5 seconds...</div>
+   
+    <p id="warningText">
+      This software requires login. You must make an account with a personal google account at home on the URL https://web.cloudmoonapp.com! Then you must hover over the profile button in the top right and create a password so you can login without google at school!
+    </p>
+    <button id="okButton" disabled>OK</button>
+  </div>
+
+  <script>
+    const button = document.getElementById('okButton');
+    const countdownElement = document.getElementById('countdown');
+   
+    let secondsLeft = 5;
+    const timer = setInterval(() => {
+      secondsLeft--;
+     
+      if (secondsLeft <= 0) {
+        clearInterval(timer);
+        button.disabled = false;
+        countdownElement.textContent = "You may now continue";
+      } else {
+        countdownElement.textContent = `Please wait ${secondsLeft} second${secondsLeft !== 1 ? 's' : ''}...`;
+      }
+    }, 1000);
+
+    button.addEventListener('click', () => {
+      document.cookie = 
+        "success=true;" +
+        " path=/;" +
+        " max-age=86400;" +     
+        " SameSite=Lax";
+
+      console.log("Cookie success");
+
+      window.location.href = "/apps/cloudmoon.html";
+    });
+  </script>
+</body>
+</html>
