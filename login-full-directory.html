@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+        }
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+            return match ? match[2] : null;
+        }
+        function generateID() {
+            return String(100000 + Math.floor(Math.random() * 900000));
+        }
+        function loadCronitor() {
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = "https://rum.cronitor.io/script.js";
+            document.head.appendChild(s);
+            window.cronitor = window.cronitor || function() {
+                (window.cronitor.q = window.cronitor.q || []).push(arguments);
+            };
+            cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+        }
+        function setupUserIDAndBanCheck() {
+            let userID = getCookie("userID");
+            if (!userID) {
+                userID = generateID();
+                setCookie("userID", userID, 365);
+            }
+            const currentPath = window.location.pathname;
+            const desiredPath = "/" + userID + "/";
+            const banFile = "/banned/" + userID + ".html";
+            fetch(banFile, { method: "HEAD", cache: "no-store" })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.replace(banFile);
+                        return;
+                    }
+                    if (currentPath !== desiredPath) {
+                        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+                    }
+                    loadCronitor();
+                    cronitor('ping', {
+                        monitor: 'user-id-' + userID,
+                        message: 'User ID: ' + userID,
+                        url: desiredPath
+                    });
+                })
+                .catch(() => {
+                    if (currentPath !== desiredPath) {
+                        history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+                    }
+                    loadCronitor();
+                    cronitor('ping', {
+                        monitor: 'user-id-' + userID,
+                        message: 'User ID: ' + userID,
+                        url: desiredPath
+                    });
+                });
+        }
+        if (document.readyState === 'complete') {
+            setupUserIDAndBanCheck();
+        } else {
+            window.addEventListener('load', setupUserIDAndBanCheck);
+        }
+    </script>
+  <link rel="icon" href="https://vexacloud.github.io/images/favicon.png">
+  <meta charset="UTF-8" />
+  <title>VexaCloud | Super User</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding-top: 40px;
+    }
+    .container {
+      background: #151a2b;
+      padding: 20px 24px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #333;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: #aaa;
+    }
+    .tab.active {
+      border-bottom-color: #4f8cff;
+      color: #fff;
+      font-weight: bold;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #0f1422;
+      color: #f5f5f5;
+    }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #4f8cff;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3a6fd1;
+    }
+    .message {
+      margin-top: 10px;
+      font-size: 14px;
+      min-height: 18px;
+    }
+    .error {
+      color: #ff6b6b;
+    }
+    .success {
+      color: #4cd964;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>VexaCloud | Super User</h1>
+    <div class="tabs">
+      <div class="tab active" data-tab="signup">Create Account</div>
+      <div class="tab" data-tab="login">Log In</div>
+    </div>
+    <div id="signup" class="tab-content active">
+      <label for="signup-email">Email</label>
+      <input type="email" id="signup-email" autocomplete="email" />
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" autocomplete="new-password" />
+      <button id="signup-button">Create Account</button>
+      <div id="signup-message" class="message"></div>
+    </div>
+    <div id="login" class="tab-content">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" autocomplete="email" />
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" autocomplete="current-password" />
+      <button id="login-button">Log In</button>
+      <div id="login-message" class="message"></div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://wvmkigmxbcfutynbspbb.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind2bWtpZ214YmNmdXR5bmJzcGJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTc4NTIsImV4cCI6MjA4ODczMzg1Mn0.0HLBy4p3g8e0kJwp-zY55tLGIcx6wqAb55Opv18YTWg";
+    const { createClient } = supabase;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function setTempCookie(name, value, maxAgeSeconds = 3600) {
+      document.cookie = name + "=" + encodeURIComponent(value) + "; Max-Age=" + maxAgeSeconds + "; Path=/; SameSite=Lax";
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        const target = tab.getAttribute("data-tab");
+        document.getElementById(target).classList.add("active");
+      });
+    });
+
+    const signupBtn = document.getElementById("signup-button");
+    const signupMsg = document.getElementById("signup-message");
+
+    signupBtn.addEventListener("click", async () => {
+      signupMsg.textContent = "";
+      signupMsg.className = "message";
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+
+      if (!email || !password) {
+        signupMsg.textContent = "Email and password are required.";
+        signupMsg.classList.add("error");
+        return;
+      }
+
+      try {
+        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
+          email,
+          password
+        });
+
+        if (signUpError) {
+          signupMsg.textContent = "Sign up error: " + signUpError.message;
+          signupMsg.classList.add("error");
+          return;
+        }
+
+        const user = signUpData.user;
+        if (!user) {
+          signupMsg.textContent = "No user returned from sign up.";
+          signupMsg.classList.add("error");
+          return;
+        }
+
+        const { error: profileError } = await supabaseClient
+          .from("profiles")
+          .insert({
+            id: user.id,
+            username: email,
+            role: "user"
+          });
+
+        if (profileError) {
+          signupMsg.textContent = "Profile creation error: " + profileError.message;
+          signupMsg.classList.add("error");
+          return;
+        }
+
+        let activeSession = signUpData.session;
+        if (!activeSession) {
+          const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+          if (signInError) {
+            signupMsg.textContent = "Auto login error: " + signInError.message;
+            signupMsg.classList.add("error");
+            return;
+          }
+          activeSession = signInData.session;
+        }
+
+        setTempCookie("useraccess", "true");
+        signupMsg.textContent = "Account created. Redirecting...";
+        signupMsg.classList.add("success");
+        window.location.href = "https://vexacloud.github.io/access/user";
+      } catch (err) {
+        signupMsg.textContent = "Unexpected error: " + err.message;
+        signupMsg.classList.add("error");
+      }
+    });
+
+    const loginBtn = document.getElementById("login-button");
+    const loginMsg = document.getElementById("login-message");
+
+    loginBtn.addEventListener("click", async () => {
+      loginMsg.textContent = "";
+      loginMsg.className = "message";
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      if (!email || !password) {
+        loginMsg.textContent = "Email and password are required.";
+        loginMsg.classList.add("error");
+        return;
+      }
+
+      try {
+        const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (signInError) {
+          loginMsg.textContent = "Login error: " + signInError.message;
+          loginMsg.classList.add("error");
+          return;
+        }
+
+        const user = signInData.user;
+        if (!user) {
+          loginMsg.textContent = "No user returned from login.";
+          loginMsg.classList.add("error");
+          return;
+        }
+
+        const { data: profiles, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("role")
+          .eq("username", email)
+          .limit(1);
+
+        if (profileError || !profiles?.length) {
+          loginMsg.textContent = "Profile not found.";
+          loginMsg.classList.add("error");
+          return;
+        }
+
+        const role = profiles[0].role || "user";
+
+        const roleRedirects = {
+          admin:  { cookie: "adminaccess",  url: "/admin.html" },
+          user:   { cookie: "useraccess",   url: "/user.html" },
+          owner:  { cookie: "owneraccess",  url: "/owner.html" },
+          banned: { cookie: "bannedaccess", url: "/accessdenied.html" }
+        };
+
+        const redirectInfo = roleRedirects[role] || {
+          cookie: "otheraccess",
+          url: "/deny.html"
+        };
+
+        setTempCookie(redirectInfo.cookie, "true");
+        loginMsg.textContent = role + " login successful. Redirecting...";
+        loginMsg.classList.add("success");
+        window.location.href = redirectInfo.url;
+      } catch (err) {
+        loginMsg.textContent = "Unexpected error: " + err.message;
+        loginMsg.classList.add("error");
+      }
+    });
+  </script>
+</body>
+</html>
