@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      <script>
+       <script>
         function setCookie(name, value, days) {
             const d = new Date();
             d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -81,8 +81,6 @@
   <meta charset="UTF-8" />
   <title>VexaCloud | Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="https://vexacloud.github.io/images/favicon.png">
-
   <style>
     * { box-sizing: border-box; }
 
@@ -92,8 +90,6 @@
       background: #f3f4f6;
       color: #111827;
     }
-
-    a { color: inherit; text-decoration: none; }
 
     /* AUTH LAYOUT */
     #auth-wrapper {
@@ -241,8 +237,8 @@
       to { transform: rotate(360deg); }
     }
 
-
-    #feed-wrapper {
+    /* CHAT FEED LAYOUT */
+    #chat-wrapper {
       display: none;
       min-height: 100vh;
       display: flex;
@@ -250,7 +246,7 @@
       background: #f3f4f6;
     }
 
-    #feed-header {
+    #chat-header {
       height: 56px;
       border-bottom: 1px solid #e5e7eb;
       background: #ffffff;
@@ -263,7 +259,7 @@
       z-index: 10;
     }
 
-    #feed-title {
+    #chat-title {
       font-size: 18px;
       font-weight: 600;
       color: #111827;
@@ -284,19 +280,19 @@
       background: #e5e7eb;
     }
 
-    #feed-main {
+    #chat-main {
       flex: 1;
       display: flex;
       justify-content: center;
       padding: 16px;
     }
 
-    #feed-column {
+    #chat-column {
       width: 100%;
       max-width: 720px;
     }
 
-    /* POST COMPOSER */
+    /* COMPOSER */
     #composer {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -544,7 +540,6 @@
 
 <body>
 
-  <!-- AUTH -->
   <div id="auth-wrapper">
     <div id="auth-card">
       <h1>VexaCloud | Chat</h1>
@@ -554,7 +549,6 @@
         <div class="tab" data-tab="login-tab">Log In</div>
       </div>
 
-      <!-- SIGNUP -->
       <div id="signup-tab" class="tab-content active">
         <label>Username</label>
         <input type="text" id="signup-username">
@@ -571,13 +565,12 @@
           <input type="file" id="signup-avatar" accept="image/*">
         </label>
 
-        <img id="avatar-preview" class="avatar-preview">
+        <img id="avatar-preview">
 
         <button id="signup-button">Create Account</button>
-        <div id="signup-spinner" class="spinner"></div>
+        <div id="signup-spinner"></div>
       </div>
 
-      <!-- LOGIN -->
       <div id="login-tab" class="tab-content">
         <label>Username</label>
         <input type="text" id="login-username">
@@ -586,35 +579,31 @@
         <input type="password" id="login-password">
 
         <button id="login-button">Log In</button>
-        <div id="login-spinner" class="spinner"></div>
+        <div id="login-spinner"></div>
       </div>
 
-      <div id="auth-message" class="message"></div>
+      <div id="auth-message"></div>
     </div>
   </div>
 
-  <!-- FEED -->
-  <div id="feed-wrapper">
-    <div id="feed-header">
-      <div id="feed-title">VexaCloud Chat</div>
+  <div id="chat-wrapper">
+    <div id="chat-header">
+      <div id="chat-title">VexaCloud Chat</div>
       <button id="logout-button">Logout</button>
     </div>
 
-    <div id="feed-main">
-      <div id="feed-column">
-        <!-- Composer -->
+    <div id="chat-main">
+      <div id="chat-column">
+
         <div id="composer">
           <div id="composer-top">
-            <img id="composer-avatar" src="" alt="">
-            <textarea
-              id="composer-textarea"
-              placeholder="What's happening?"
-            ></textarea>
+            <img id="composer-avatar" src="">
+            <textarea id="composer-textarea" placeholder="What's happening?"></textarea>
           </div>
           <div id="composer-bottom">
             <div id="composer-left">
               <label id="composer-image-label">
-                Upload Image
+                📷 Image
                 <input type="file" id="composer-image-input" accept="image/*">
               </label>
               <span id="composer-image-name"></span>
@@ -623,8 +612,8 @@
           </div>
         </div>
 
-        <!-- Posts -->
         <div id="posts"></div>
+
       </div>
     </div>
   </div>
@@ -640,7 +629,7 @@
     let currentProfile = null;
 
     const authWrapper = document.getElementById("auth-wrapper");
-    const feedWrapper = document.getElementById("feed-wrapper");
+    const chatWrapper = document.getElementById("chat-wrapper");
     const authMsg = document.getElementById("auth-message");
     const avatarPreview = document.getElementById("avatar-preview");
 
@@ -651,15 +640,6 @@
     const composerPostButton = document.getElementById("composer-post-button");
     const postsContainer = document.getElementById("posts");
 
-    function showSpinner(id) {
-      document.getElementById(id).style.display = "block";
-    }
-
-    function hideSpinner(id) {
-      document.getElementById(id).style.display = "none";
-    }
-
-    // Tabs
     document.querySelectorAll(".tab").forEach(tab => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -667,11 +647,9 @@
         tab.classList.add("active");
         document.getElementById(tab.dataset.tab).classList.add("active");
         authMsg.textContent = "";
-        authMsg.className = "message";
       });
     });
 
-    // Avatar preview
     document.getElementById("signup-avatar").addEventListener("change", e => {
       const file = e.target.files[0];
       if (file) {
@@ -682,12 +660,7 @@
       }
     });
 
-    // SIGNUP
     document.getElementById("signup-button").onclick = async () => {
-      showSpinner("signup-spinner");
-      authMsg.textContent = "";
-      authMsg.className = "message";
-
       const username = document.getElementById("signup-username").value.trim();
       const email = document.getElementById("signup-email").value.trim();
       const password = document.getElementById("signup-password").value;
@@ -695,16 +668,12 @@
 
       if (!username || !email || !password || !avatarFile) {
         authMsg.textContent = "All fields are required.";
-        authMsg.classList.add("error");
-        hideSpinner("signup-spinner");
         return;
       }
 
       const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
       if (signUpError) {
         authMsg.textContent = signUpError.message;
-        authMsg.classList.add("error");
-        hideSpinner("signup-spinner");
         return;
       }
 
@@ -719,8 +688,6 @@
 
       if (uploadError) {
         authMsg.textContent = uploadError.message;
-        authMsg.classList.add("error");
-        hideSpinner("signup-spinner");
         return;
       }
 
@@ -739,53 +706,30 @@
 
       if (profileError) {
         authMsg.textContent = profileError.message;
-        authMsg.classList.add("error");
-        hideSpinner("signup-spinner");
         return;
       }
 
-      // Auto login
-      const { data: autoLogin, error: autoLoginError } = await supabaseClient.auth.signInWithPassword({
+      const { data: autoLogin } = await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
 
-      if (autoLoginError) {
-        authMsg.textContent = autoLoginError.message;
-        authMsg.classList.add("error");
-        hideSpinner("signup-spinner");
-        return;
-      }
-
       currentUser = autoLogin.user;
 
-      const { data: fullProfile2 } = await supabaseClient
+      const { data: fullProfile } = await supabaseClient
         .from("profiles")
         .select("*")
         .eq("id", currentUser.id)
         .maybeSingle();
 
-      currentProfile = fullProfile2;
+      currentProfile = fullProfile;
 
-      enterFeed();
-      hideSpinner("signup-spinner");
+      enterChat();
     };
 
-    // LOGIN
     document.getElementById("login-button").onclick = async () => {
-      showSpinner("login-spinner");
-      authMsg.textContent = "";
-      authMsg.className = "message";
-
       const username = document.getElementById("login-username").value.trim();
       const password = document.getElementById("login-password").value;
-
-      if (!username || !password) {
-        authMsg.textContent = "Enter username and password.";
-        authMsg.classList.add("error");
-        hideSpinner("login-spinner");
-        return;
-      }
 
       const { data: profile } = await supabaseClient
         .from("profiles")
@@ -795,8 +739,6 @@
 
       if (!profile) {
         authMsg.textContent = "User not found.";
-        authMsg.classList.add("error");
-        hideSpinner("login-spinner");
         return;
       }
 
@@ -809,8 +751,6 @@
 
       if (loginError) {
         authMsg.textContent = loginError.message;
-        authMsg.classList.add("error");
-        hideSpinner("login-spinner");
         return;
       }
 
@@ -824,31 +764,24 @@
 
       currentProfile = fullProfile;
 
-      enterFeed();
-      hideSpinner("login-spinner");
+      enterChat();
     };
 
-    function enterFeed() {
+    function enterChat() {
       authWrapper.style.display = "none";
-      feedWrapper.style.display = "flex";
+      chatWrapper.style.display = "flex";
 
-      if (currentProfile && currentProfile.avatar_url) {
-        composerAvatar.src = currentProfile.avatar_url;
-      } else {
-        composerAvatar.src = "";
-      }
+      composerAvatar.src = currentProfile.avatar_url || "";
 
-      loadFeed();
-      subscribeToFeed();
+      loadChat();
+      subscribeToChat();
     }
 
-    // Composer image name
     composerImageInput.addEventListener("change", e => {
       const file = e.target.files[0];
       composerImageName.textContent = file ? file.name : "";
     });
 
-    // Enter to post (Shift+Enter = newline)
     composerTextarea.addEventListener("keydown", e => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -856,7 +789,6 @@
       }
     });
 
-    // Create post
     composerPostButton.onclick = async () => {
       if (!currentUser) return;
 
@@ -864,8 +796,6 @@
       const file = composerImageInput.files[0];
 
       if (!content && !file) return;
-
-      composerPostButton.disabled = true;
 
       let imageUrl = null;
 
@@ -877,9 +807,7 @@
           .from("post-images")
           .upload(filePath, file, { upsert: true });
 
-        if (uploadError) {
-          console.error(uploadError);
-        } else {
+        if (!uploadError) {
           const { data: urlData } = supabaseClient.storage.from("post-images").getPublicUrl(filePath);
           imageUrl = urlData.publicUrl;
         }
@@ -894,12 +822,9 @@
       composerTextarea.value = "";
       composerImageInput.value = "";
       composerImageName.textContent = "";
-      composerPostButton.disabled = false;
-
-      loadFeed();
     };
 
-    async function loadFeed() {
+    async function loadChat() {
       const { data: posts } = await supabaseClient
         .from("feed")
         .select("*")
@@ -1058,7 +983,6 @@
           });
 
           commentInput.value = "";
-          loadFeed();
         });
 
         commentInputRow.appendChild(commentInput);
@@ -1090,36 +1014,33 @@
           },
           { onConflict: "post_id,user_id,emoji" }
         );
-
-      loadFeed();
     }
 
-    function subscribeToFeed() {
+    function subscribeToChat() {
       supabaseClient
-        .channel("public:posts")
+        .channel("chat-realtime")
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "posts" },
-          () => loadFeed()
+          { event: "*", schema: "public", table: "posts" },
+          () => loadChat()
         )
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "comments" },
-          () => loadFeed()
+          { event: "*", schema: "public", table: "comments" },
+          () => loadChat()
         )
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "reactions" },
-          () => loadFeed()
+          { event: "*", schema: "public", table: "reactions" },
+          () => loadChat()
         )
         .subscribe();
     }
 
-    // LOGOUT
     document.getElementById("logout-button").onclick = async () => {
       await supabaseClient.auth.signOut();
 
-      feedWrapper.style.display = "none";
+      chatWrapper.style.display = "none";
       authWrapper.style.display = "flex";
 
       currentUser = null;
