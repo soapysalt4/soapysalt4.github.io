@@ -7,40 +7,32 @@
             d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
             document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
         }
-
         function getCookie(name) {
             const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
             return match ? match[2] : null;
         }
-
         function generateID() {
             return String(100000 + Math.floor(Math.random() * 900000));
         }
-
         function loadCronitor() {
             const s = document.createElement('script');
             s.async = true;
             s.src = "https://rum.cronitor.io/script.js";
             document.head.appendChild(s);
-
             window.cronitor = window.cronitor || function() {
                 (window.cronitor.q = window.cronitor.q || []).push(arguments);
             };
-
             cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
         }
-
         function setupUserIDAndBanCheck() {
             let userID = getCookie("userID");
             if (!userID) {
                 userID = generateID();
                 setCookie("userID", userID, 365);
             }
-
             const currentPath = window.location.pathname;
             const desiredPath = "/" + userID + "/";
             const banFile = "/banned/" + userID + ".html";
-
             fetch(banFile, { method: "HEAD", cache: "no-store" })
                 .then(response => {
                     if (response.ok) {
@@ -69,29 +61,26 @@
                     });
                 });
         }
-
         if (document.readyState === 'complete') {
             setupUserIDAndBanCheck();
         } else {
             window.addEventListener('load', setupUserIDAndBanCheck);
         }
     </script>
-  <script src="https://vexacloud.github.io/login-full-directory.js"><script>
-  <script src="https://vexacloud.github.io/iframe.js"></script>
+  <script src="https://vexacloud.github.io/login-full-directory.js"></script>
+
   <link rel="icon" href="/images/favicon.png">
   <meta charset="UTF-8" />
   <title>VexaCloud | Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #f3f4f6;
       color: #111827;
     }
-
     #auth-wrapper {
       min-height: 100vh;
       display: flex;
@@ -99,7 +88,6 @@
       justify-content: center;
       padding: 24px;
     }
-
     #auth-card {
       width: 100%;
       max-width: 420px;
@@ -108,7 +96,6 @@
       border-radius: 8px;
       padding: 24px 24px 20px;
     }
-
     h1 {
       margin: 0 0 16px 0;
       text-align: center;
@@ -116,13 +103,11 @@
       font-weight: 600;
       color: #111827;
     }
-
     .tabs {
       display: flex;
       border-bottom: 1px solid #e5e7eb;
       margin-bottom: 16px;
     }
-
     .tab {
       flex: 1;
       text-align: center;
@@ -132,23 +117,19 @@
       color: #6b7280;
       border-bottom: 2px solid transparent;
     }
-
     .tab.active {
       color: #111827;
       border-bottom-color: #2563eb;
       font-weight: 600;
     }
-
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
     label {
       display: block;
       margin-bottom: 6px;
       font-size: 14px;
       color: #374151;
     }
-
     input[type="text"],
     input[type="password"],
     input[type="email"] {
@@ -161,13 +142,11 @@
       font-size: 14px;
       margin-bottom: 12px;
     }
-
     input:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 1px #2563eb20;
     }
-
     .file-btn {
       display: inline-block;
       padding: 8px 12px;
@@ -179,13 +158,10 @@
       margin-bottom: 12px;
       color: #374151;
     }
-
     .file-btn:hover {
       background: #e5e7eb;
     }
-
     .file-btn input { display: none; }
-
     .avatar-preview {
       width: 64px;
       height: 64px;
@@ -196,7 +172,6 @@
       display: none;
       margin-bottom: 12px;
     }
-
     button {
       width: 100%;
       padding: 10px;
@@ -208,20 +183,16 @@
       cursor: pointer;
       margin-top: 4px;
     }
-
     button:hover {
       background: #1d4ed8;
     }
-
     .message {
       margin-top: 10px;
       min-height: 18px;
       font-size: 13px;
     }
-
     .error { color: #b91c1c; }
     .success { color: #15803d; }
-
     .spinner {
       width: 18px;
       height: 18px;
@@ -232,11 +203,9 @@
       display: none;
       margin: 10px auto 0;
     }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
     #chat-wrapper {
       display: none;
       min-height: 100vh;
@@ -244,7 +213,6 @@
       flex-direction: column;
       background: #f3f4f6;
     }
-
     #chat-header {
       height: 56px;
       border-bottom: 1px solid #e5e7eb;
@@ -257,13 +225,11 @@
       top: 0;
       z-index: 10;
     }
-
     #chat-title {
       font-size: 18px;
       font-weight: 600;
       color: #111827;
     }
-
     #logout-button {
       width: auto;
       padding: 4px 8px;
@@ -274,23 +240,19 @@
       border: 1px solid #d1d5db;
       cursor: pointer;
     }
-
     #logout-button:hover {
       background: #e5e7eb;
     }
-
     #chat-main {
       flex: 1;
       display: flex;
       justify-content: center;
       padding: 16px;
     }
-
     #chat-column {
       width: 100%;
       max-width: 720px;
     }
-
     #composer {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -298,12 +260,10 @@
       padding: 12px 12px 10px;
       margin-bottom: 16px;
     }
-
     #composer-top {
       display: flex;
       gap: 10px;
     }
-
     #composer-avatar {
       width: 40px;
       height: 40px;
@@ -311,7 +271,6 @@
       background: #e5e7eb;
       object-fit: cover;
     }
-
     #composer-textarea {
       flex: 1;
       border: 1px solid #d1d5db;
@@ -321,26 +280,22 @@
       min-height: 60px;
       font-size: 14px;
     }
-
     #composer-textarea:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 1px #2563eb20;
     }
-
     #composer-bottom {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-top: 8px;
     }
-
     #composer-left {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-
     #composer-image-label {
       display: inline-flex;
       align-items: center;
@@ -353,15 +308,12 @@
       cursor: pointer;
       color: #4b5563;
     }
-
     #composer-image-label:hover {
       background: #e5e7eb;
     }
-
     #composer-image-input {
       display: none;
     }
-
     #composer-image-name {
       font-size: 12px;
       color: #6b7280;
@@ -370,14 +322,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     #composer-post-button {
       width: auto;
       padding: 6px 14px;
       border-radius: 999px;
       font-size: 14px;
     }
-
     .post {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -385,14 +335,12 @@
       padding: 10px 12px;
       margin-bottom: 12px;
     }
-
     .post-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 6px;
     }
-
     .post-avatar {
       width: 36px;
       height: 36px;
@@ -400,25 +348,21 @@
       object-fit: cover;
       background: #e5e7eb;
     }
-
     .post-username {
       font-size: 14px;
       font-weight: 600;
       color: #111827;
     }
-
     .post-time {
       font-size: 12px;
       color: #9ca3af;
     }
-
     .post-content {
       font-size: 14px;
       color: #111827;
       white-space: pre-wrap;
       margin-bottom: 6px;
     }
-
     .post-image {
       max-width: 100%;
       border-radius: 8px;
@@ -426,7 +370,6 @@
       margin-bottom: 6px;
       border: 1px solid #e5e7eb;
     }
-
     .post-footer {
       display: flex;
       align-items: center;
@@ -435,7 +378,6 @@
       font-size: 13px;
       color: #6b7280;
     }
-
     .reaction-button {
       display: inline-flex;
       align-items: center;
@@ -449,34 +391,28 @@
       color: #6b7280;
       width: auto;
     }
-
     .reaction-button:hover {
       background: #f3f4f6;
       border-color: #e5e7eb;
     }
-
     .comment-toggle {
       cursor: pointer;
       font-size: 13px;
       color: #4b5563;
     }
-
     .comment-toggle:hover {
       text-decoration: underline;
     }
-
     .comments {
       margin-top: 8px;
       border-top: 1px solid #e5e7eb;
       padding-top: 6px;
     }
-
     .comment {
       display: flex;
       gap: 8px;
       margin-bottom: 6px;
     }
-
     .comment-avatar {
       width: 28px;
       height: 28px;
@@ -484,33 +420,28 @@
       object-fit: cover;
       background: #e5e7eb;
     }
-
     .comment-body {
       background: #f9fafb;
       border-radius: 8px;
       padding: 6px 8px;
       flex: 1;
     }
-
     .comment-username {
       font-size: 13px;
       font-weight: 600;
       color: #111827;
       margin-bottom: 2px;
     }
-
     .comment-text {
       font-size: 13px;
       color: #111827;
       white-space: pre-wrap;
     }
-
     .comment-input-row {
       display: flex;
       gap: 6px;
       margin-top: 6px;
     }
-
     .comment-input {
       flex: 1;
       border-radius: 999px;
@@ -518,13 +449,11 @@
       padding: 6px 10px;
       font-size: 13px;
     }
-
     .comment-input:focus {
       outline: none;
       border-color: #2563eb;
       box-shadow: 0 0 0 1px #2563eb20;
     }
-
     .comment-send-button {
       width: auto;
       padding: 4px 10px;
@@ -533,64 +462,48 @@
     }
   </style>
 </head>
-
 <body>
-
   <div id="auth-wrapper">
     <div id="auth-card">
       <h1>VexaCloud | Chat</h1>
-
       <div class="tabs">
         <div class="tab active" data-tab="signup-tab">Create Account</div>
         <div class="tab" data-tab="login-tab">Log In</div>
       </div>
-
       <div id="signup-tab" class="tab-content active">
         <label>Username</label>
         <input type="text" id="signup-username">
-
         <label>Email</label>
         <input type="email" id="signup-email">
-
         <label>Password</label>
         <input type="password" id="signup-password">
-
         <label>Profile Image</label>
         <label class="file-btn">
           Choose Image
           <input type="file" id="signup-avatar" accept="image/*">
         </label>
-
         <img id="avatar-preview">
-
         <button id="signup-button">Create Account</button>
         <div id="signup-spinner"></div>
       </div>
-
       <div id="login-tab" class="tab-content">
         <label>Username</label>
         <input type="text" id="login-username">
-
         <label>Password</label>
         <input type="password" id="login-password">
-
         <button id="login-button">Log In</button>
         <div id="login-spinner"></div>
       </div>
-
       <div id="auth-message"></div>
     </div>
   </div>
-
   <div id="chat-wrapper" style="display:none;">
     <div id="chat-header">
       <div id="chat-title">VexaCloud Chat</div>
       <button id="logout-button">Logout</button>
     </div>
-
     <div id="chat-main">
       <div id="chat-column">
-
         <div id="composer">
           <div id="composer-top">
             <img id="composer-avatar" src="">
@@ -607,45 +520,37 @@
             <button id="composer-post-button">Post</button>
           </div>
         </div>
-
         <div id="posts"></div>
-
       </div>
     </div>
   </div>
-
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
     const supabaseClient = supabase.createClient(
       "https://andxngfcbdxfsmgbxpws.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuZHhuZ2ZjYmR4ZnNtZ2J4cHdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNDA5NjgsImV4cCI6MjA4ODgxNjk2OH0.DXHVQBypVrvn3s3A4cstmZeQEpEDCmAAUuJ0bRebCaQ"
     );
-
     let currentUser = null;
     let currentProfile = null;
-
+    let openComments = new Set();
     const authWrapper = document.getElementById("auth-wrapper");
     const chatWrapper = document.getElementById("chat-wrapper");
     const authMsg = document.getElementById("auth-message");
     const avatarPreview = document.getElementById("avatar-preview");
-
     const composerAvatar = document.getElementById("composer-avatar");
     const composerTextarea = document.getElementById("composer-textarea");
     const composerImageInput = document.getElementById("composer-image-input");
     const composerImageName = document.getElementById("composer-image-name");
     const composerPostButton = document.getElementById("composer-post-button");
     const postsContainer = document.getElementById("posts");
-
     chatWrapper.style.display = "none";
     authWrapper.style.display = "flex";
-
     function showError(msg) {
       authMsg.textContent = msg;
       authMsg.style.color = "red";
       authMsg.style.fontSize = "12px";
       authMsg.style.marginTop = "8px";
     }
-
     document.querySelectorAll(".tab").forEach(tab => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -655,7 +560,6 @@
         authMsg.textContent = "";
       });
     });
-
     document.getElementById("signup-avatar").addEventListener("change", e => {
       const file = e.target.files[0];
       if (file) {
@@ -665,35 +569,26 @@
         avatarPreview.style.display = "none";
       }
     });
-
     document.getElementById("signup-button").onclick = async () => {
       const username = document.getElementById("signup-username").value.trim();
       const email = document.getElementById("signup-email").value.trim();
       const password = document.getElementById("signup-password").value;
       const avatarFile = document.getElementById("signup-avatar").files[0];
-
       if (!username || !email || !password || !avatarFile) {
         showError("All fields are required.");
         return;
       }
-
       const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
       if (signUpError) return showError(signUpError.message);
-
       const user = signUpData.user;
-
       const ext = avatarFile.name.split(".").pop();
       const filePath = `${user.id}/avatar.${ext}`;
-
       const { error: uploadError } = await supabaseClient.storage
         .from("avatars")
         .upload(filePath, avatarFile, { upsert: true });
-
       if (uploadError) return showError(uploadError.message);
-
       const { data: urlData } = supabaseClient.storage.from("avatars").getPublicUrl(filePath);
       const avatarUrl = urlData.publicUrl;
-
       const { error: profileError } = await supabaseClient
         .from("profiles")
         .insert({
@@ -703,300 +598,231 @@
           avatar_url: avatarUrl,
           visible: true
         });
-
       if (profileError) return showError(profileError.message);
-
       const { data: autoLogin, error: autoLoginError } = await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
-
       if (autoLoginError) return showError(autoLoginError.message);
-
       currentUser = autoLogin.user;
-
       const { data: fullProfile } = await supabaseClient
         .from("profiles")
         .select("*")
         .eq("id", currentUser.id)
         .maybeSingle();
-
       currentProfile = fullProfile;
-
       enterChat();
     };
-
     document.getElementById("login-button").onclick = async () => {
       const username = document.getElementById("login-username").value.trim();
       const password = document.getElementById("login-password").value;
-
       const { data: profile } = await supabaseClient
         .from("profiles")
         .select("contact_email")
         .eq("username", username)
         .maybeSingle();
-
       if (!profile) return showError("User not found.");
-
       const email = profile.contact_email;
-
       const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
-
       if (loginError) return showError(loginError.message);
-
       currentUser = loginData.user;
-
       const { data: fullProfile } = await supabaseClient
         .from("profiles")
         .select("*")
         .eq("id", currentUser.id)
         .maybeSingle();
-
       currentProfile = fullProfile;
-
       enterChat();
     };
-
     function enterChat() {
       authWrapper.style.display = "none";
       chatWrapper.style.display = "flex";
-
       composerAvatar.src = currentProfile.avatar_url || "";
-
       loadChat();
       subscribeToChat();
     }
-
     composerImageInput.addEventListener("change", e => {
       const file = e.target.files[0];
       composerImageName.textContent = file ? file.name : "";
     });
-
     composerTextarea.addEventListener("keydown", e => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         composerPostButton.click();
       }
     });
-
     composerPostButton.onclick = async () => {
       if (!currentUser) return;
-
       const content = composerTextarea.value.trim();
       const file = composerImageInput.files[0];
-
       if (!content && !file) return;
-
       let imageUrl = null;
-
       if (file) {
         const ext = file.name.split(".").pop();
         const filePath = `${currentUser.id}/${Date.now()}.${ext}`;
-
         const { error: uploadError } = await supabaseClient.storage
           .from("post-images")
           .upload(filePath, file, { upsert: true });
-
         if (!uploadError) {
           const { data: urlData } = supabaseClient.storage.from("post-images").getPublicUrl(filePath);
           imageUrl = urlData.publicUrl;
         }
       }
-
       await supabaseClient.from("posts").insert({
         user_id: currentUser.id,
         content: content || null,
         image_url: imageUrl
       });
-
       composerTextarea.value = "";
       composerImageInput.value = "";
       composerImageName.textContent = "";
     };
-
     async function loadChat() {
       const { data: posts } = await supabaseClient
         .from("feed")
         .select("*")
         .order("created_at", { ascending: false });
-
       const { data: reactions } = await supabaseClient
         .from("post_reaction_counts")
         .select("*");
-
       const { data: comments } = await supabaseClient
         .from("post_comments")
         .select("*");
-
       const reactionMap = {};
       (reactions || []).forEach(r => {
         if (!reactionMap[r.post_id]) reactionMap[r.post_id] = {};
         reactionMap[r.post_id][r.emoji] = r.count;
       });
-
       const commentMap = {};
       (comments || []).forEach(c => {
         if (!commentMap[c.post_id]) commentMap[c.post_id] = [];
         commentMap[c.post_id].push(c);
       });
-
       postsContainer.innerHTML = "";
-
       (posts || []).forEach(post => {
         const postEl = document.createElement("div");
         postEl.className = "post";
         postEl.dataset.postId = post.id;
-
         const header = document.createElement("div");
         header.className = "post-header";
-
         const avatar = document.createElement("img");
         avatar.className = "post-avatar";
         avatar.src = post.avatar_url || "";
-
         const headerText = document.createElement("div");
         const usernameEl = document.createElement("div");
         usernameEl.className = "post-username";
         usernameEl.textContent = post.username;
-
         const timeEl = document.createElement("div");
         timeEl.className = "post-time";
         timeEl.textContent = new Date(post.created_at).toLocaleString();
-
         headerText.appendChild(usernameEl);
         headerText.appendChild(timeEl);
-
         header.appendChild(avatar);
         header.appendChild(headerText);
-
         const contentEl = document.createElement("div");
         contentEl.className = "post-content";
         contentEl.textContent = post.content || "";
-
         postEl.appendChild(header);
         if (post.content) postEl.appendChild(contentEl);
-
         if (post.image_url) {
           const img = document.createElement("img");
           img.className = "post-image";
           img.src = post.image_url;
           postEl.appendChild(img);
         }
-
         const footer = document.createElement("div");
         footer.className = "post-footer";
-
         const emojis = ["👍", "❤️", "😂"];
         emojis.forEach(emoji => {
           const btn = document.createElement("button");
           btn.className = "reaction-button";
           btn.type = "button";
           btn.textContent = emoji;
-
           const countSpan = document.createElement("span");
           countSpan.textContent = reactionMap[post.id]?.[emoji] || 0;
           btn.appendChild(countSpan);
-
           btn.addEventListener("click", () => handleReaction(post.id, emoji));
-
           footer.appendChild(btn);
         });
-
         const commentToggle = document.createElement("span");
         commentToggle.className = "comment-toggle";
         const commentCount = (commentMap[post.id] || []).length;
         commentToggle.textContent = `Comments (${commentCount})`;
         footer.appendChild(commentToggle);
-
         postEl.appendChild(footer);
-
         const commentsEl = document.createElement("div");
         commentsEl.className = "comments";
-        commentsEl.style.display = "none";
-
         const commentList = document.createElement("div");
         (commentMap[post.id] || []).forEach(c => {
           const cEl = document.createElement("div");
           cEl.className = "comment";
-
           const cAvatar = document.createElement("img");
           cAvatar.className = "comment-avatar";
           cAvatar.src = c.avatar_url || "";
-
           const cBody = document.createElement("div");
           cBody.className = "comment-body";
-
           const cUser = document.createElement("div");
           cUser.className = "comment-username";
           cUser.textContent = c.username;
-
           const cText = document.createElement("div");
           cText.className = "comment-text";
           cText.textContent = c.content;
-
           cBody.appendChild(cUser);
           cBody.appendChild(cText);
-
           cEl.appendChild(cAvatar);
           cEl.appendChild(cBody);
-
           commentList.appendChild(cEl);
         });
-
         const commentInputRow = document.createElement("div");
         commentInputRow.className = "comment-input-row";
-
         const commentInput = document.createElement("input");
         commentInput.className = "comment-input";
         commentInput.placeholder = "Write a comment...";
-
         commentInput.addEventListener("keydown", e => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             commentSendButton.click();
           }
         });
-
         const commentSendButton = document.createElement("button");
         commentSendButton.className = "comment-send-button";
         commentSendButton.type = "button";
         commentSendButton.textContent = "Send";
-
         commentSendButton.addEventListener("click", async () => {
           const text = commentInput.value.trim();
           if (!text || !currentUser) return;
-
           await supabaseClient.from("comments").insert({
             post_id: post.id,
             user_id: currentUser.id,
             content: text
           });
-
           commentInput.value = "";
         });
-
         commentInputRow.appendChild(commentInput);
         commentInputRow.appendChild(commentSendButton);
-
         commentsEl.appendChild(commentList);
         commentsEl.appendChild(commentInputRow);
-
+        const shouldBeOpen = openComments.has(post.id);
+        commentsEl.style.display = shouldBeOpen ? "block" : "none";
         commentToggle.addEventListener("click", () => {
-          commentsEl.style.display = commentsEl.style.display === "none" ? "block" : "none";
+          const isCurrentlyOpen = commentsEl.style.display !== "none";
+          if (isCurrentlyOpen) {
+            commentsEl.style.display = "none";
+            openComments.delete(post.id);
+          } else {
+            commentsEl.style.display = "block";
+            openComments.add(post.id);
+          }
         });
-
         postEl.appendChild(commentsEl);
-
         postsContainer.appendChild(postEl);
       });
     }
-
     async function handleReaction(postId, emoji) {
       if (!currentUser) return;
-
       await supabaseClient
         .from("reactions")
         .upsert(
@@ -1008,7 +834,6 @@
           { onConflict: "post_id,user_id,emoji" }
         );
     }
-
     function subscribeToChat() {
       supabaseClient
         .channel("chat-realtime")
@@ -1029,16 +854,12 @@
         )
         .subscribe();
     }
-
     document.getElementById("logout-button").onclick = async () => {
       await supabaseClient.auth.signOut();
-
       chatWrapper.style.display = "none";
       authWrapper.style.display = "flex";
-
       currentUser = null;
       currentProfile = null;
-
       document.getElementById("login-username").value = "";
       document.getElementById("login-password").value = "";
       document.getElementById("signup-username").value = "";
