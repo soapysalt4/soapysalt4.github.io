@@ -3,9 +3,6 @@
 <head>
   <script src="/iframe.js"></script>
   <script>
-  // ────────────────────────────────────────────────
-  //  Cookie & ID helpers
-  // ────────────────────────────────────────────────
   function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -20,10 +17,6 @@
   function generateID() {
     return String(100000 + Math.floor(Math.random() * 900000));
   }
-
-  // ────────────────────────────────────────────────
-  //  Cronitor setup
-  // ────────────────────────────────────────────────
   function loadCronitor() {
     const s = document.createElement('script');
     s.async = true;
@@ -34,10 +27,6 @@
     };
     cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
   }
-
-  // ────────────────────────────────────────────────
-  //  Main logic
-  // ────────────────────────────────────────────────
   function setupUserIDAndBanCheck() {
     let userID = getCookie("userID");
 
@@ -114,6 +103,10 @@
 </head>
 
 <body>
-  <iframe src="https://a000000.dns.army/"></iframe>
+    <iframe 
+    src="https://a000000.dns.army/"
+    allowfullscreen
+    webkitallowfullscreen
+    mozallowfullscreen></iframe>
 </body>
 </html>
