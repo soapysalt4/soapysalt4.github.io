@@ -1,4 +1,4 @@
-# Unblocked School Gaming Software by **Hacker114**
+## Unblocked School Gaming Software by **Hacker114**
 
 ---
 
