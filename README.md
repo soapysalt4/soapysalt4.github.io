@@ -1,5 +1,7 @@
 # Unblocked School Gaming Software by **Hacker114**
 
+---
+
 - This repository contains gaming software created by **Hacker114**.
 
 ---
