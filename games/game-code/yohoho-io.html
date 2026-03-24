@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/games/k1488r00/iframe.css">
+    <script>
+        const SHOW_POPUP = true;
+        const POPUP_HEADER = "Note:";
+        const POPUP_BODY  = "If you are not in F4 mode (Immersive Mode) the game may be glitchy!";
+
+        function createAnnouncementPopup() {
+            if (!SHOW_POPUP) return;
+            if (document.getElementById("announcement-overlay")) return;
+
+            const overlay = document.createElement("div");
+            overlay.id = "announcement-overlay";
+
+            const popup = document.createElement("div");
+            popup.id = "announcement-popup";
+            popup.innerHTML = `
+                <span class="announcement-close">&times;</span>
+                <h2>${POPUP_HEADER}</h2>
+                <p>${POPUP_BODY}</p>
+            `;
+
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+
+            const closeBtn = popup.querySelector(".announcement-close");
+            closeBtn.addEventListener("click", () => overlay.remove());
+
+            overlay.addEventListener("click", (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+        }
+
+        window.addEventListener("load", createAnnouncementPopup);
+    </script>
+  </head>
+  <body>
+    <iframe src="https://hacker-144.github.io/yohoho.io"></iframe>
+  </body>
+</html>
