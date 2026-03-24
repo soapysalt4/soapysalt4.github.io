@@ -53,16 +53,22 @@ body {
 }
 #categorycontainer .tile {
     flex: 0 0 auto;
-    padding: 0.3rem 0.75rem;
+    width: auto;
+    height: auto;
+    padding: 0.3rem 0.9rem;
     font-size: 0.82rem;
     font-weight: 500;
     white-space: nowrap;
     border-radius: 999px;
     background: rgba(30, 30, 55, 0.92);
+    backdrop-filter: blur(6px);
     border: 1px solid rgba(255,255,255,0.18);
     color: rgba(255,255,255,0.9);
     cursor: pointer;
     transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #categorycontainer .tile:hover {
@@ -71,6 +77,11 @@ body {
     color: #fff;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+#categorycontainer .tile .sigma {
+    padding: 0;
+    font-size: 0.82rem;
 }
 #searchdiv {
     display: flex;
