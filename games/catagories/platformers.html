@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+    function generateID() {
+      return String(100000 + Math.floor(Math.random() * 900000));
+    }
+    function loadCronitor() {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = "https://rum.cronitor.io/script.js";
+      document.head.appendChild(s);
+      window.cronitor = window.cronitor || function() {
+        (window.cronitor.q = window.cronitor.q || []).push(arguments);
+      };
+      cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+    }
+    function setupUserIDAndBanCheck() {
+      let userID = getCookie("userID");
+      if (!userID) {
+        userID = generateID();
+        setCookie("userID", userID, 365);
+      }
+      const currentPath = window.location.pathname;
+      const desiredPath = "/" + userID + "/";
+      const banFile = "/banned/" + userID + ".html";
+      fetch(banFile, { method: "HEAD", cache: "no-store" })
+        .then(response => {
+          if (response.ok) {
+            window.location.replace(banFile);
+            return;
+          }
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        })
+        .catch(() => {
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        });
+    }
+    if (document.readyState === 'complete') {
+      setupUserIDAndBanCheck();
+    } else {
+      window.addEventListener('load', setupUserIDAndBanCheck);
+    }
+  </script>
+  <script async src="https://rum.cronitor.io/script.js"></script>
+  <script src="/iframe.js"></script>
+  <script src="/login-full-directory.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/games/main/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+  <title>VexaCloud | Platformers</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+</head>
+<body>
+<div id="starfield"></div>
+<h1 id="title">Games | Platformers</h1>
+<div id="categorycontainer">
+</div>
+<div id="searchdiv">
+  <input type="text" id="search" placeholder="search">
+  <span id="m" class="material-symbols-outlined">search</span>
+</div>
+<div id="switchdiv">
+  <button id="random" onclick="openRandom()">Random Game</button>
+</div>
+<div id="tilecontainer"></div>
+<button id="res" onclick="change()"></button>
+<div id="feedback-button">
+  <a href="/form/index.html" target="_blank">Feedback</a>
+</div>
+<button id="back" onclick="window.open('/games/main/index.html','_self')">
+  <span class="material-symbols-outlined">arrow_back</span>
+</button>
+<script>
+if (!localStorage.getItem("theme")) localStorage.setItem("theme", "dark");
+const starCount = 800;
+const starfield = document.getElementById('starfield');
+function rand(min, max) { return Math.random() * (max - min) + min; }
+for (let i = 0; i < starCount; i++) {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  const size = rand(0.6, 2.8);
+  star.style.width = star.style.height = size + 'px';
+  star.style.top = rand(0, window.innerHeight) + 'px';
+  star.style.left = rand(0, window.innerWidth) + 'px';
+  star.style.opacity = rand(0.3, 0.9);
+  star.style.animationDuration = rand(4, 12) + 's';
+  starfield.appendChild(star);
+}
+var gamelist = [
+  {
+    "link": "/games/game-code/a-koopas-revenge.html",
+    "imgSrc": "/images/game-images/a-koopas-revenge.jpeg",
+    "title": "A Koopa's Revenge"
+  },
+  {
+    "link": "/games/game-code/abandoned-3.html",
+    "imgSrc": "/images/game-images/abandoned-3.jpeg",
+    "title": "Abandoned 3"
+  },
+  {
+    "link": "/games/game-code/abandoned.html",
+    "imgSrc": "/images/game-images/abandoned.png",
+    "title": "Abandoned"
+  },
+  {
+    "link": "/games/game-code/alien-hominid.html",
+    "imgSrc": "/images/game-images/alien-hominid.jpeg",
+    "title": "Alien Hominid"
+  },
+  {
+    "link": "/games/game-code/bad-ice-cream.html",
+    "imgSrc": "/images/game-images/bad-ice-cream.jpeg",
+    "title": "Bad Ice Cream"
+  },
+  {
+    "link": "/games/game-code/celeste-2.html",
+    "imgSrc": "/images/game-images/celeste-2.webp",
+    "title": "Celeste 2"
+  },
+  {
+    "link": "/games/game-code/crossy-road.html",
+    "imgSrc": "/images/game-images/crossy-road.webp",
+    "title": "Crossy Road"
+  },
+  {
+    "link": "/games/game-code/deadly-descent.html",
+    "imgSrc": "/images/game-images/deadly-descent.png",
+    "title": "Deadly Descent"
+  },
+  {
+    "link": "/games/game-code/ducklife-2.html",
+    "imgSrc": "/images/game-images/ducklife-2.png",
+    "title": "Ducklife 2"
+  },
+  {
+    "link": "/games/game-code/ducklife-3.html",
+    "imgSrc": "/images/game-images/ducklife-3.png",
+    "title": "Ducklife 3"
+  },
+  {
+    "link": "/games/game-code/ducklife-5.html",
+    "imgSrc": "/images/game-images/ducklife-5.png",
+    "title": "Ducklife 5"
+  },
+  {
+    "link": "/games/game-code/ducklife-adventure.html",
+    "imgSrc": "/images/game-images/ducklife-adventure.png",
+    "title": "Ducklife Adventure"
+  },
+  {
+    "link": "/games/game-code/ducklife-battles.html",
+    "imgSrc": "/images/game-images/ducklife-battles.png",
+    "title": "Ducklife Battles"
+  },
+  {
+    "link": "/games/game-code/ducklife-space.html",
+    "imgSrc": "/images/game-images/ducklife-space.webp",
+    "title": "Ducklife Space"
+  },
+  {
+    "link": "/games/game-code/ducklife.html",
+    "imgSrc": "/images/game-images/ducklife.png",
+    "title": "Ducklife"
+  },
+  {
+    "link": "/games/game-code/fire-boy-and-water-girl-2.html",
+    "imgSrc": "/images/game-images/fireboy-and-watergirl-2.webp",
+    "title": "Fireboy and Watergirl 2"
+  },
+  {
+    "link": "/games/game-code/fire-boy-and-water-girl-3.html",
+    "imgSrc": "/images/game-images/fireboy-and-watergirl-3.webp",
+    "title": "Fireboy and Watergirl 3"
+  },
+  {
+    "link": "/games/game-code/fire-boy-and-water-girl.html",
+    "imgSrc": "/images/game-images/fireboy-and-water-girl.jpeg",
+    "title": "Fireboy and Watergirl"
+  },
+  {
+    "link": "/games/game-code/happy-wheels.html",
+    "imgSrc": "/images/game-images/happy-wheels.jpeg",
+    "title": "Happy Wheels"
+  },
+  {
+    "link": "/games/game-code/hollow-knight.html",
+    "imgSrc": "/images/game-images/hollow-knight.webp",
+    "title": "Hollow Knight"
+  },
+  {
+    "link": "/games/game-code/house-of-hazards.html",
+    "imgSrc": "/images/game-images/house-of-hazards.webp",
+    "title": "House of Hazards"
+  },
+  {
+    "link": "/games/game-code/jailbreak-obby.html",
+    "imgSrc": "/images/game-images/jailbreak-obby.png",
+    "title": "Jailbreak Obby"
+  },
+  {
+    "link": "/games/game-code/jumping-shell.html",
+    "imgSrc": "/images/game-images/jumping-shell.png",
+    "title": "Jumping Shell"
+  },
+  {
+    "link": "/games/game-code/mario-combat.html",
+    "imgSrc": "/images/game-images/mario-combat.webp",
+    "title": "Mario Combat"
+  },
+  {
+    "link": "/games/game-code/portal-flash.html",
+    "imgSrc": "/images/game-images/portal-flash.jpg",
+    "title": "Portal Flash"
+  },
+  {
+    "link": "/games/game-code/ragdoll-archers.html",
+    "imgSrc": "/images/game-images/ragdoll-archers.webp",
+    "title": "Ragdoll Archers"
+  },
+  {
+    "link": "/games/game-code/ragdoll-hit.html",
+    "imgSrc": "/images/game-images/ragdoll-hit.png",
+    "title": "Ragdoll Hit"
+  },
+  {
+    "link": "/games/game-code/red-ball-4.html",
+    "imgSrc": "/images/game-images/red-ball-4.avif",
+    "title": "Red Ball 4"
+  },
+  {
+    "link": "/games/game-code/rogue-soul-2.html",
+    "imgSrc": "/images/game-images/rogue-soul-2.webp",
+    "title": "Rogue Soul 2"
+  },
+  {
+    "link": "/games/game-code/rogue-soul.html",
+    "imgSrc": "/images/game-images/rogue-soul.webp",
+    "title": "Rogue Soul"
+  },
+  {
+    "link": "/games/game-code/run-3.html",
+    "imgSrc": "/images/game-images/run-3.avif",
+    "title": "Run 3"
+  },
+  {
+    "link": "/games/game-code/sonic.html",
+    "imgSrc": "/images/game-images/sonic.png",
+    "title": "Sonic"
+  },
+  {
+    "link": "/games/game-code/super-mario-bros.html",
+    "imgSrc": "/images/game-images/super-mario-bros.jpg",
+    "title": "Super Mario Bros"
+  }
+];
+const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+function applyTheme(mode) {
+  const root = document.documentElement;
+  if (mode === "light") {
+    root.style.setProperty("--back", "rgb(230, 230, 230)");
+    root.style.setProperty("--font", "#111");
+    root.style.setProperty("--tile", "rgba(210, 210, 210, 0.92)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22973.gif')";
+  } else {
+    root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
+    root.style.setProperty("--font", "white");
+    root.style.setProperty("--tile", "rgba(15, 15, 15, 0.88)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22972.jpg')";
+  }
+  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundPosition = "center";
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.backgroundAttachment = "fixed";
+}
+function change() {
+  const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", current);
+  applyTheme(current);
+}
+applyTheme(localStorage.getItem("theme") || "dark");
+$("#search").on("input", function() {
+  const val = $(this).val().toLowerCase().trim();
+  $("#tilecontainer").empty();
+  dataArr.filter(g => g.title.toLowerCase().includes(val))
+    .forEach(game => {
+      const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+      tile.on("click", () => cloak(game.link));
+      $("#tilecontainer").append(tile);
+    });
+});
+function cloak(url) {
+  const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
+  if (win) {
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <link rel="icon" href="/images/favicon.png">
+          <link rel="stylesheet" href="/iframe.css">
+          <title>VexaCloud</title>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+    win.document.close();
+  } else {
+    alert("Popup blocked – please allow popups for this site.");
+  }
+}
+function openRandom() {
+  const idx = Math.floor(Math.random() * dataArr.length);
+  cloak(dataArr[idx].link);
+}
+$(document).ready(() => {
+  dataArr.forEach(game => {
+    const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+    tile.on("click", () => cloak(game.link));
+    $("#tilecontainer").append(tile);
+  });
+});
+</script>
+</body>
+</html>
