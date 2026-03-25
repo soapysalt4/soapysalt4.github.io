@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+    function generateID() {
+      return String(100000 + Math.floor(Math.random() * 900000));
+    }
+    function loadCronitor() {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = "https://rum.cronitor.io/script.js";
+      document.head.appendChild(s);
+      window.cronitor = window.cronitor || function() {
+        (window.cronitor.q = window.cronitor.q || []).push(arguments);
+      };
+      cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+    }
+    function setupUserIDAndBanCheck() {
+      let userID = getCookie("userID");
+      if (!userID) {
+        userID = generateID();
+        setCookie("userID", userID, 365);
+      }
+      const currentPath = window.location.pathname;
+      const desiredPath = "/" + userID + "/";
+      const banFile = "/banned/" + userID + ".html";
+      fetch(banFile, { method: "HEAD", cache: "no-store" })
+        .then(response => {
+          if (response.ok) {
+            window.location.replace(banFile);
+            return;
+          }
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        })
+        .catch(() => {
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        });
+    }
+    if (document.readyState === 'complete') {
+      setupUserIDAndBanCheck();
+    } else {
+      window.addEventListener('load', setupUserIDAndBanCheck);
+    }
+  </script>
+  <script async src="https://rum.cronitor.io/script.js"></script>
+  <script src="/iframe.js"></script>
+  <script src="/login-full-directory.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/games/main/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+  <title>VexaCloud | Skill</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+</head>
+<body>
+<div id="starfield"></div>
+<h1 id="title">Games | Skill</h1>
+<div id="categorycontainer">
+</div>
+<div id="searchdiv">
+  <input type="text" id="search" placeholder="search">
+  <span id="m" class="material-symbols-outlined">search</span>
+</div>
+<div id="switchdiv">
+  <button id="random" onclick="openRandom()">Random Game</button>
+</div>
+<div id="tilecontainer"></div>
+<button id="res" onclick="change()"></button>
+<div id="feedback-button">
+  <a href="/form/index.html" target="_blank">Feedback</a>
+</div>
+<button id="back" onclick="window.open('/games/main/index.html','_self')">
+  <span class="material-symbols-outlined">arrow_back</span>
+</button>
+<script>
+if (!localStorage.getItem("theme")) localStorage.setItem("theme", "dark");
+const starCount = 800;
+const starfield = document.getElementById('starfield');
+function rand(min, max) { return Math.random() * (max - min) + min; }
+for (let i = 0; i < starCount; i++) {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  const size = rand(0.6, 2.8);
+  star.style.width = star.style.height = size + 'px';
+  star.style.top = rand(0, window.innerHeight) + 'px';
+  star.style.left = rand(0, window.innerWidth) + 'px';
+  star.style.opacity = rand(0.3, 0.9);
+  star.style.animationDuration = rand(4, 12) + 's';
+  starfield.appendChild(star);
+}
+var gamelist = [
+  {
+    "link": "/games/game-code/2048-cubes.html",
+    "imgSrc": "/images/game-images/2048-cubes.jpeg",
+    "title": "2048 Cubes"
+  },
+  {
+    "link": "/games/game-code/2048.html",
+    "imgSrc": "/images/game-images/2048.gif",
+    "title": "2048"
+  },
+  {
+    "link": "/games/game-code/a-dance-of-fire-and-ice.html",
+    "imgSrc": "/images/game-images/a-dance-of-fire-and-ice.jpeg",
+    "title": "A Dance of Fire and Ice"
+  },
+  {
+    "link": "/games/game-code/a-difficult-game-about-climbing.html",
+    "imgSrc": "/images/game-images/a-difficult-game-about-climbing.jpeg",
+    "title": "A Difficult Game About Climbing"
+  },
+  {
+    "link": "/games/game-code/acheivement-unlocked-2.html",
+    "imgSrc": "/images/game-images/achievement-unlocked-2.jpeg",
+    "title": "Achievement Unlocked 2"
+  },
+  {
+    "link": "/games/game-code/acheivement-unlocked-3.html",
+    "imgSrc": "/images/game-images/achievement-unlocked-3.jpeg",
+    "title": "Achievement Unlocked 3"
+  },
+  {
+    "link": "/games/game-code/acheivement-unlocked.html",
+    "imgSrc": "/images/game-images/achievement-unlocked.jpeg",
+    "title": "Achievement Unlocked"
+  },
+  {
+    "link": "/games/game-code/big-ice-tower-tiny-square.html",
+    "imgSrc": "/images/game-images/big-ice-tower-tiny-square.jpg",
+    "title": "Big Ice Tower Tiny Square"
+  },
+  {
+    "link": "/games/game-code/big-tower-tiny-square.html",
+    "imgSrc": "/images/game-images/big-tower-tiny-square.jpeg",
+    "title": "Big Tower Tiny Square"
+  },
+  {
+    "link": "/games/game-code/bloxorz.html",
+    "imgSrc": "/images/game-images/bloxorz.png",
+    "title": "Bloxorz"
+  },
+  {
+    "link": "/games/game-code/buckshot-roulette.html",
+    "imgSrc": "/images/game-images/buckshot-roulette.jpg",
+    "title": "Buckshot Roulette"
+  },
+  {
+    "link": "/games/game-code/capybara-clicker-2.html",
+    "imgSrc": "/images/game-images/capybara-clicker-2.png",
+    "title": "Capybara Clicker 2"
+  },
+  {
+    "link": "/games/game-code/chrome-dino-game.html",
+    "imgSrc": "/images/game-images/chrome-dino-game.avif",
+    "title": "Chrome Dino Game"
+  },
+  {
+    "link": "/games/game-code/cookie-clicker.html",
+    "imgSrc": "/images/game-images/cookie-clicker.jpg",
+    "title": "Cookie Clicker"
+  },
+  {
+    "link": "/games/game-code/coreball.html",
+    "imgSrc": "/images/game-images/coreball.png",
+    "title": "Coreball"
+  },
+  {
+    "link": "/games/game-code/curve-ball.html",
+    "imgSrc": "/images/game-images/curve-ball.png",
+    "title": "Curve Ball"
+  },
+  {
+    "link": "/games/game-code/doodle-jump.html",
+    "imgSrc": "/images/game-images/doodle-jump.jpg",
+    "title": "Doodle Jump"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-breeze.html",
+    "imgSrc": "/images/game-images/geometry-dash-breeze.png",
+    "title": "Geometry Dash Breeze"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-lite.html",
+    "imgSrc": "/images/game-images/geometry-dash-lite.png",
+    "title": "Geometry Dash Lite"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-meltdown.html",
+    "imgSrc": "/images/game-images/geometry-dash-meltdown.png",
+    "title": "Geometry Dash Meltdown"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-nemesis.html",
+    "imgSrc": "/images/game-images/geometry-dash-nemesis.jpeg",
+    "title": "Geometry Dash Nemesis"
+  },
+  {
+    "link": "/games/game-code/geometry-dash-world.html",
+    "imgSrc": "/images/game-images/geometry-dash-world.jpg",
+    "title": "Geometry Dash World"
+  },
+  {
+    "link": "/games/game-code/helix-jump.html",
+    "imgSrc": "/images/game-images/helix-jump.png",
+    "title": "Helix Jump"
+  },
+  {
+    "link": "/games/game-code/hill-climb-racing-lite.html",
+    "imgSrc": "/images/game-images/hill-cimb-racing-lite.webp",
+    "title": "Hill Climb Racing Lite"
+  },
+  {
+    "link": "/games/game-code/idle-breakout.html",
+    "imgSrc": "/images/game-images/idle-breakout.jpg",
+    "title": "Idle Breakout"
+  },
+  {
+    "link": "/games/game-code/learn-to-fly-2.html",
+    "imgSrc": "/images/game-images/learn-to-fly-2.jpeg",
+    "title": "Learn to Fly 2"
+  },
+  {
+    "link": "/games/game-code/learn-to-fly-3.html",
+    "imgSrc": "/images/game-images/learn-to-fly-3.png",
+    "title": "Learn to Fly 3"
+  },
+  {
+    "link": "/games/game-code/learn-to-fly.html",
+    "imgSrc": "/images/game-images/learn-to-fly.jpg",
+    "title": "Learn to Fly"
+  },
+  {
+    "link": "/games/game-code/level-devil.html",
+    "imgSrc": "/images/game-images/level-devil.jpeg",
+    "title": "Level Devil"
+  },
+  {
+    "link": "/games/game-code/line-rider.html",
+    "imgSrc": "/images/game-images/line-rider.jpg",
+    "title": "Line Rider"
+  },
+  {
+    "link": "/games/game-code/mad-skill-moto-cross-2.html",
+    "imgSrc": "/images/game-images/mad-skill-moto-cross-2.png",
+    "title": "Mad Skill Moto Cross 2"
+  },
+  {
+    "link": "/games/game-code/ovo-2.html",
+    "imgSrc": "/images/game-images/ovo-2.png",
+    "title": "OVO 2"
+  },
+  {
+    "link": "/games/game-code/ovo-3-dimensions.html",
+    "imgSrc": "/images/game-images/ovo-3-dimensions.avif",
+    "title": "OVO 3 Dimensions"
+  },
+  {
+    "link": "/games/game-code/ovo.html",
+    "imgSrc": "/images/game-images/ovo.avif",
+    "title": "OVO"
+  },
+  {
+    "link": "/games/game-code/rise-higher.html",
+    "imgSrc": "/images/game-images/rise-higher.jpg",
+    "title": "Rise Higher"
+  },
+  {
+    "link": "/games/game-code/slice-it-all.html",
+    "imgSrc": "/images/game-images/slice-it-all.png",
+    "title": "Slice It All"
+  },
+  {
+    "link": "/games/game-code/slope-3.html",
+    "imgSrc": "/images/game-images/slope-3.webp",
+    "title": "Slope 3"
+  },
+  {
+    "link": "/games/game-code/slope.html",
+    "imgSrc": "/images/game-images/slope.webp",
+    "title": "Slope"
+  },
+  {
+    "link": "/games/game-code/stickman-hook.html",
+    "imgSrc": "/images/game-images/stickman-hook.webp",
+    "title": "Stickman Hook"
+  },
+  {
+    "link": "/games/game-code/tanuki-sunset.html",
+    "imgSrc": "/images/game-images/tanuki-sunset.jpg",
+    "title": "Tanuki Sunset"
+  },
+  {
+    "link": "/games/game-code/the-impossible-quiz-2.html",
+    "imgSrc": "/images/game-images/the-impossible-quiz-2.jpeg",
+    "title": "The Impossible Quiz 2"
+  },
+  {
+    "link": "/games/game-code/the-impossible-quiz.html",
+    "imgSrc": "/images/game-images/the-impossible-quiz.jpg",
+    "title": "The Impossible Quiz"
+  },
+  {
+    "link": "/games/game-code/tomb-of-the-mask.html",
+    "imgSrc": "/images/game-images/tomb-of-the-mask.png",
+    "title": "Tomb of the Mask"
+  },
+  {
+    "link": "/games/game-code/unicycle-hero.html",
+    "imgSrc": "/images/game-images/unicycle-hero.png",
+    "title": "Unicycle Hero"
+  },
+  {
+    "link": "/games/game-code/vex-6.html",
+    "imgSrc": "/images/game-images/vex-6.webp",
+    "title": "Vex 6"
+  },
+  {
+    "link": "/games/game-code/vex-7.html",
+    "imgSrc": "/images/game-images/vex-7.webp",
+    "title": "Vex 7"
+  },
+  {
+    "link": "/games/game-code/vex-8.html",
+    "imgSrc": "/images/game-images/vex-8.png",
+    "title": "Vex 8"
+  },
+  {
+    "link": "/games/game-code/vex-challenges.html",
+    "imgSrc": "/images/game-images/vex-challenges.jpeg",
+    "title": "Vex Challenges"
+  },
+  {
+    "link": "/games/game-code/vex-x3m.html",
+    "imgSrc": "/images/game-images/vex-x3m.jpg",
+    "title": "Vex X3M"
+  },
+  {
+    "link": "/games/game-code/worlds-hardest-game.html",
+    "imgSrc": "/images/game-images/worlds-hardest-game.png",
+    "title": "World's Hardest Game"
+  }
+];
+const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+function applyTheme(mode) {
+  const root = document.documentElement;
+  if (mode === "light") {
+    root.style.setProperty("--back", "rgb(230, 230, 230)");
+    root.style.setProperty("--font", "#111");
+    root.style.setProperty("--tile", "rgba(210, 210, 210, 0.92)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22973.gif')";
+  } else {
+    root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
+    root.style.setProperty("--font", "white");
+    root.style.setProperty("--tile", "rgba(15, 15, 15, 0.88)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22972.jpg')";
+  }
+  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundPosition = "center";
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.backgroundAttachment = "fixed";
+}
+function change() {
+  const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", current);
+  applyTheme(current);
+}
+applyTheme(localStorage.getItem("theme") || "dark");
+$("#search").on("input", function() {
+  const val = $(this).val().toLowerCase().trim();
+  $("#tilecontainer").empty();
+  dataArr.filter(g => g.title.toLowerCase().includes(val))
+    .forEach(game => {
+      const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+      tile.on("click", () => cloak(game.link));
+      $("#tilecontainer").append(tile);
+    });
+});
+function cloak(url) {
+  const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
+  if (win) {
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <link rel="icon" href="/images/favicon.png">
+          <link rel="stylesheet" href="/iframe.css">
+          <title>VexaCloud</title>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+    win.document.close();
+  } else {
+    alert("Popup blocked – please allow popups for this site.");
+  }
+}
+function openRandom() {
+  const idx = Math.floor(Math.random() * dataArr.length);
+  cloak(dataArr[idx].link);
+}
+$(document).ready(() => {
+  dataArr.forEach(game => {
+    const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+    tile.on("click", () => cloak(game.link));
+    $("#tilecontainer").append(tile);
+  });
+});
+</script>
+</body>
+</html>
