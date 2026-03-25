@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
+    }
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+      return match ? match[2] : null;
+    }
+    function generateID() {
+      return String(100000 + Math.floor(Math.random() * 900000));
+    }
+    function loadCronitor() {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = "https://rum.cronitor.io/script.js";
+      document.head.appendChild(s);
+      window.cronitor = window.cronitor || function() {
+        (window.cronitor.q = window.cronitor.q || []).push(arguments);
+      };
+      cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
+    }
+    function setupUserIDAndBanCheck() {
+      let userID = getCookie("userID");
+      if (!userID) {
+        userID = generateID();
+        setCookie("userID", userID, 365);
+      }
+      const currentPath = window.location.pathname;
+      const desiredPath = "/" + userID + "/";
+      const banFile = "/banned/" + userID + ".html";
+      fetch(banFile, { method: "HEAD", cache: "no-store" })
+        .then(response => {
+          if (response.ok) {
+            window.location.replace(banFile);
+            return;
+          }
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        })
+        .catch(() => {
+          if (currentPath !== desiredPath) {
+            history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
+          }
+          loadCronitor();
+          cronitor('ping', {
+            monitor: 'user-id-' + userID,
+            message: 'User ID: ' + userID,
+            url: desiredPath
+          });
+        });
+    }
+    if (document.readyState === 'complete') {
+      setupUserIDAndBanCheck();
+    } else {
+      window.addEventListener('load', setupUserIDAndBanCheck);
+    }
+  </script>
+  <script async src="https://rum.cronitor.io/script.js"></script>
+  <script src="/iframe.js"></script>
+  <script src="/login-full-directory.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/games/main/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+  <title>VexaCloud | Driving</title>
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/@simondmc/popup-js@1.4.2/popup.min.js"></script>
+</head>
+<body>
+<div id="starfield"></div>
+<h1 id="title">Games | Driving</h1>
+<div id="categorycontainer">
+</div>
+<div id="searchdiv">
+  <input type="text" id="search" placeholder="search">
+  <span id="m" class="material-symbols-outlined">search</span>
+</div>
+<div id="switchdiv">
+  <button id="random" onclick="openRandom()">Random Game</button>
+</div>
+<div id="tilecontainer"></div>
+<button id="res" onclick="change()"></button>
+<div id="feedback-button">
+  <a href="/form/index.html" target="_blank">Feedback</a>
+</div>
+<button id="back" onclick="window.open('/games/main/index.html','_self')">
+  <span class="material-symbols-outlined">arrow_back</span>
+</button>
+<script>
+if (!localStorage.getItem("theme")) localStorage.setItem("theme", "dark");
+const starCount = 800;
+const starfield = document.getElementById('starfield');
+function rand(min, max) { return Math.random() * (max - min) + min; }
+for (let i = 0; i < starCount; i++) {
+  const star = document.createElement('div');
+  star.classList.add('star');
+  const size = rand(0.6, 2.8);
+  star.style.width = star.style.height = size + 'px';
+  star.style.top = rand(0, window.innerHeight) + 'px';
+  star.style.left = rand(0, window.innerWidth) + 'px';
+  star.style.opacity = rand(0.3, 0.9);
+  star.style.animationDuration = rand(4, 12) + 's';
+  starfield.appendChild(star);
+}
+var gamelist = [
+  {
+    "link": "/games/game-code/ace-gangster-taxi.html",
+    "imgSrc": "/images/game-images/ace-gangster-taxi.jpeg",
+    "title": "Ace Gangster Taxi"
+  },
+  {
+    "link": "/games/game-code/blumgi-racers.html",
+    "imgSrc": "/images/game-images/blumgi-racers.jpeg",
+    "title": "Blumgi Racers"
+  },
+  {
+    "link": "/games/game-code/burnin-rubber-5-xs.html",
+    "imgSrc": "/images/game-images/burnin-rubber-5-xs.webp",
+    "title": "Burnin Rubber 5 XS"
+  },
+  {
+    "link": "/games/game-code/burnin-rubber-crash-n-burn.html",
+    "imgSrc": "/images/game-images/burnin-rubber-crash-and-burn.jpg",
+    "title": "Burnin Rubber Crash n Burn"
+  },
+  {
+    "link": "/games/game-code/car-king-arena-2.html",
+    "imgSrc": "/images/game-images/car-king-arena-2.png",
+    "title": "Car King Arena 2"
+  },
+  {
+    "link": "/games/game-code/car-king-arena.html",
+    "imgSrc": "/images/game-images/car-king-arena.png",
+    "title": "Car King Arena"
+  },
+  {
+    "link": "/games/game-code/city-car-driving-simulator-stunt-master.html",
+    "imgSrc": "/images/game-images/city-car-driving-simulator-stunt-master.webp",
+    "title": "City Car Driving Stunt Master"
+  },
+  {
+    "link": "/games/game-code/crazy-cars.html",
+    "imgSrc": "/images/game-images/crazy-cars.jpeg",
+    "title": "Crazy Cars"
+  },
+  {
+    "link": "/games/game-code/crazy-for-speed.html",
+    "imgSrc": "/images/game-images/crazy-for-speed.webp",
+    "title": "Crazy For Speed"
+  },
+  {
+    "link": "/games/game-code/demolition-derby-crash-racing.html",
+    "imgSrc": "/images/game-images/demolition-derby-crash-racing.avif",
+    "title": "Demolition Derby Crash Racing"
+  },
+  {
+    "link": "/games/game-code/drift-boss.html",
+    "imgSrc": "/images/game-images/drift-boss.webp",
+    "title": "Drift Boss"
+  },
+  {
+    "link": "/games/game-code/drift-hunters.html",
+    "imgSrc": "/images/game-images/drift-hunters.png",
+    "title": "Drift Hunters"
+  },
+  {
+    "link": "/games/game-code/drift-io.html",
+    "imgSrc": "/images/game-images/drift-io.png",
+    "title": "Drift.io"
+  },
+  {
+    "link": "/games/game-code/drive-mad.html",
+    "imgSrc": "/images/game-images/drive-mad.png",
+    "title": "Drive Mad"
+  },
+  {
+    "link": "/games/game-code/driven-wild.html",
+    "imgSrc": "/images/game-images/driven-wild.webp",
+    "title": "Driven Wild"
+  },
+  {
+    "link": "/games/game-code/eggy-car.html",
+    "imgSrc": "/images/game-images/eggy-car.webp",
+    "title": "Eggy Car"
+  },
+  {
+    "link": "/games/game-code/escape-road-2.html",
+    "imgSrc": "/images/game-images/escape-road-2.webp",
+    "title": "Escape Road 2"
+  },
+  {
+    "link": "/games/game-code/escape-road.html",
+    "imgSrc": "/images/game-images/escape-road.webp",
+    "title": "Escape Road"
+  },
+  {
+    "link": "/games/game-code/freak-taxi-simulator.html",
+    "imgSrc": "/images/game-images/freak-taxi-simulator.webp",
+    "title": "Freak Taxi Simulator"
+  },
+  {
+    "link": "/games/game-code/highway-racer-2-remastered.html",
+    "imgSrc": "/images/game-images/highway-racer-2.webp",
+    "title": "Highway Racer 2"
+  },
+  {
+    "link": "/games/game-code/hill-climb-racing-lite.html",
+    "imgSrc": "/images/game-images/hill-cimb-racing-lite.webp",
+    "title": "Hill Climb Racing Lite"
+  },
+  {
+    "link": "/games/game-code/hover-racer-drive.html",
+    "imgSrc": "/images/game-images/hover-racer-drive.webp",
+    "title": "Hover Racer Drive"
+  },
+  {
+    "link": "/games/game-code/hover-racer.html",
+    "imgSrc": "/images/game-images/hover-racer.jpg",
+    "title": "Hover Racer"
+  },
+  {
+    "link": "/games/game-code/indian-truck-simulator.html",
+    "imgSrc": "/images/game-images/indian-truck-simulator.png",
+    "title": "Indian Truck Simulator"
+  },
+  {
+    "link": "/games/game-code/jetski-racing.html",
+    "imgSrc": "/images/game-images/jetski-racing.jpg",
+    "title": "Jetski Racing"
+  },
+  {
+    "link": "/games/game-code/moto-road-rash.html",
+    "imgSrc": "/images/game-images/moto-road-rash.webp",
+    "title": "Moto Road Rash"
+  },
+  {
+    "link": "/games/game-code/moto-x3m-2.html",
+    "imgSrc": "/images/game-images/moto-x3m-2.webp",
+    "title": "Moto X3M 2"
+  },
+  {
+    "link": "/games/game-code/moto-x3m-3.html",
+    "imgSrc": "/images/game-images/moto-x3m-3.webp",
+    "title": "Moto X3M 3"
+  },
+  {
+    "link": "/games/game-code/moto-x3m-spooky-land.html",
+    "imgSrc": "/images/game-images/moto-x3m-spooky-land.png",
+    "title": "Moto X3M Spooky Land"
+  },
+  {
+    "link": "/games/game-code/moto-x3m.html",
+    "imgSrc": "/images/game-images/moto-x3m.webp",
+    "title": "Moto X3M"
+  },
+  {
+    "link": "/games/game-code/mr-racer.html",
+    "imgSrc": "/images/game-images/mr-racer.png",
+    "title": "Mr Racer"
+  },
+  {
+    "link": "/games/game-code/police-pursuit-2.html",
+    "imgSrc": "/images/game-images/police-pursuit-2.webp",
+    "title": "Police Pursuit 2"
+  },
+  {
+    "link": "/games/game-code/polytrack.html",
+    "imgSrc": "/images/game-images/polytrack.webp",
+    "title": "Polytrack"
+  },
+  {
+    "link": "/games/game-code/russian-car-simulator.html",
+    "imgSrc": "/images/game-images/russian-car-simulator.webp",
+    "title": "Russian Car Simulator"
+  },
+  {
+    "link": "/games/game-code/slow-roads.html",
+    "imgSrc": "/images/game-images/slow-roads.jpg",
+    "title": "Slow Roads"
+  },
+  {
+    "link": "/games/game-code/smash-karts.html",
+    "imgSrc": "/images/game-images/smash-karts.webp",
+    "title": "Smash Karts"
+  },
+  {
+    "link": "/games/game-code/snow-rider-3d.html",
+    "imgSrc": "/images/game-images/snow-rider-3d.png",
+    "title": "Snow Rider 3D"
+  },
+  {
+    "link": "/games/game-code/summer-rider.html",
+    "imgSrc": "/images/game-images/summer-rider.jpg",
+    "title": "Summer Rider"
+  },
+  {
+    "link": "/games/game-code/super-bike-the-champion.html",
+    "imgSrc": "/images/game-images/super-bike-the-champion.png",
+    "title": "Super Bike The Champion"
+  },
+  {
+    "link": "/games/game-code/super-star-car.html",
+    "imgSrc": "/images/game-images/super-star-car.png",
+    "title": "Super Star Car"
+  },
+  {
+    "link": "/games/game-code/top-speed-racing-3d.html",
+    "imgSrc": "/images/game-images/top-speed-racing-3d.webp",
+    "title": "Top Speed Racing 3D"
+  },
+  {
+    "link": "/games/game-code/traffic-jam-3d.html",
+    "imgSrc": "/images/game-images/traffic-jam-3d.jpg",
+    "title": "Traffic Jam 3D"
+  },
+  {
+    "link": "/games/game-code/wheelie-bike.html",
+    "imgSrc": "/images/game-images/wheelie-bike.png",
+    "title": "Wheelie Bike"
+  },
+  {
+    "link": "/games/game-code/wheely-8.html",
+    "imgSrc": "/images/game-images/wheely-8.png",
+    "title": "Wheely 8"
+  }
+];
+const dataArr = gamelist.sort((a, b) => a.title.localeCompare(b.title));
+function applyTheme(mode) {
+  const root = document.documentElement;
+  if (mode === "light") {
+    root.style.setProperty("--back", "rgb(230, 230, 230)");
+    root.style.setProperty("--font", "#111");
+    root.style.setProperty("--tile", "rgba(210, 210, 210, 0.92)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">dark_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22973.gif')";
+  } else {
+    root.style.setProperty("--back", "rgba(11, 11, 11, 1)");
+    root.style.setProperty("--font", "white");
+    root.style.setProperty("--tile", "rgba(15, 15, 15, 0.88)");
+    document.getElementById("res").innerHTML = '<span class="material-symbols-outlined">light_mode</span>';
+    document.body.style.backgroundImage = "url('/images/22972.jpg')";
+  }
+  document.body.style.backgroundSize = "cover";
+  document.body.style.backgroundPosition = "center";
+  document.body.style.backgroundRepeat = "no-repeat";
+  document.body.style.backgroundAttachment = "fixed";
+}
+function change() {
+  const current = localStorage.getItem("theme") === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", current);
+  applyTheme(current);
+}
+applyTheme(localStorage.getItem("theme") || "dark");
+$("#search").on("input", function() {
+  const val = $(this).val().toLowerCase().trim();
+  $("#tilecontainer").empty();
+  dataArr.filter(g => g.title.toLowerCase().includes(val))
+    .forEach(game => {
+      const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+      tile.on("click", () => cloak(game.link));
+      $("#tilecontainer").append(tile);
+    });
+});
+function cloak(url) {
+  const win = window.open("about:blank", "_blank", "width=1280,height=800,menubar=no,toolbar=no");
+  if (win) {
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <link rel="icon" href="/images/favicon.png">
+          <link rel="stylesheet" href="/iframe.css">
+          <title>VexaCloud</title>
+        </head>
+        <body>
+          <iframe src="${url}"></iframe>
+        </body>
+      </html>
+    `);
+    win.document.close();
+  } else {
+    alert("Popup blocked – please allow popups for this site.");
+  }
+}
+function openRandom() {
+  const idx = Math.floor(Math.random() * dataArr.length);
+  cloak(dataArr[idx].link);
+}
+$(document).ready(() => {
+  dataArr.forEach(game => {
+    const tile = $(`<div class="tile"><img src="${game.imgSrc}" alt=""><p class="sigma">${game.title}</p></div>`);
+    tile.on("click", () => cloak(game.link));
+    $("#tilecontainer").append(tile);
+  });
+});
+</script>
+</body>
+</html>
