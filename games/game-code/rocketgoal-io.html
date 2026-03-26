@@ -1,210 +1,239 @@
-<html><head><base target="_blank"></head><body><div id="container">
-  <iframe id="fr" width="100%" height="100%" frameborder="0" allowfullscreen=""></iframe>
-  <button class="play-button" type="button" onclick="PlayTo(this)">CLICK TO PLAY</button>
-</div>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
 
-<style>
-  .play-button {
-    padding: 22px 48px;
-    background: linear-gradient(135deg, #0a1a3a, #0d2b6b);
-    color: #ffffff;
-    border: 3px solid #1e3a8a;
-    border-radius: 12px;
-    font: bold 26px Arial;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1001;
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ftbaldana/poklp@main/aaaaaa/TemplateData/style.css">
+    <link rel="manifest" href="https://cdn.jsdelivr.net/gh/ftbaldana/poklp@main/aaaaaa/manifest.webmanifest">
 
-    /* Animation */
-    box-shadow: 0 0 20px rgba(30, 58, 138, 0.6);
-    transition: 0.25s ease;
-    animation: pulseGlow 2.2s infinite ease-in-out;
-  }
-
-  .play-button:hover {
-    background: linear-gradient(135deg, #12306b, #1e3a8a);
-    box-shadow: 0 0 30px rgba(30, 58, 138, 0.9);
-    transform: translate(-50%, -50%) scale(1.06);
-  }
-
-  @keyframes pulseGlow {
-    0% {
-      box-shadow: 0 0 18px rgba(30, 58, 138, 0.5);
-    }
-    50% {
-      box-shadow: 0 0 32px rgba(30, 58, 138, 0.9);
-    }
-    100% {
-      box-shadow: 0 0 18px rgba(30, 58, 138, 0.5);
-    }
-  }
-
-  .fullscreen-button {
-    padding: 10px 15px;
-    background: #0a1a3a;
-    color: #fff;
-    border: 2px solid #1e3a8a;
-    border-radius: 5px;
-    font: bold 14px Arial;
-    cursor: pointer;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1002;
-    transition: 0.25s ease;
-  }
-
-  .fullscreen-button:hover {
-    background: #1e3a8a;
-    box-shadow: 0 0 15px rgba(30, 58, 138, 0.8);
-  }
-
-  body, html {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-  }
-</style>
-
-<script>
-  // GameMonetize SDK Entegrasyonu
-  window.SDK_OPTIONS = {
-    gameId: "9km7avlf26r9se5gam8028uq4p6drmx1",
-    onEvent: function (a) {
-      switch (a.name) {
-        case "SDK_GAME_PAUSE":
-          console.log("Oyun duraklatıldı, reklam gösteriliyor...");
-          break;
-        case "SDK_GAME_START":
-          console.log("Reklam bitti, oyun devam ediyor...");
-          break;
-        case "SDK_READY":
-          console.log("SDK hazır.");
-          break;
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.2.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.2.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.2.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.2.0/firebase-remote-config-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.2.0/firebase-firestore-compat.js"></script>
+    <script>
+      if (window.location.href.includes("dev")) {
+        const s = document.createElement("script");
+        s.src = "firebase/firebase_dev.js";
+        document.head.appendChild(s);
       }
-    }
-  };
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/ftbaldana/poklp@main/aaaaaa/firebase/firebase.js"></script>
 
-  const DB_NAME = 'GameCacheDB';
-  const STORE_NAME = 'GameFiles';
-  const CACHE_DURATION = 90 * 24 * 60 * 60 * 1000; // 3 ay
-  const FILE_URL = 'https://cdn.jsdelivr.net/gh/centerclassroom/mc55@main/gtr.xml';
+    <!-- Xsolla Scripts -->
+    <script src="https://cdn.jsdelivr.net/gh/ftbaldana/poklp@main/aaaaaa/xsolla/xsolla.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ftbaldana/poklp@main/aaaaaa/utils.js"></script>
 
-  function openDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        db.createObjectStore(STORE_NAME, { keyPath: 'url' });
-      };
-      request.onsuccess = (event) => resolve(event.target.result);
-      request.onerror = (event) => reject(event.target.error);
-    });
-  }
+    <!-- Google tag (gtag.js) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
 
-  async function saveToCache(url, content) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, 'readwrite');
-      const store = transaction.objectStore(STORE_NAME);
-      const request = store.put({ url: url, content: content, timestamp: Date.now() });
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(new Error('Cache error'));
-    });
-  }
+      gtag('consent', 'default', {
+        ad_storage: 'granted',
+        analytics_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted'
+      });
 
-  async function getFileFromCache(url) {
-    const db = await openDB();
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, 'readonly');
-      const store = transaction.objectStore(STORE_NAME);
-      const request = store.get(url);
-      request.onsuccess = async (event) => {
-        const data = event.target.result;
-        if (data && (Date.now() - data.timestamp) < CACHE_DURATION) {
-          resolve(data.content);
-        } else {
-          try {
-            const response = await fetch(url);
-            const text = await response.text();
-            await saveToCache(url, text);
-            resolve(text);
-          } catch (err) {
-            reject(err);
-          }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        region: [
+          'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR',
+          'DE','GR','HU','IE','IT','LV','LT','LU','MT','NL',
+          'PL','PT','RO','SK','SI','ES','SE',
+          'IS','LI','NO',
+          'GB',
+          'CH'
+        ]
+      });
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZN6YDCFCY8" onload="onGtagLoaded()" onerror="onGtagLoaded()"></script>
+    <script>
+      function onGtagLoaded() {
+        if (window.playgamaScript) return;
+        gtag('js', new Date());
+        gtag('config', 'G-ZN6YDCFCY8');
+        window.playgamaScript = document.createElement("script");
+        window.playgamaScript.src = "https://playgama.com/ads/pockethaven.v0.1.js";
+        window.playgamaScript.async = true;
+        document.head.appendChild(window.playgamaScript);
+      }
+    </script>
+
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        background: #000;
+      }
+      #unity-canvas { outline: none; }
+
+      /* Play button */
+      #play-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        z-index: 1001;
+      }
+      #play-button {
+        padding: 22px 48px;
+        background: linear-gradient(135deg, #0a1a3a, #0d2b6b);
+        color: #ffffff;
+        border: 3px solid #1e3a8a;
+        border-radius: 12px;
+        font: bold 26px Arial;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(30, 58, 138, 0.6);
+        transition: 0.25s ease;
+        animation: pulseGlow 2.2s infinite ease-in-out;
+      }
+      #play-button:hover {
+        background: linear-gradient(135deg, #12306b, #1e3a8a);
+        box-shadow: 0 0 30px rgba(30, 58, 138, 0.9);
+        transform: scale(1.06);
+      }
+      @keyframes pulseGlow {
+        0%   { box-shadow: 0 0 18px rgba(30, 58, 138, 0.5); }
+        50%  { box-shadow: 0 0 32px rgba(30, 58, 138, 0.9); }
+        100% { box-shadow: 0 0 18px rgba(30, 58, 138, 0.5); }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- Play overlay -->
+    <div id="play-overlay">
+      <button id="play-button" onclick="startGame()">CLICK TO PLAY</button>
+    </div>
+
+    <!-- Unity container (hidden until play is clicked) -->
+    <div id="unity-container" style="display:none;">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1" data-sl="canvas-lq"></canvas>
+      <div id="unity-loading-bar">
+        <div id="loading-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+    </div>
+
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
-      };
-      request.onerror = () => reject(new Error('DB error'));
-    });
-  }
-
-  // SDK'yı cache üzerinden yükle
-  async function loadSDK() {
-    try {
-      const sdkContent = await getFileFromCache(SDK_URL);
-      const script = document.createElement('script');
-      script.text = sdkContent;
-      script.id = 'gamemonetize-sdk';
-      document.head.appendChild(script);
-    } catch (err) {
-      console.error('SDK yükleme hatası:', err);
-      // Cache başarısız olursa doğrudan ekle
-      const script = document.createElement('script');
-      script.id = 'gamemonetize-sdk';
-      script.src = SDK_URL;
-      document.head.appendChild(script);
-    }
-  }
-
-  // SDK'yı hemen yükle
-  loadSDK();
-
-  // Reklamı ekrana tıklandığında çağır
-  let isAdShown = false;
-  function showAdOnClick() {
-    if (!isAdShown && typeof sdk !== 'undefined' && typeof sdk.showBanner !== 'undefined') {
-      sdk.showBanner();
-      isAdShown = true;
-    }
-  }
-
-  function PlayTo(button) {
-    const iframe = document.getElementById("fr");
-    getFileFromCache(FILE_URL).then((text) => {
-      iframe.contentDocument.open();
-      iframe.contentDocument.write(text);
-      iframe.contentDocument.close();
-      iframe.style.display = "block";
-      button.style.display = "none";
-
-      iframe.contentWindow.document.addEventListener('pointerdown', showAdOnClick);
-      iframe.contentWindow.document.addEventListener('touchstart', showAdOnClick);
-    }).catch((err) => {
-      console.error('Error:', err);
-      alert('Oyun yüklenemedi.');
-    });
-  }
-
-  function openFullscreen() {
-    getFileFromCache(FILE_URL).then((text) => {
-      const newWindow = window.open("", "_blank");
-      if (newWindow) {
-        newWindow.document.open();
-        newWindow.document.write(text);
-        newWindow.document.close();
-
-        newWindow.document.addEventListener('pointerdown', showAdOnClick);
-        newWindow.document.addEventListener('touchstart', showAdOnClick);
-      } else {
-        alert('Tam ekran açılamadı.');
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
       }
-    }).catch((err) => {
-      console.error('Error:', err);
-      alert('Tam ekran yüklenemedi.');
-    });
-  }
-</script></body></html>
+
+      var LATEST_TXT_URL = "https://danidrorm.github.io/RGFiles/latest.txt";
+      var REPO_CDN_BASE = "https://cdn.jsdelivr.net/gh/Danidrorm/RGFiles@";
+
+      var UNITY_FILES = {
+        loader:    "b23dd96997961653e2825455633aac82.loader.js",
+        data:      "1c6b3fb6706375cf5f4e35c5d914385e.data.unityweb",
+        framework: "98438f2e7a94945eb0c97aa68a131683.framework.js.unityweb",
+        wasm:      "def2138bbbbbb3dc09c6c604c4109263.wasm.unityweb",
+      };
+
+      function isValidGitSha(ref) {
+        return /^[a-f0-9]{7,40}$/i.test(ref);
+      }
+
+      async function fetchLatestRef() {
+        var url = LATEST_TXT_URL + "?t=" + Date.now();
+        var res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to fetch latest.txt: " + res.status);
+        var ref = (await res.text()).trim();
+        if (!isValidGitSha(ref)) throw new Error("latest.txt returned invalid SHA: " + ref);
+        return ref;
+      }
+
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          var script = document.createElement("script");
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("Failed to load script: " + src));
+          document.body.appendChild(script);
+        });
+      }
+
+      async function startGame() {
+        document.getElementById("play-overlay").style.display = "none";
+        document.getElementById("unity-container").style.display = "block";
+        loadingBar.style.display = "block";
+
+        var ref;
+        try {
+          ref = await fetchLatestRef();
+        } catch (e) {
+          console.warn("latest.txt fetch failed, falling back to @main:", e);
+          ref = "main";
+        }
+
+        var buildUrl = REPO_CDN_BASE + ref;
+        var loaderUrl = buildUrl + "/" + UNITY_FILES.loader;
+
+        var config = {
+          dataUrl:             buildUrl + "/" + UNITY_FILES.data,
+          frameworkUrl:        buildUrl + "/" + UNITY_FILES.framework,
+          codeUrl:             buildUrl + "/" + UNITY_FILES.wasm,
+          streamingAssetsUrl:  "StreamingAssets",
+          productVersion:      "0.302",
+          showBanner:          unityShowBanner,
+        };
+
+        try {
+          await loadScript(loaderUrl);
+        } catch (e) {
+          alert(e.message || String(e));
+          return;
+        }
+
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = (100 * progress) + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          window.unityInstance = unityInstance;
+          window.unityGame = unityInstance;
+          initializeFirebase(unityInstance);
+          initializeUtils(unityInstance);
+        }).catch((message) => {
+          alert(message);
+        });
+      }
+    </script>
+
+  </body>
+</html>
