@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kirka.io Party Joiner</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #042C53;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Join screen ── */
+  #join-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #header {
+    padding: 1.5rem 2rem 1rem;
+  }
+
+  #logo {
+    font-size: 22px;
+    font-weight: 500;
+    color: #B5D4F4;
+  }
+
+  #logo span { color: #378ADD; }
+
+  #subtitle {
+    font-size: 13px;
+    color: #85B7EB;
+    margin-top: 4px;
+  }
+
+  #input-area {
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  #input-group {
+    flex: 1;
+    min-width: 260px;
+    display: flex;
+    border: 0.5px solid #378ADD;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  #prefix {
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+    color: #85B7EB;
+    background: #0C447C;
+    padding: 11px 14px;
+    white-space: nowrap;
+    user-select: none;
+    border-right: 0.5px solid #185FA5;
+    display: flex;
+    align-items: center;
+  }
+
+  #url-input {
+    flex: 1;
+    background: #0C447C;
+    border: none;
+    outline: none;
+    color: #E6F1FB;
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    padding: 11px 14px;
+  }
+
+  #url-input::placeholder {
+    color: #378ADD;
+    opacity: 0.6;
+  }
+
+  #input-group:focus-within {
+    border-color: #85B7EB;
+    box-shadow: 0 0 0 2px rgba(55, 138, 221, 0.2);
+  }
+
+  #input-group.error {
+    border-color: #E24B4A;
+  }
+
+  #join-btn {
+    background: #378ADD;
+    color: #E6F1FB;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 11px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  #join-btn:hover { background: #185FA5; }
+  #join-btn:active { transform: scale(0.97); }
+
+  #error-msg {
+    color: #F09595;
+    font-size: 12px;
+    padding: 0 2rem 0.75rem;
+    display: none;
+  }
+
+  #placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 0 2rem 2rem;
+  }
+
+  #placeholder-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #0C447C;
+    border: 0.5px solid #185FA5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #placeholder-text {
+    font-size: 15px;
+    color: #85B7EB;
+    text-align: center;
+  }
+
+  /* ── Lobby screen ── */
+  #lobby-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9999;
+    flex-direction: column;
+  }
+
+  #lobby-screen.visible {
+    display: flex;
+  }
+
+  #loading-bar {
+    height: 3px;
+    background: #378ADD;
+    flex-shrink: 0;
+    display: none;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  #loading-bar.show { display: block; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  #lobby-iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<!-- Join screen -->
+<div id="join-screen">
+  <div id="header">
+    <div id="logo">kirka<span>.io</span> party</div>
+    <div id="subtitle">enter your party ID to join a shared lobby</div>
+  </div>
+
+  <div id="input-area">
+    <div id="input-group">
+      <div id="prefix">https://kirka.io/___lobby___/</div>
+      <input id="url-input" type="text" placeholder="party ID" spellcheck="false" />
+    </div>
+    <button id="join-btn">Join Party</button>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <div id="placeholder">
+    <div id="placeholder-icon">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="13" stroke="#378ADD" stroke-width="1.5"/>
+        <path d="M10 16h12M16 10l6 6-6 6" stroke="#85B7EB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div id="placeholder-text">enter a party ID above to load the lobby</div>
+  </div>
+</div>
+
+<!-- Fullscreen lobby screen -->
+<div id="lobby-screen">
+  <div id="loading-bar"></div>
+  <iframe id="lobby-iframe" allowfullscreen></iframe>
+</div>
+
+<script>
+  const input = document.getElementById('url-input');
+  const inputGroup = document.getElementById('input-group');
+  const btn = document.getElementById('join-btn');
+  const errMsg = document.getElementById('error-msg');
+  const joinScreen = document.getElementById('join-screen');
+  const lobbyScreen = document.getElementById('lobby-screen');
+  const loadingBar = document.getElementById('loading-bar');
+  const iframe = document.getElementById('lobby-iframe');
+
+  const BASE = 'https://kirka.io/___lobby___/';
+  const ID_PATTERN = /^[A-Za-z0-9~_\-]+$/;
+
+  function showError(msg) {
+    errMsg.textContent = msg;
+    errMsg.style.display = 'block';
+    inputGroup.classList.add('error');
+  }
+
+  function clearError() {
+    errMsg.style.display = 'none';
+    inputGroup.classList.remove('error');
+  }
+
+  function loadLobby() {
+    const id = input.value.trim();
+    clearError();
+
+    if (!id) { showError('please enter a party ID'); return; }
+    if (!ID_PATTERN.test(id)) { showError('party ID can only contain letters, numbers, ~, _ or -'); return; }
+
+    const url = BASE + id;
+
+    // 1. Switch to fullscreen first
+    joinScreen.style.display = 'none';
+    lobbyScreen.classList.add('visible');
+    loadingBar.classList.add('show');
+
+    // 2. Then load the iframe
+    iframe.onload = () => {
+      loadingBar.classList.remove('show');
+    };
+
+    iframe.src = url;
+  }
+
+  btn.addEventListener('click', loadLobby);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') loadLobby(); });
+  input.addEventListener('input', clearError);
+</script>
+
+</body>
+</html>
