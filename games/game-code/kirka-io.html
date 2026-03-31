@@ -10,14 +10,12 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         html, body {
             height: 100%;
             overflow: hidden;
             background: #000;
             margin: 0;
         }
-
         .iframe-container {
             position: fixed;
             top: 0;
@@ -26,14 +24,12 @@
             height: 100%;
             z-index: 1;
         }
-
         iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
         }
-
         .join-party-btn {
             position: fixed;
             top: 25px;
@@ -58,13 +54,11 @@
             user-select: none;
             opacity: 0.75;
         }
-
         .join-party-btn:hover {
             background: rgba(255, 255, 255, 0.15);
             color: white;
             opacity: 0.9;
         }
-
         .countdown {
             font-size: 14px;
             font-weight: 600;
@@ -82,11 +76,10 @@
         Join Party
         <span id="countdown" class="countdown">3</span>
     </button>
-
     <script>
         const joinBtn = document.getElementById('joinBtn');
         const countdownEl = document.getElementById('countdown');
-        
+       
         let timeLeft = 3;
         let countdownInterval;
 
@@ -94,12 +87,11 @@
             countdownInterval = setInterval(() => {
                 timeLeft--;
                 countdownEl.textContent = timeLeft;
-
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
                     joinBtn.style.transition = 'opacity 0.8s ease';
                     joinBtn.style.opacity = '0';
-                    
+                   
                     setTimeout(() => {
                         joinBtn.style.display = 'none';
                     }, 900);
@@ -107,9 +99,12 @@
             }, 1000);
         }
 
+        // Updated click handler - breaks out of iframes using window.top
         joinBtn.addEventListener('click', () => {
-            window.location.href = '/games/k1488r00/kirka-party.html';
+            // This will navigate the top-most window, escaping any iframe or about:blank wrapper
+            window.top.location.href = '/games/k1488r00/kirka-party.html';
         });
+
         startCountdown();
     </script>
 </body>
