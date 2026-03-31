@@ -12,8 +12,9 @@
     font-family: 'Segoe UI', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
-  /* ── Join screen ── */
+  /* Join screen */
   #join-screen {
     flex: 1;
     display: flex;
@@ -125,7 +126,8 @@
     color: #85B7EB;
     text-align: center;
   }
-  /* ── Lobby screen ── */
+
+  /* Lobby screen */
   #lobby-screen {
     display: none;
     position: fixed;
@@ -137,27 +139,33 @@
   #lobby-screen.visible {
     display: flex;
   }
-  #loading-bar {
-    height: 3px;
-    background: #378ADD;
-    flex-shrink: 0;
-    display: none;
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-  #loading-bar.show { display: block; }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
-  }
-  #lobby-iframe {
+  #lobby-object {
     flex: 1;
     width: 100%;
     border: none;
-    display: block;
+    background: #000;
+  }
+  #back-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: rgba(0,0,0,0.8);
+    color: #E6F1FB;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 10001;
+    display: none;
+  }
+  #back-btn:hover {
+    background: rgba(0,0,0,0.95);
   }
 </style>
 </head>
 <body>
+
 <!-- Join screen -->
 <div id="join-screen">
   <div id="header">
@@ -183,10 +191,10 @@
   </div>
 </div>
 
-<!-- Fullscreen lobby screen -->
+<!-- Lobby screen -->
 <div id="lobby-screen">
-  <div id="loading-bar"></div>
-  <iframe id="lobby-iframe" allowfullscreen></iframe>
+  <button id="back-btn">← Back to Joiner</button>
+  <object id="lobby-object" type="text/html"></object>
 </div>
 
 <script>
@@ -196,8 +204,8 @@
   const errMsg = document.getElementById('error-msg');
   const joinScreen = document.getElementById('join-screen');
   const lobbyScreen = document.getElementById('lobby-screen');
-  const loadingBar = document.getElementById('loading-bar');
-  const iframe = document.getElementById('lobby-iframe');
+  const backBtn = document.getElementById('back-btn');
+  const lobbyObject = document.getElementById('lobby-object');
 
   const BASE = 'https://kirka.io/___lobby___/';
   const ID_PATTERN = /^[A-Za-z0-9~_\-]+$/;
@@ -217,34 +225,37 @@
     const id = input.value.trim();
     clearError();
 
-    if (!id) { 
-      showError('please enter a party ID'); 
-      return; 
+    if (!id) {
+      showError('please enter a party ID');
+      return;
     }
-    if (!ID_PATTERN.test(id)) { 
-      showError('party ID can only contain letters, numbers, ~, _ or -'); 
-      return; 
+    if (!ID_PATTERN.test(id)) {
+      showError('party ID can only contain letters, numbers, ~, _ or -');
+      return;
     }
 
     const url = BASE + id;
 
-    // 1. Switch to fullscreen page immediately
+    // Show lobby screen first
     joinScreen.style.display = 'none';
     lobbyScreen.classList.add('visible');
-    loadingBar.classList.add('show');
+    backBtn.style.display = 'block';
 
-    // 2. Wait 1 second, then load the iframe
-    setTimeout(() => {
-      iframe.onload = () => {
-        loadingBar.classList.remove('show');
-      };
-      iframe.src = url;
-    }, 1000); // ← 1 second delay
+    // Set the object data (different embedding method)
+    lobbyObject.data = url;
   }
 
+  backBtn.addEventListener('click', () => {
+    lobbyObject.data = '';
+    lobbyScreen.classList.remove('visible');
+    joinScreen.style.display = 'flex';
+    backBtn.style.display = 'none';
+    input.focus();
+  });
+
   btn.addEventListener('click', loadLobby);
-  input.addEventListener('keydown', e => { 
-    if (e.key === 'Enter') loadLobby(); 
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadLobby();
   });
   input.addEventListener('input', clearError);
 </script>
