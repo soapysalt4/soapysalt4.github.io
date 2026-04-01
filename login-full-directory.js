@@ -11,7 +11,7 @@ async function playAlarm() {
             await audioContext.resume();
         }
 
-        const response = await fetch('/images/audio/alarm.mp4');
+        const response = await fetch('/images/audio/alarm.mp3');
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
@@ -29,12 +29,10 @@ async function playAlarm() {
         source.start(0);
         currentSource = source;
 
-        console.log('Alarm playing automatically at 1.2 volume');
-
     } catch (error) {
         console.error('Web Audio API failed, using fallback:', error);
         
-        const audio = new Audio('images/audio/alarm.mp3');
+        const audio = new Audio('/images/audio/alarm.mp3');
         audio.volume = 1.0;    
         audio.loop = true;
         audio.play().catch(err => {
