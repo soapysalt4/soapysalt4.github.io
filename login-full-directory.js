@@ -11,7 +11,7 @@ async function playAlarm() {
             await audioContext.resume();
         }
 
-        const response = await fetch('images/audio/alarm.mp4');
+        const response = await fetch('/images/audio/alarm.mp4');
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
