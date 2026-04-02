@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const ADMIN_CODES = new Set(["deny", "deny2"]);
-    const STORAGE_KEY = "positive_verification_rq158zmb7daj7hsfa8";
+    const ADMIN_CODES = new Set(["311267", "notallowed"]);
+    const STORAGE_KEY = "positive_verification_rq158zmb7daj7hsfa8_is_true";
 
     if (localStorage.getItem(STORAGE_KEY) === "true") {
         return;
