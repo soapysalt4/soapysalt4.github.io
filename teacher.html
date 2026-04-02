@@ -2,9 +2,6 @@
 <html lang="en">
 <head>
 <script>
-  // ────────────────────────────────────────────────
-  //  Cookie & ID helpers
-  // ────────────────────────────────────────────────
   function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -20,9 +17,6 @@
     return String(100000 + Math.floor(Math.random() * 900000));
   }
 
-  // ────────────────────────────────────────────────
-  //  Cronitor setup
-  // ────────────────────────────────────────────────
   function loadCronitor() {
     const s = document.createElement('script');
     s.async = true;
@@ -34,9 +28,6 @@
     cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
   }
 
-  // ────────────────────────────────────────────────
-  //  Main logic
-  // ────────────────────────────────────────────────
   function setupUserIDAndBanCheck() {
     let userID = getCookie("userID");
 
@@ -48,7 +39,6 @@
     const currentPath = window.location.pathname;
     const desiredPath = "/" + userID + "/";
 
-    // UPDATED: check inside /banned/
     const banFile = "/banned/" + userID + ".html";
 
     fetch(banFile, { method: "HEAD", cache: "no-store" })
