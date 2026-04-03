@@ -1,5 +1,5 @@
 // id-assigning.js
-// User ID rewriting and ban redirects disabled.
+// Disabled: no more random folder redirects.
 
 document.addEventListener("DOMContentLoaded", () => {
     // Script intentionally disabled.
