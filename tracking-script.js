@@ -1,3 +1,6 @@
-async src="https://rum.cronitor.io/script.js">
-    window.cronitor = window.cronitor || function() { (window.cronitor.q = window.cronitor.q || []).push(arguments); };
-    cronitor('config', { clientKey: 'b72461a152926ec0d8e6d87824007208' });
+// tracking-script.js
+// Tracking and access enforcement disabled.
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Script intentionally disabled.
+});
