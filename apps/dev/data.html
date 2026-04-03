@@ -1,100 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <script src="/iframe.js"></script>
-        <script>
-  // ────────────────────────────────────────────────
-  //  Cookie & ID helpers
-  // ────────────────────────────────────────────────
-  function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = name + "=" + value + "; expires=" + d.toUTCString() + "; path=/; SameSite=Lax";
-  }
-
-  function getCookie(name) {
-    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    return match ? match[2] : null;
-  }
-
-  function generateID() {
-    return String(100000 + Math.floor(Math.random() * 900000));
-  }
-
-  // ────────────────────────────────────────────────
-  //  Cronitor setup
-  // ────────────────────────────────────────────────
-  function loadCronitor() {
-    const s = document.createElement('script');
-    s.async = true;
-    s.src = "https://rum.cronitor.io/script.js";
-    document.head.appendChild(s);
-    window.cronitor = window.cronitor || function() {
-      (window.cronitor.q = window.cronitor.q || []).push(arguments);
-    };
-    cronitor('config', { clientKey: 'c983eb319c32e403949792590d38aae0' });
-  }
-
-  // ────────────────────────────────────────────────
-  //  Main logic
-  // ────────────────────────────────────────────────
-  function setupUserIDAndBanCheck() {
-    let userID = getCookie("userID");
-
-    if (!userID) {
-      userID = generateID();
-      setCookie("userID", userID, 365);
-    }
-
-    const currentPath = window.location.pathname;
-    const desiredPath = "/" + userID + "/";
-
-    // UPDATED: check inside /banned/
-    const banFile = "/banned/" + userID + ".html";
-
-    fetch(banFile, { method: "HEAD", cache: "no-store" })
-      .then(response => {
-        if (response.ok) {
-          window.location.replace(banFile);
-          return;
-        }
-
-        if (currentPath !== desiredPath) {
-          history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
-        }
-
-        loadCronitor();
-        cronitor('ping', {
-          monitor: 'user-id-' + userID,
-          message: 'User ID: ' + userID,
-          url: desiredPath
-        });
-      })
-      .catch(() => {
-        if (currentPath !== desiredPath) {
-          history.replaceState(null, "", desiredPath + window.location.search + window.location.hash);
-        }
-
-        loadCronitor();
-        cronitor('ping', {
-          monitor: 'user-id-' + userID,
-          message: 'User ID: ' + userID,
-          url: desiredPath
-        });
-      });
-  }
-
-  if (document.readyState === 'complete') {
-    setupUserIDAndBanCheck();
-  } else {
-    window.addEventListener('load', setupUserIDAndBanCheck);
-  }
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data URL Generator</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.png">
-    <script src="/login-full-directory.js"></script>
+
     <style>
         body{margin:0;padding:0;font-family:Arial,sans-serif;background:#000;color:#fff;overflow:hidden;height:100vh}
         .header{display:flex;justify-content:space-between;align-items:center;padding:0 20px;background:#111;border-bottom:3px solid #f00;position:relative;z-index:10;height:56px}
@@ -118,6 +29,7 @@
         #dataurl-content{flex:1;background:#000;border:1px solid #f00;color:#0f0;padding:15px;border-radius:8px;font-family:'Courier New',monospace;font-size:14px;overflow:auto;resize:none;white-space:pre}
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="title">DATA URL GENERATOR</div>
@@ -125,7 +37,6 @@
     </div>
 
     <div class="main-content">
-        <!-- Left Panel: Input -->
         <div class="input-panel">
             <div class="fetch-header">
                 <input type="text" id="url-input" placeholder="https://example.com">
@@ -140,7 +51,6 @@
             </div>
         </div>
 
-        <!-- Right Panel: Output -->
         <div class="output-panel">
             <div class="dataurl-section" id="dataurl-section">
                 <div class="dataurl-header">
@@ -165,7 +75,6 @@
             const status = document.getElementById('status');
             const section = document.getElementById('dataurl-section');
             const output = document.getElementById('dataurl-content');
-            const copyBtn = document.getElementById('copy-btn');
 
             status.style.display = 'block';
             status.textContent = 'Fetching page via proxy...';
@@ -187,17 +96,18 @@
                     } catch { return url; }
                 };
 
-                const attrRegex = /\b(src|href|action|background|poster|data-src)=["']([^"']+)["']/gi;
-                html = html.replace(attrRegex, (match, attr, val) => `${attr}="${makeProxied(val)}"`);
+                html = html.replace(/\b(src|href|action|background|poster|data-src)=["']([^"']+)["']/gi,
+                    (match, attr, val) => `${attr}="${makeProxied(val)}"`);
 
-                html = html.replace(/url\((['"]?)([^'")]+)\1\)/gi, (match, quote, val) => {
-                    return `url(${quote}${makeProxied(val.trim())}${quote})`;
-                });
+                html = html.replace(/url\((['"]?)([^'")]+)\1\)/gi,
+                    (match, quote, val) => `url(${quote}${makeProxied(val.trim())}${quote})`);
 
-                html = html.replace(/style=["']([^"']*)["']/gi, (match, styles) => {
-                    const rewritten = styles.replace(/url\(([^'")]+)\)/gi, (m, u) => `url(${makeProxied(u.trim())})`);
-                    return `style="${rewritten}"`;
-                });
+                html = html.replace(/style=["']([^"']*)["']/gi,
+                    (match, styles) => {
+                        const rewritten = styles.replace(/url\(([^'")]+)\)/gi,
+                            (m, u) => `url(${makeProxied(u.trim())})`);
+                        return `style="${rewritten}"`;
+                    });
 
                 const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
 
